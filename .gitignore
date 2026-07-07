@@ -4,3 +4,13 @@ __pycache__/
 *.pyc
 test-screenshots/
 csra-server
+
+# Error sentinel runtime artifacts (scripts + docs in semblance/ ARE tracked;
+# only generated logs/reports/snapshots are ignored)
+semblance/*.log
+semblance/latest.*
+semblance/caught-errors-*.md
+semblance/caught-errors-*.json
+semblance/health-*.md
+semblance/health-*.log
+semblance/.last-signature

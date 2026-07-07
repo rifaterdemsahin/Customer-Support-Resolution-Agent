@@ -5,6 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Act 3 — The Lesson | AI Agent Demo</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+<script>
+/* CSRA Error Sentinel — global client error catcher. Captures uncaught errors,
+   unhandled promise rejections, and failed resource loads; shows a dismissible
+   badge, persists to localStorage, and reports to /api/errors (server records in
+   semblance/). Installs a GSAP stub when the CDN fails so pages degrade gracefully. */
+(function(){
+  if(window.__csraSentinel)return;window.__csraSentinel=true;
+  function load(){try{return JSON.parse(localStorage.getItem('csra_errors')||'[]')}catch(e){return[]}}
+  function save(q){try{localStorage.setItem('csra_errors',JSON.stringify(q.slice(-100)))}catch(e){}}
+  var Q=load();
+  function report(e){if(location.protocol!=='http:'&&location.protocol!=='https:')return;var b;try{b=JSON.stringify(e)}catch(x){return}try{if(navigator.sendBeacon&&navigator.sendBeacon('/api/errors',new Blob([b],{type:'application/json'})))return}catch(x){}try{fetch('/api/errors',{method:'POST',headers:{'Content-Type':'application/json'},body:b,keepalive:true}).catch(function(){})}catch(x){}}
+  function badge(e){var d=document.getElementById('sentinel-badge');if(!d){d=document.createElement('div');d.id='sentinel-badge';d.style.cssText='position:fixed;top:10px;left:10px;z-index:99990;max-width:360px;background:#e94560;color:#fff;font:700 12px/1.45 system-ui,sans-serif;padding:8px 12px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.6);cursor:pointer;word-break:break-word';d.title='Click to dismiss — error recorded in semblance/';d.addEventListener('click',function(){d.style.display='none'});(document.body||document.documentElement).appendChild(d)}d.style.display='block';var m=e.data&&(e.data.message||JSON.stringify(e.data));d.textContent='⚠ '+e.type+': '+String(m).slice(0,180)}
+  function rec(type,data){var e={type:type,ts:new Date().toISOString(),page:location.pathname.split('/').pop()||'index.html',data:data};Q.push(e);save(Q);badge(e);report(e)}
+  window.__csraInstallGsapStub=function(src){if(window.gsap)return;var n=function(){return C},C={call:n,to:n,fromTo:n,from:n,set:n,kill:n,eventCallback:n,time:function(){return 0},restart:n,pause:n,play:n,progress:function(){return 0},duration:function(){return 0}};window.gsap={timeline:function(){return C},to:n,fromTo:n,from:n,set:n,quickTo:function(){return n},version:'stub-offline'};rec('dependency-missing',{message:'GSAP failed to load from CDN — animation disabled, static fallback shown.',src:src||'gsap.min.js'});try{document.querySelectorAll('[style*="opacity:0"]').forEach(function(el){el.style.opacity=1})}catch(e){}}
+  window.addEventListener('error',function(e){if(e.target&&e.target!==window&&e.target.tagName){var t=e.target.tagName.toLowerCase(),src=e.target.src||e.target.href||'';if(t==='script'&&/gsap/i.test(src)){window.__csraInstallGsapStub(src);return}rec('resource-error',{tag:t,src:src,message:'<'+t+'> failed to load'});return}rec('uncaught',{message:e.message||'unknown error',filename:e.filename,line:e.lineno,col:e.colno,stack:e.error&&e.error.stack})},true);
+  window.addEventListener('unhandledrejection',function(e){rec('unhandledrejection',{message:(e.reason&&(e.reason.message||String(e.reason)))||'promise rejection',stack:e.reason&&e.reason.stack})});
+})();
+</script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;width:100vw;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
@@ -199,7 +217,7 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" onerror="__csraInstallGsapStub(this.src)"></script>
 <script>
 (function() {
   var tl = gsap.timeline({ defaults: { ease: "power3.inOut" } });

@@ -10,18 +10,30 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"runtime/debug"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets"
 )
 
 var (
-	githubToken string
-	githubRepo  string
+	githubToken  string
+	githubRepo   string
+	semblanceDir string
 )
 
 func main() {
 	githubRepo = envOrDefault("GITHUB_REPO", "rifaterdemsahin/Customer-Support-Resolution-Agent")
+	semblanceDir = envOrDefault("SEMBLANCE_DIR", "semblance")
+	if err := os.MkdirAll(semblanceDir, 0o755); err != nil {
+		log.Printf("⚠️  semblance: cannot create dir %q: %v", semblanceDir, err)
+	} else {
+		log.Printf("✅ semblance: recording caught errors in %s", semblanceDir)
+	}
 
 	if err := loadGitHubToken(); err != nil {
 		log.Fatalf("Failed to load GitHub token: %v", err)
@@ -32,11 +44,12 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/api/status", handleStatus)
+	mux.HandleFunc("/api/errors", handleClientError)
 	mux.HandleFunc("/api/upload/audio", handleUploadAudio)
 	mux.HandleFunc("/api/upload/image", handleUploadImage)
 	mux.Handle("/", http.FileServer(http.Dir("/static")))
 
-	handler := corsMiddleware(mux)
+	handler := corsMiddleware(recoverer(mux))
 
 	log.Printf("CSRA Backend starting on :%s", port)
 	log.Printf("GitHub repo: %s", githubRepo)
@@ -118,6 +131,7 @@ func handleUploadAudio(w http.ResponseWriter, r *http.Request) {
 
 	path := fmt.Sprintf("generated-audio/%s-narration.mp3", act)
 	if err := pushToGitHub(path, data, fmt.Sprintf("upload: update %s narration audio", act)); err != nil {
+		recordError("server", "github-upload", path, "audio upload failed: "+err.Error())
 		writeError(w, "GitHub upload failed: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -153,6 +167,7 @@ func handleUploadImage(w http.ResponseWriter, r *http.Request) {
 
 	path := fmt.Sprintf("generated-images/%s.png", scene)
 	if err := pushToGitHub(path, data, fmt.Sprintf("upload: update %s background image", scene)); err != nil {
+		recordError("server", "github-upload", path, "image upload failed: "+err.Error())
 		writeError(w, "GitHub upload failed: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -243,6 +258,105 @@ func writeError(w http.ResponseWriter, msg string, code int) {
 func writeSuccess(w http.ResponseWriter, msg string) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok", "message": msg})
+}
+
+// recoverer is the global server-side error catcher. Any panic raised while
+// serving a request is recovered, recorded into the semblance/ folder, and
+// returned to the client as a clean 500 instead of crashing the process.
+func recoverer(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if rec := recover(); rec != nil {
+				msg := fmt.Sprintf("panic: %v\n%s", rec, debug.Stack())
+				recordError("server", "panic", r.Method+" "+r.URL.Path, msg)
+				log.Printf("❌ PANIC recovered %s %s: %v", r.Method, r.URL.Path, rec)
+				writeError(w, "Internal server error (recovered)", http.StatusInternalServerError)
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
+}
+
+// recordError appends one tab-separated line to semblance/<source>-errors.log.
+// source is "server" or "client". This is the durable record of every caught
+// error on both sides of the system.
+func recordError(source, kind, page, msg string) {
+	dir := semblanceDir
+	if dir == "" {
+		dir = "semblance"
+	}
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		log.Printf("semblance: cannot create dir: %v", err)
+		return
+	}
+	path := filepath.Join(dir, source+"-errors.log")
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+	if err != nil {
+		log.Printf("semblance: cannot open %s: %v", path, err)
+		return
+	}
+	defer f.Close()
+	oneLine := strings.ReplaceAll(strings.ReplaceAll(msg, "\n", " ⏎ "), "\t", " ")
+	fmt.Fprintf(f, "%s\t%s\t%s\t%s\t%s\n", time.Now().UTC().Format(time.RFC3339), source, kind, page, oneLine)
+}
+
+// handleClientError receives JSON error reports from the client-side Error
+// Sentinel and durably records them in semblance/client-errors.log.
+func handleClientError(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		writeError(w, "Failed to read body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	var p struct {
+		Type string `json:"type"`
+		TS   string `json:"ts"`
+		Page string `json:"page"`
+		Data struct {
+			Message  string `json:"message"`
+			Filename string `json:"filename"`
+			Line     int    `json:"line"`
+			Col      int    `json:"col"`
+			Stack    string `json:"stack"`
+			Src      string `json:"src"`
+			Tag      string `json:"tag"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(body, &p); err != nil {
+		writeError(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	d := p.Data
+	var parts []string
+	if d.Message != "" {
+		parts = append(parts, d.Message)
+	}
+	if d.Tag != "" {
+		parts = append(parts, "tag="+d.Tag)
+	}
+	if d.Src != "" {
+		parts = append(parts, "src="+d.Src)
+	}
+	if d.Filename != "" {
+		parts = append(parts, "at "+d.Filename+":"+strconv.Itoa(d.Line)+":"+strconv.Itoa(d.Col))
+	}
+	if d.Stack != "" {
+		parts = append(parts, "\n"+d.Stack)
+	}
+	if p.TS == "" {
+		p.TS = time.Now().UTC().Format(time.RFC3339)
+	}
+	page := p.Page
+	if page == "" {
+		page = r.Header.Get("Referer")
+	}
+	recordError("client", p.Type, page, p.TS+" "+strings.Join(parts, " "))
+	log.Printf("📥 client error [%s] %s: %s", p.Type, page, d.Message)
+	writeSuccess(w, "recorded")
 }
 
 func envOrDefault(key, def string) string {
