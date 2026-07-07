@@ -68,6 +68,10 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
 .env-links a{color:#666;text-decoration:none;padding:2px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);transition:all 0.2s}
 .env-links a:hover{color:#00d4aa;border-color:rgba(0,212,170,0.35);background:rgba(0,212,170,0.06)}
 .env-links .sep{color:#444;margin:0 1px}
+.dbg-btn{padding:3px 9px;border-radius:5px;font-size:13px;cursor:pointer;background:rgba(0,212,170,0.06);color:#777;border:1px solid rgba(255,255,255,0.06);transition:all 0.2s;user-select:none;line-height:1.2}
+.dbg-btn:hover{color:#00d4aa;border-color:rgba(0,212,170,0.25);background:rgba(0,212,170,0.1)}
+.dbg-btn.paused{background:rgba(233,69,96,0.15);color:#e94560;border-color:rgba(233,69,96,0.3)}
+.dbg-btn.copied{background:rgba(0,204,102,0.15);color:#00cc66;border-color:rgba(0,204,102,0.3)}
 </style>
 </head>
 <body>
@@ -134,6 +138,9 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
         <a href="act2.html" title="Local Act 2">🏠 Local</a><span class="sep">|</span>
         <a href="https://rifaterdemsahin.github.io/Customer-Support-Resolution-Agent/act2.html" title="Cloud / GitHub Pages">🌐 Cloud</a>
       </span>
+      <span class="dbg-btn" id="dbg-pause" title="Pause / Play animation">⏸</span>
+      <span class="dbg-btn" id="dbg-copy" title="Copy debug log to clipboard">📋</span>
+      <span class="dbg-btn" id="dbg-script" title="Open script.md">📜</span>
       <span class="debug-status">
         <span class="status-badge imgs" id="status-scene" style="background:rgba(0,204,102,0.2);color:#00cc66;margin-right:8px">📍 Scene 1/3: Policy Check</span>
         <span class="status-badge imgs" id="status-imgs">🖼 0/0</span>
@@ -200,6 +207,25 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
   }
 
   document.getElementById('debug-toggle').addEventListener('click',function(){document.getElementById('debug-panel').classList.toggle('open')});
+
+  var isPaused = false;
+  document.getElementById('dbg-pause').addEventListener('click',function(e){e.stopPropagation();
+    isPaused = !isPaused; var btn = document.getElementById('dbg-pause');
+    if (isPaused) { tl.pause(); btn.textContent = '▶'; btn.className = 'dbg-btn paused'; }
+    else { tl.play(); btn.textContent = '⏸'; btn.className = 'dbg-btn'; }
+  });
+
+  document.getElementById('dbg-copy').addEventListener('click',function(e){e.stopPropagation();
+    var lines = allEvents.map(function(ev){return '['+ev.id+'] '+ev.t+'s '+ev.m;}).join('\n');
+    navigator.clipboard.writeText(lines).then(function(){
+      var btn = document.getElementById('dbg-copy'); btn.textContent = '✓'; btn.className = 'dbg-btn copied';
+      setTimeout(function(){btn.textContent = '📋'; btn.className = 'dbg-btn';}, 1200);
+    }).catch(function(){}); 
+  });
+
+  document.getElementById('dbg-script').addEventListener('click',function(e){e.stopPropagation();
+    window.open('script.md','_blank');
+  });
 
   document.querySelectorAll('img').forEach(function(img,i){
     imgTotal++; var nm=(img.src.split('/').pop()||'img-'+i).split('?')[0];
