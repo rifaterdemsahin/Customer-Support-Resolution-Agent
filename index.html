@@ -315,12 +315,95 @@ h2 {
   border-radius: 16px;
   padding: 24px 40px;
 }
+
+.subtitle-bar {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 80;
+  opacity: 0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.subtitle-bg {
+  background: #e94560;
+  padding: 18px 36px;
+  border-radius: 14px;
+}
+
+.subtitle-text {
+  font-size: 30px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  letter-spacing: 1px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.subtitle-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 32px;
+  background: #ffffff;
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.subtitle-bar.act2 .subtitle-bg { background: #00cc66; }
+.subtitle-bar.act3 .subtitle-bg { background: #00d4aa; }
+.subtitle-bar.act3 .subtitle-text { color: #0a0a0a; }
+.subtitle-bar.act3 .subtitle-cursor { background: #0a0a0a; }
+
+.gh-pages-banner {
+  position: absolute;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 81;
+  opacity: 0;
+  background: rgba(0, 212, 170, 0.15);
+  border: 2px solid #00d4aa;
+  border-radius: 16px;
+  padding: 24px 44px;
+  text-align: center;
+}
+
+.gh-pages-banner .gh-label {
+  font-size: 22px;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.gh-pages-banner .gh-url {
+  font-size: 32px;
+  font-weight: 700;
+  color: #00d4aa;
+  letter-spacing: 1px;
+}
 </style>
 </head>
 <body>
 <div class="stage" id="stage">
 
   <div class="flash-overlay" id="flash"></div>
+
+  <div class="subtitle-bar" id="subtitle-bar">
+    <div class="subtitle-bg">
+      <span class="subtitle-text" id="subtitle-text"></span><span class="subtitle-cursor" id="subtitle-cursor"></span>
+    </div>
+  </div>
+
+  <div class="gh-pages-banner" id="gh-banner">
+    <div class="gh-label">🔗 View the live demo</div>
+    <div class="gh-url">rifaterdemsahin.github.io/Customer-Support-Resolution-Agent</div>
+  </div>
 
   <!-- ===================== ACT 1: NAIVE ===================== -->
   <div class="scene" id="scene1">
@@ -485,11 +568,36 @@ h2 {
 (function() {
   var tl = gsap.timeline({ defaults: { ease: "power3.inOut" } });
 
+  var subText = document.getElementById('subtitle-text');
+  var subBar = document.getElementById('subtitle-bar');
+  var subCursor = document.getElementById('subtitle-cursor');
+
+  function showSubtitle(text, bgClass, at, duration) {
+    duration = duration || 1.8;
+    // strip class and set bg
+    tl.call(function() {
+      subBar.className = 'subtitle-bar';
+      if (bgClass) subBar.classList.add(bgClass);
+      subText.textContent = text;
+    }, null, at);
+
+    // reveal character by character using clipPath
+    var charCount = text.length;
+    tl.fromTo(subBar,
+      { opacity: 1, clipPath: 'inset(0 100% 0 0)' },
+      { clipPath: 'inset(0 0% 0 0)', duration: duration, ease: 'steps(' + Math.min(charCount, 30) + ')' },
+      at + '+=0'
+    );
+
+    // fade out after reveal
+    tl.to(subBar, { opacity: 0, duration: 0.4 }, at + '+= ' + (duration + 1.5));
+  }
+
   /* ---------- Narrator (Web Speech API) ---------- */
   function narrate(text, at) {
     if (!('speechSynthesis' in window)) return;
     var u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.9;
+    u.rate = 0.85;
     u.pitch = 1;
     u.volume = 0.7;
     u.lang = 'en-US';
@@ -497,13 +605,36 @@ h2 {
     tl.call(function() { window.speechSynthesis.speak(u); }, null, at);
   }
 
+  // Act 1 narration + subtitle (red bg)
+  showSubtitle(
+    "When guidelines are silent, autonomous agents risk financial errors.",
+    'act1',
+    '+=0.3',
+    2.2
+  );
   narrate(
     "When guidelines are silent, autonomous agents risk financial errors.",
     "+=0.3"
   );
+
+  // Act 2 narration + subtitle (green bg)
+  showSubtitle(
+    "The resilient agent detects the gap and escalates to a human for policy interpretation.",
+    'act2',
+    '+=10',
+    2.5
+  );
   narrate(
     "The resilient agent detects the gap and escalates to a human for policy interpretation.",
     "+=10"
+  );
+
+  // Act 3 narration + subtitle (cyan bg)
+  showSubtitle(
+    "Know what you don't know. Escalate policy gaps to the right decision-maker.",
+    'act3',
+    '+=20',
+    2.4
   );
   narrate(
     "Know what you don't know. Escalate policy gaps to the right decision-maker.",
@@ -629,11 +760,15 @@ h2 {
   tl.to("#s3-final", { scale: 1.03, duration: 0.4, repeat: 1, yoyo: true }, "+=0.4");
   tl.to(".final-text", { textShadow: "0 0 30px rgba(0,212,170,0.6)", duration: 0.8 }, "-=0.4");
 
+  // GitHub Pages banner at the end
+  tl.to("#gh-banner", { opacity: 1, y: -10, duration: 0.6 }, "+=0.3");
+  tl.to("#gh-banner", { scale: 1.02, duration: 0.3, repeat: 1, yoyo: true }, "+=0.3");
+
   /* ============ Timeline progress bar ============ */
   tl.to("#timeline", { width: "100%", duration: 30, ease: "none" }, 0);
 
-  // Loop on finish (last 3 seconds hold)
-  tl.to({}, { duration: 3 });
+  // Loop on finish (last 5 seconds hold)
+  tl.to({}, { duration: 5 });
   tl.eventCallback("onComplete", function() {
     tl.restart(true, false);
   });
