@@ -686,58 +686,6 @@ h2 {
     2.4
   );
 
-    // fade out after reveal
-    tl.to(subBar, { opacity: 0, duration: 0.4 }, at + '+= ' + (duration + 1.5));
-  }
-
-  /* ---------- Narrator (Web Speech API) ---------- */
-  function narrate(text, at) {
-    if (!('speechSynthesis' in window)) return;
-    var u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.85;
-    u.pitch = 1;
-    u.volume = 0.7;
-    u.lang = 'en-US';
-    window.speechSynthesis.cancel();
-    tl.call(function() { window.speechSynthesis.speak(u); }, null, at);
-  }
-
-  // Act 1 narration + subtitle (red bg)
-  showSubtitle(
-    "When guidelines are silent, autonomous agents risk financial errors.",
-    'act1',
-    '+=0.3',
-    2.2
-  );
-  narrate(
-    "When guidelines are silent, autonomous agents risk financial errors.",
-    "+=0.3"
-  );
-
-  // Act 2 narration + subtitle (green bg)
-  showSubtitle(
-    "The resilient agent detects the gap and escalates to a human for policy interpretation.",
-    'act2',
-    '+=10',
-    2.5
-  );
-  narrate(
-    "The resilient agent detects the gap and escalates to a human for policy interpretation.",
-    "+=10"
-  );
-
-  // Act 3 narration + subtitle (cyan bg)
-  showSubtitle(
-    "Know what you don't know. Escalate policy gaps to the right decision-maker.",
-    'act3',
-    '+=20',
-    2.4
-  );
-  narrate(
-    "Know what you don't know. Escalate policy gaps to the right decision-maker.",
-    "+=20"
-  );
-
   /* ============ ACT 1: NAIVE (0–10s) ============ */
   tl.to("#scene1", { opacity: 1, duration: 0.4 }, 0);
   tl.to("#scene1-bg", { opacity: 0.35, duration: 1 }, 0);
