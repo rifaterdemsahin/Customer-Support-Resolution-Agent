@@ -1,0 +1,52 @@
+name: Health Check
+
+# Runs the CSRA error-catcher + test suite automatically every 10 minutes.
+# Catches both code regressions (on push) and external/environment changes
+# (e.g. the GSAP CDN going down, image/audio URLs breaking). Fails the run
+# if any check fails so problems surface as a red workflow.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '**.html'
+      - 'backend/**'
+      - 'test-animation.js'
+      - 'semblance/**'
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Install Node deps
+        run: npm ci || npm install
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run health check (catch errors + rerun tests)
+        run: bash semblance/health-check.sh --force
+
+      - name: Upload health report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-report-${{ github.run_id }}
+          path: |
+            semblance/latest-health.md
+            semblance/health-*.md
+            semblance/health-*.log
+          if-no-files-found: warn
