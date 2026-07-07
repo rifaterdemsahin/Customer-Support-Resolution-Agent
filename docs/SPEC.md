@@ -248,7 +248,7 @@ All subtitles use `clipPath: inset()` character-by-character reveal via GSAP `st
 | Env links | `.env-links` | Inline flex, 11px | `🏠 Local` link to current file (relative), `🌐 Cloud` link to GitHub Pages absolute URL |
 | Pause button | `#dbg-pause` | 13px `.dbg-btn` | `⏸` → toggles to `▶` (paused): pauses/resumes GSAP timeline via `tl.pause()`/`tl.play()` |
 | Copy button | `#dbg-copy` | 13px `.dbg-btn` | `📋` → `✓` briefly: copies all debug timeline entries to clipboard as `[E#] X.Xs message` |
-| Script button | `#dbg-script` | 13px `.dbg-btn` | `📜`: opens `script.md` in a new tab |
+| Script button | `#dbg-script` | 13px `.dbg-btn` | `📜`: loads `docs/script.md` via `fetch()` and displays in a modal popup with a `📋 Copy Script` button. Cached on first load (`dataset.loaded`). Close via `×`, backdrop click, or Escape. |
 | Image badge | `#status-imgs` | — | `"🖼 N/M"` — turns red if not all loaded |
 | Audio badge | `#status-audio` | — | `"🔊 N/M"` — turns red if not all loaded |
 | Event badge | `#status-events` | — | `"📋 N"` total event count |

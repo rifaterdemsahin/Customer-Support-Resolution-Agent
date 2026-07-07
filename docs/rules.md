@@ -73,7 +73,7 @@ The debug toggle bar (34px, always visible) provides:
 - 🏠 Local / 🌐 Cloud env-switch links
 - ⏸/▶ Pause/Play timeline control
 - 📋 Copy debug log to clipboard
-- 📜 Open script.md
+- 📜 Open script modal (fetches `docs/script.md`, shows in modal with copy button)
 - 📍 Current scene indicator (Scene X/3: Name)
 - 🖼 🔊 📋 Artifact load tracking
 

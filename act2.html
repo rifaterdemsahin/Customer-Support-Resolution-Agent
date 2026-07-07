@@ -72,6 +72,15 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
 .dbg-btn:hover{color:#00d4aa;border-color:rgba(0,212,170,0.25);background:rgba(0,212,170,0.1)}
 .dbg-btn.paused{background:rgba(233,69,96,0.15);color:#e94560;border-color:rgba(233,69,96,0.3)}
 .dbg-btn.copied{background:rgba(0,204,102,0.15);color:#00cc66;border-color:rgba(0,204,102,0.3)}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:999;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:#0d0d0d;border:2px solid #00d4aa;border-radius:16px;width:92%;max-width:960px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 0 60px rgba(0,212,170,0.12)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid rgba(0,212,170,0.12)}
+.modal-header h3{color:#00d4aa;font-size:20px;margin:0;letter-spacing:1px}
+.modal-close{cursor:pointer;color:#666;font-size:28px;transition:color 0.2s;line-height:1}
+.modal-close:hover{color:#e94560}
+.modal-body{flex:1;overflow-y:auto;padding:20px 24px;color:#bbb;font-size:13px;line-height:1.7;white-space:pre-wrap;font-family:'SF Mono','Fira Code',monospace}
+.modal-footer{display:flex;gap:10px;padding:14px 24px;border-top:1px solid rgba(0,212,170,0.12)}
 </style>
 </head>
 <body>
@@ -223,8 +232,27 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
     }).catch(function(){}); 
   });
 
+  // Open script modal
   document.getElementById('dbg-script').addEventListener('click',function(e){e.stopPropagation();
-    window.open('docs/script.md','_blank');
+    var modal = document.getElementById('script-modal'); modal.classList.add('open');
+    var body = document.getElementById('modal-body');
+    if (!body.dataset.loaded) {
+      fetch('docs/script.md').then(function(r){return r.text()}).then(function(t){
+        body.textContent = t; body.dataset.loaded = '1';
+      })["catch"](function(){body.textContent = 'Failed to load script.md';});
+    }
+  });
+  document.getElementById('modal-close').addEventListener('click',function(){
+    document.getElementById('script-modal').classList.remove('open');
+  });
+  document.getElementById('script-modal').addEventListener('click',function(e){
+    if (e.target === this) this.classList.remove('open');
+  });
+  document.getElementById('modal-copy').addEventListener('click',function(){
+    navigator.clipboard.writeText(document.getElementById('modal-body').textContent).then(function(){
+      var b = document.getElementById('modal-copy'); b.textContent = '\u2713 Copied!'; b.className = 'dbg-btn copied';
+      setTimeout(function(){b.textContent = '\uD83D\uDCCB Copy Script'; b.className = 'dbg-btn';}, 1500);
+    })["catch"](function(){});
   });
 
   document.querySelectorAll('img').forEach(function(img,i){
@@ -293,5 +321,18 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
   tl.eventCallback("onComplete",function(){console.log('[16s] Act 2 loop');tl.restart(true,false)});
 })();
 </script>
+<!-- Script Modal -->
+<div class="modal-overlay" id="script-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>📜 Script — AI Agent: Escalate vs. Guess</h3>
+      <span class="modal-close" id="modal-close">&times;</span>
+    </div>
+    <div class="modal-body" id="modal-body">Loading...</div>
+    <div class="modal-footer">
+      <span class="dbg-btn" id="modal-copy">📋 Copy Script</span>
+    </div>
+  </div>
+</div>
 </body>
 </html>
