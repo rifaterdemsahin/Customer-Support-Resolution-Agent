@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Agent: Escalate vs. Guess</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
 <style>
 *, *::before, *::after {
   margin: 0;
@@ -428,6 +429,40 @@ h2 {
   font-size: 24px;
   color: #e94560;
 }
+
+.escalation-svg-wrap {
+  margin: 24px 0 12px 0;
+  opacity: 0;
+}
+
+.escalation-svg-wrap svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.escalation-svg-wrap .svg-label {
+  font-size: 16px;
+  fill: #666;
+  text-anchor: middle;
+}
+
+.escalation-svg-wrap .svg-label.active {
+  fill: #00d4aa;
+}
+
+.escalation-path {
+  stroke: #00cc66;
+  stroke-width: 3;
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.escalation-dot {
+  fill: #00cc66;
+  opacity: 0;
+}
 </style>
 </head>
 <body>
@@ -455,6 +490,80 @@ h2 {
       but is <span style="color:#e94560;font-weight:700;">silent on competitor pricing</span>.
     </div>
     <div class="problem-rule">⚠️ Unmapped Policy Gap — No Deterministic Rule</div>
+    <div class="escalation-svg-wrap" id="escalation-svg-wrap">
+      <svg width="740" height="200" viewBox="0 0 740 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- AI Agent (left) -->
+        <g transform="translate(80, 50)">
+          <!-- Antenna -->
+          <line x1="40" y1="0" x2="40" y2="18" stroke="#00d4aa" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="40" cy="-4" r="6" fill="none" stroke="#00d4aa" stroke-width="2"/>
+          <!-- Head -->
+          <rect x="12" y="18" width="56" height="44" rx="8" fill="none" stroke="#00d4aa" stroke-width="3"/>
+          <!-- Eyes -->
+          <circle cx="30" cy="37" r="5" fill="#00d4aa"/>
+          <circle cx="50" cy="37" r="5" fill="#00d4aa"/>
+          <!-- Mouth -->
+          <rect x="26" y="47" width="28" height="4" rx="2" fill="#00d4aa"/>
+          <!-- Antenna glow -->
+          <circle cx="40" cy="-4" r="10" fill="#00d4aa" opacity="0.15">
+            <animate attributeName="r" values="10;14;10" dur="2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.15;0.05;0.15" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Body -->
+          <rect x="4" y="68" width="72" height="50" rx="10" fill="none" stroke="#00d4aa" stroke-width="3"/>
+          <!-- Chest lines -->
+          <line x1="40" y1="78" x2="40" y2="108" stroke="#00d4aa" stroke-width="2" opacity="0.5"/>
+          <line x1="18" y1="85" x2="62" y2="85" stroke="#00d4aa" stroke-width="1.5" opacity="0.4"/>
+          <line x1="18" y1="93" x2="62" y2="93" stroke="#00d4aa" stroke-width="1.5" opacity="0.4"/>
+          <line x1="18" y1="101" x2="40" y2="101" stroke="#00d4aa" stroke-width="1.5" opacity="0.3"/>
+        </g>
+        <!-- Label: AI -->
+        <text x="120" y="185" fill="#00d4aa" font-size="20" font-weight="700" text-anchor="middle">AI Agent</text>
+        <text x="120" y="170" fill="#555" font-size="14" text-anchor="middle">Autonomous</text>
+
+        <!-- Escalation arrow (animated path) -->
+        <path class="escalation-path" id="escalation-path"
+              d="M 210,110 C 280,110 280,80 340,80 C 400,80 400,110 470,110"/>
+        <!-- Arrow head -->
+        <polygon id="escalation-arrowhead" points="470,103 490,110 470,117" fill="#00cc66" opacity="0"/>
+        <!-- Arrow dots -->
+        <circle class="escalation-dot" id="dot1" cx="260" cy="100" r="4"/>
+        <circle class="escalation-dot" id="dot2" cx="310" cy="82" r="4"/>
+        <circle class="escalation-dot" id="dot3" cx="370" cy="82" r="4"/>
+        <circle class="escalation-dot" id="dot4" cx="420" cy="105" r="4"/>
+        <!-- Flow label -->
+        <text x="350" y="65" fill="#888" font-size="14" text-anchor="middle" opacity="0" id="flow-label">escalation</text>
+
+        <!-- Human Agent (right) -->
+        <g transform="translate(540, 50)">
+          <!-- Head -->
+          <circle cx="40" cy="20" r="18" fill="none" stroke="#00cc66" stroke-width="3"/>
+          <!-- Eyes -->
+          <circle cx="34" cy="18" r="3" fill="#00cc66"/>
+          <circle cx="46" cy="18" r="3" fill="#00cc66"/>
+          <!-- Smile -->
+          <path d="M 30,28 Q 40,36 50,28" fill="none" stroke="#00cc66" stroke-width="2" stroke-linecap="round"/>
+          <!-- Body -->
+          <rect x="16" y="42" width="48" height="50" rx="10" fill="none" stroke="#00cc66" stroke-width="3"/>
+          <!-- Tie -->
+          <polygon points="40,52 34,68 40,64 46,68" fill="none" stroke="#00cc66" stroke-width="1.5" opacity="0.6"/>
+          <!-- Arms -->
+          <line x1="16" y1="52" x2="4" y2="78" stroke="#00cc66" stroke-width="3" stroke-linecap="round"/>
+          <line x1="64" y1="52" x2="76" y2="78" stroke="#00cc66" stroke-width="3" stroke-linecap="round"/>
+          <!-- Glow -->
+          <circle cx="40" cy="20" r="28" fill="#00cc66" opacity="0.08">
+            <animate attributeName="r" values="28;34;28" dur="2.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.08;0.03;0.08" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+        </g>
+        <!-- Label: Human -->
+        <text x="580" y="170" fill="#666" font-size="14" text-anchor="middle">Expert</text>
+        <text x="580" y="190" fill="#00cc66" font-size="20" font-weight="700" text-anchor="middle">Human Agent</text>
+
+        <!-- Dashed border between sides -->
+        <line x1="370" y1="115" x2="370" y2="155" stroke="#333" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+      </svg>
+    </div>
   </div>
 
   <audio id="audio-act1" preload="auto" src="generated-audio/2026-07-07T09-28-54Z/act1-narration.mp3"></audio>
@@ -647,7 +756,7 @@ h2 {
       at + '+=0'
     );
 
-    tl.to(subBar, { opacity: 0, duration: 0.4 }, at + '+= ' + (duration + 1.5));
+    tl.to(subBar, { opacity: 0, duration: 0.6 }, at + '+= ' + (duration + 3.5));
   }
 
   function playAudio(audioEl, at) {
@@ -658,6 +767,22 @@ h2 {
       } catch(e) {}
     }, null, at);
   }
+
+  function logEvent(event, at) {
+    tl.call(function() {
+      var elapsed = tl.time().toFixed(1);
+      console.log('[' + elapsed + 's] ' + event);
+    }, null, at);
+  }
+
+  // === Problem card intro subtitle ===
+  showSubtitle(
+    "AI agents face uncertainty when policy rules don't cover every scenario.",
+    'act1',
+    '+=0.5',
+    2.0
+  );
+  logEvent('Problem card displayed — AI Agent Policy Gap Problem', '+=0.5');
 
   // Act 1 — play audio + subtitle
   playAudio(audioAct1, '+=0.3');
@@ -693,21 +818,39 @@ h2 {
   // Problem card — display for 5 seconds
   tl.to("#problem-card", { opacity: 1, scale: 1.05, duration: 0.6 }, "+=0.2");
   tl.to("#problem-card", { scale: 1, duration: 0.4 });
-  tl.to("#problem-card", { opacity: 1, duration: 3.5 });
+
+  // SVG escalation animation — draw arrow, fade dots
+  tl.to("#escalation-svg-wrap", { opacity: 1, duration: 0.5 }, "-=0.2");
+  tl.to("#escalation-path", { strokeDashoffset: 0, duration: 1.2, ease: "power3.inOut" }, "-=0.1");
+  tl.to("#escalation-arrowhead", { opacity: 1, duration: 0.3 }, "-=0.6");
+  tl.to("#dot1", { opacity: 1, duration: 0.2 }, "-=0.8");
+  tl.to("#dot2", { opacity: 1, duration: 0.2 }, "-=0.6");
+  tl.to("#dot3", { opacity: 1, duration: 0.2 }, "-=0.4");
+  tl.to("#dot4", { opacity: 1, duration: 0.2 }, "-=0.2");
+  tl.to("#flow-label", { opacity: 1, duration: 0.4 }, "-=0.1");
+
+  tl.to("#problem-card", { opacity: 1, duration: 2.8 });
   tl.to("#problem-card", { opacity: 0, y: -30, duration: 0.5 }, "+=0.5");
+  showSubtitle("Customer requests a competitor price match.", 'act1', '+=0', 1.6);
+  logEvent('Problem card dismissed', '+=0');
 
   // Request bubble appears after problem card
   tl.to("#s1-request", { opacity: 1, y: 0, duration: 0.6 }, "+=0.2");
   tl.to("#s1-request", { opacity: 1, duration: 1.2 });
+  logEvent('Customer request bubble appears', '+=0');
 
   // Agent appears thinking
   tl.to("#s1-agent", { opacity: 1, duration: 0.5 }, "+=0.3");
   tl.to("#s1-agent-box", { scale: 1.02, duration: 0.3, repeat: 1, yoyo: true });
+  showSubtitle("AI agent checks internal policy rules...", 'act1', '+=0.2', 1.5);
+  logEvent('AI Agent appears — analyzing request', '+=0');
 
   // Policy rules display
   tl.to("#s1-policy", { opacity: 1, scale: 1, duration: 0.6 }, "+=0.4");
   // Highlight the gap item
   tl.to("#s1-policy li.gap", { color: "#e94560", fontWeight: "bold", duration: 0.5 }, "+=0.5");
+  showSubtitle("Policy gap found: competitor price matching has no rule.", 'act1', '+=0.5', 1.8);
+  logEvent('Policy rules shown — competitor gap highlighted', '+=0');
 
   // Policy gap banner — swap to gap image
   tl.to("#scene1-bg", { opacity: 0, duration: 0.3 }, "+=0.5");
@@ -716,9 +859,12 @@ h2 {
 
   // Policy gap banner text
   tl.to("#s1-gap", { opacity: 1, scale: 1, duration: 0.5 });
+  logEvent('Policy Gap banner shown', '+=0');
 
   // Agent guesses
   tl.to("#s1-guess", { opacity: 1, duration: 0.5 }, "+=0.4");
+  showSubtitle("No matching rule. Agent guesses — applies 15% discount.", 'act1', '+=0.3', 1.8);
+  logEvent('Agent guesses — applies unauthorized discount', '+=0');
 
   // Red flash + swap to error image
   tl.to("#flash", { opacity: 0.4, duration: 0.15 }, "+=0.3");
@@ -726,32 +872,43 @@ h2 {
   tl.to("#scene1-bg", { opacity: 0.5, duration: 0.2 });
   tl.to("#flash", { opacity: 0, duration: 0.4 });
   tl.to("#s1-agent-box", { className: "agent-box error", duration: 0.2 }, "-=0.5");
+  logEvent('Red flash — error state triggered', '+=0');
 
   // Wrong result
   tl.to("#s1-guess", { opacity: 0, duration: 0.2 }, "+=0.2");
   tl.to("#s1-result", { opacity: 1, scale: 1.1, duration: 0.4 });
   tl.to("#s1-result", { scale: 1, duration: 0.3 });
   tl.to("#s1-result", { opacity: 1, duration: 1 });
+  showSubtitle("Financial loss: unauthorized discount applied.", 'act1', '+=0.2', 1.5);
+  logEvent('Error result displayed — financial loss', '+=0');
 
   // Transition out
   tl.to("#scene1", { opacity: 0, duration: 0.5 }, "+=0.5");
+  logEvent('Act 1 complete — transitioning to Act 2', '+=0');
 
   /* ============ ACT 2: RESILIENT (10–20s) ============ */
   tl.to("#scene2", { opacity: 1, duration: 0.4 }, "-=0.1");
   tl.to("#scene2-bg", { opacity: 0.3, duration: 1 }, "-=0.1");
+  logEvent('Act 2 started — The Resilient Approach', '+=0');
 
   // Request bubble
   tl.to("#s2-request", { opacity: 1, y: 0, duration: 0.6 }, "+=0.2");
+  logEvent('Same competitor price match request arrives', '+=0');
 
   // Agent appears
   tl.to("#s2-agent", { opacity: 1, duration: 0.5 }, "+=0.3");
+  showSubtitle("Improved agent checks policy — finds same gap.", 'act2', '+=0.3', 1.8);
+  logEvent('Resilient agent appears', '+=0');
 
   // Policy rules checked
   tl.to("#s2-policy", { opacity: 1, scale: 1, duration: 0.6 }, "+=0.4");
   tl.to("#s2-policy li.gap", { color: "#e94560", fontWeight: "bold", duration: 0.5 }, "+=0.5");
+  logEvent('Policy gap confirmed again', '+=0');
 
   // Decision point
   tl.to("#s2-decision", { opacity: 1, duration: 0.6 }, "+=0.6");
+  showSubtitle("Agent recognizes: no deterministic rule exists.", 'act2', '+=0.4', 1.8);
+  logEvent('Agent decides — no guessing this time', '+=0');
 
   // Escalate to human — swap to escalate image
   tl.to("#s2-decision", { opacity: 0, duration: 0.3 }, "+=0.8");
@@ -760,6 +917,8 @@ h2 {
   tl.to("#s2-escalate", { opacity: 1, scale: 1.05, duration: 0.5 });
   tl.to("#s2-escalate", { scale: 1, duration: 0.3 });
   tl.to("#s2-agent-box", { className: "agent-box success", duration: 0.2 });
+  showSubtitle("Escalating to human for policy interpretation.", 'act2', '+=0', 2.0);
+  logEvent('Escalation to human agent initiated', '+=0');
 
   // Success result
   tl.to("#s2-escalate", { opacity: 1, duration: 1.2 }, "+=0.3");
@@ -768,16 +927,22 @@ h2 {
   tl.to("#scene2-bg", { opacity: 0.4, duration: 0.4 });
   tl.to("#s2-result", { opacity: 1, scale: 1, duration: 0.5 });
   tl.to("#s2-result", { opacity: 1, duration: 1.2 });
+  showSubtitle("Human resolves — correct outcome, zero financial error.", 'act2', '+=0.2', 2.0);
+  logEvent('Success — human agent applied correct policy', '+=0');
 
   // Transition out
   tl.to("#scene2", { opacity: 0, duration: 0.5 }, "+=0.5");
+  logEvent('Act 2 complete — transitioning to Act 3', '+=0');
 
   /* ============ ACT 3: THE LESSON (20–30s) ============ */
   tl.to("#scene3", { opacity: 1, duration: 0.4 }, "-=0.1");
   tl.to("#scene3-bg", { opacity: 0.25, duration: 1 }, "-=0.1");
+  logEvent('Act 3 started — The Lesson / Comparison', '+=0');
 
   // Side by side comparison
   tl.to("#s3-comparison", { opacity: 1, duration: 0.6 }, "+=0.3");
+  showSubtitle("Naive agent guesses wrong. Resilient agent escalates.", 'act3', '+=0.2', 2.2);
+  logEvent('Side-by-side comparison columns appear', '+=0');
 
   // Animate naive column steps
   tl.to("#naive-step1", { opacity: 1, duration: 0.3 }, "+=0.3");
@@ -803,6 +968,8 @@ h2 {
   // Animate 100% → 0%
   tl.fromTo("#metric-end", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.6 }, "+=0.4");
   tl.to("#metric-start", { opacity: 0.2, scale: 0.8, color: "#555", duration: 0.5 }, "-=0.3");
+  showSubtitle("Error rate drops from 100% to 0% with human escalation.", 'act3', '+=0', 2.0);
+  logEvent('Metric animation: 100% → 0%', '+=0');
 
   // Final text
   tl.call(function() { document.getElementById('scene3-bg').src = 'generated-images/2026-07-07T09-10-41Z/act3-final.png'; }, null, "+=0.2");
@@ -810,10 +977,12 @@ h2 {
   tl.to("#s3-final", { opacity: 1, y: 0, duration: 0.8 }, "+=0.6");
   tl.to("#s3-final", { scale: 1.03, duration: 0.4, repeat: 1, yoyo: true }, "+=0.4");
   tl.to(".final-text", { textShadow: "0 0 30px rgba(0,212,170,0.6)", duration: 0.8 }, "-=0.4");
+  logEvent('Final message displayed', '+=0');
 
   // GitHub Pages banner at the end
   tl.to("#gh-banner", { opacity: 1, y: -10, duration: 0.6 }, "+=0.3");
   tl.to("#gh-banner", { scale: 1.02, duration: 0.3, repeat: 1, yoyo: true }, "+=0.3");
+  logEvent('GitHub Pages URL banner shown', '+=0');
 
   /* ============ Timeline progress bar ============ */
   tl.to("#timeline", { width: "100%", duration: 30, ease: "none" }, 0);
@@ -821,6 +990,7 @@ h2 {
   // Loop on finish (last 5 seconds hold)
   tl.to({}, { duration: 5 });
   tl.eventCallback("onComplete", function() {
+    console.log('[30s] Animation loop restart');
     tl.restart(true, false);
   });
 
