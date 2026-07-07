@@ -52,14 +52,14 @@ input[type="text"]:focus{border-color:#00d4aa;outline:none}
   <h1>🎬 Media Manager</h1>
   <p style="color:#666;margin-bottom:20px">Upload, preview, and manage audio narrations and background images for the animated demo.</p>
 
-  <!-- GitHub config -->
+  <!-- Backend config -->
   <div class="upload-section" style="margin-bottom:24px">
-    <h3>☁️ GitHub Upload Config</h3>
-    <p style="color:#666;font-size:13px;margin-bottom:12px">Enter a GitHub personal access token with repo scope to enable direct uploads.</p>
+    <h3>☁️ Backend API (fly.io + Azure Key Vault)</h3>
+    <p style="color:#666;font-size:13px;margin-bottom:12px">The Go backend loads the GitHub token from Azure Key Vault. Uploads go through the backend API deployed on fly.io.</p>
     <div class="gh-header">
-      <input type="text" id="gh-token" placeholder="GitHub personal access token..." style="font-family:monospace">
-      <input type="text" id="gh-repo" value="rifaterdemsahin/Customer-Support-Resolution-Agent" style="max-width:320px;font-family:monospace">
-      <button class="btn primary" onclick="saveConfig()">🔑 Save Config</button>
+      <input type="text" id="backend-url" placeholder="Backend URL..." value="https://csra-backend.fly.dev" style="max-width:420px;font-family:monospace">
+      <button class="btn primary" onclick="saveConfig()">🔑 Save URL</button>
+      <button class="btn ghost" onclick="checkBackend()">🔍 Check Status</button>
     </div>
     <div id="gh-status"></div>
   </div>
@@ -130,20 +130,28 @@ input[type="text"]:focus{border-color:#00d4aa;outline:none}
 
 <script>
 (function(){
-  var GH_REPO = 'rifaterdemsahin/Customer-Support-Resolution-Agent';
+  var BACKEND_URL = 'https://csra-backend.fly.dev';
 
   function loadConfig() {
-    var t = localStorage.getItem('gh_token');
-    if (t) document.getElementById('gh-token').value = t;
-    document.getElementById('gh-repo').value = localStorage.getItem('gh_repo') || GH_REPO;
+    var u = localStorage.getItem('backend_url');
+    if (u) document.getElementById('backend-url').value = u;
   }
 
   window.saveConfig = function() {
-    var t = document.getElementById('gh-token').value.trim();
-    var r = document.getElementById('gh-repo').value.trim();
-    if (t) localStorage.setItem('gh_token', t);
-    if (r) localStorage.setItem('gh_repo', r);
-    setStatus('gh-status', 'Config saved ✓', 'ok');
+    var u = document.getElementById('backend-url').value.trim();
+    if (u) { localStorage.setItem('backend_url', u); BACKEND_URL = u; }
+    setStatus('gh-status', 'Backend URL saved ✓', 'ok');
+  };
+
+  window.checkBackend = async function() {
+    var u = document.getElementById('backend-url').value.trim() || BACKEND_URL;
+    setStatus('gh-status','Checking '+u+'/health ...','info');
+    try {
+      var resp = await fetch(u+'/health');
+      var j = await resp.json();
+      if (resp.ok) setStatus('gh-status','✅ Backend connected — '+j.status,'ok');
+      else setStatus('gh-status','❌ Backend error: '+JSON.stringify(j),'err');
+    } catch(e) { setStatus('gh-status','❌ Cannot reach backend: '+e.message,'err'); }
   };
 
   function setStatus(id, msg, cls) {
@@ -152,42 +160,34 @@ input[type="text"]:focus{border-color:#00d4aa;outline:none}
     setTimeout(function(){el.innerHTML=''}, 4000);
   }
 
-  async function ghUpload(path, content, message) {
-    var token = document.getElementById('gh-token').value.trim();
-    var repo = document.getElementById('gh-repo').value.trim();
-    if (!token) { setStatus('audio-status','Missing GitHub token','err'); return false; }
+  async function uploadToBackend(endpoint, formData, label) {
+    var u = document.getElementById('backend-url').value.trim() || BACKEND_URL;
     try {
-      var resp = await fetch('https://api.github.com/repos/'+repo+'/contents/'+path, {
-        method: 'PUT',
-        headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-        body: JSON.stringify({message:message,content:btoa(String.fromCharCode(...new Uint8Array(content))),branch:'main'})
-      });
+      var resp = await fetch(u+endpoint, {method:'POST',body:formData});
       var j = await resp.json();
-      if (!resp.ok) throw new Error(j.message||'Upload failed');
-      return true;
-    } catch(e) { setStatus('audio-status',e.message,'err'); return false; }
+      if (!resp.ok) throw new Error(j.error||'Upload failed');
+      return {ok:true,message:j.message};
+    } catch(e) { setStatus(label,e.message,'err'); return {ok:false}; }
   }
 
   window.uploadAudio = async function() {
     var act = document.getElementById('audio-act').value;
     var file = document.getElementById('audio-file').files[0];
     if (!file) { setStatus('audio-status','Select an MP3 file first','err'); return; }
-    var path = 'generated-audio/' + act + '-narration.mp3';
-    setStatus('audio-status','Uploading '+file.name+' to '+path+'...','info');
-    var buf = await file.arrayBuffer();
-    var ok = await ghUpload(path, buf, 'upload: update '+act+' narration');
-    if (ok) setStatus('audio-status','Uploaded '+path+' ✓','ok');
+    setStatus('audio-status','Uploading '+file.name+' via backend...','info');
+    var fd = new FormData(); fd.append('act',act); fd.append('file',file);
+    var r = await uploadToBackend('/api/upload/audio', fd, 'audio-status');
+    if (r.ok) setStatus('audio-status','✅ Uploaded '+act+' narration','ok');
   };
 
   window.uploadImage = async function() {
     var scene = document.getElementById('image-scene').value;
     var file = document.getElementById('image-file').files[0];
     if (!file) { setStatus('image-status','Select an image file first','err'); return; }
-    var path = 'generated-images/' + scene + '.png';
-    setStatus('image-status','Uploading '+file.name+' to '+path+'...','info');
-    var buf = await file.arrayBuffer();
-    var ok = await ghUpload(path, buf, 'upload: update '+scene+' background');
-    if (ok) setStatus('image-status','Uploaded '+path+' ✓','ok');
+    setStatus('image-status','Uploading '+file.name+' via backend...','info');
+    var fd = new FormData(); fd.append('scene',scene); fd.append('file',file);
+    var r = await uploadToBackend('/api/upload/image', fd, 'image-status');
+    if (r.ok) setStatus('image-status','✅ Uploaded '+scene,'ok');
   };
 
   window.previewAudio = function() {
