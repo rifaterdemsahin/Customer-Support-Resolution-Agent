@@ -683,6 +683,27 @@ h2 {
   display: block;
   border-radius: 14px;
 }
+
+.gray-area-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  opacity: 0;
+  max-width: 650px;
+  width: 55%;
+  border-radius: 16px;
+  box-shadow: 0 0 50px rgba(233, 69, 96, 0.18);
+  border: 2px solid rgba(233, 69, 96, 0.3);
+}
+
+.gray-area-overlay img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 14px;
+}
 </style>
 </head>
 <body>
@@ -829,6 +850,11 @@ h2 {
 
     <div id="s1-gap" style="opacity:0;">
       <div class="policy-gap-banner">⚠️ Policy Gap — No Rule Found</div>
+    </div>
+
+    <div class="gray-area-overlay" id="gray-area-overlay">
+      <img src="infographic/gray area.jpeg" alt="Gray area: uncertainty zone where policy is silent">
+      <div style="text-align:center;color:#e94560;font-size:14px;margin-top:4px;font-weight:700;">Policy Gap — No Deterministic Rule Exists</div>
     </div>
 
     <div id="s1-guess" style="opacity:0; text-align:center;">
@@ -1205,6 +1231,12 @@ h2 {
   // Policy gap banner text
   tl.to("#s1-gap", { opacity: 1, scale: 1, duration: 0.5 });
   logEvent('Policy Gap banner shown', '+=0');
+
+  // Gray area infographic — uncertainty zone
+  tl.to("#gray-area-overlay", { opacity: 1, scale: 1, duration: 0.5 }, "+=0.2");
+  tl.to("#gray-area-overlay", { opacity: 1, duration: 2.5 });
+  logEvent('Gray area shown — policy silence / uncertainty zone', '+=0', 'Infographic illustrates the ambiguous zone where policy rules are absent.', 'error');
+  tl.to("#gray-area-overlay", { opacity: 0, scale: 0.95, duration: 0.3 }, "+=0.2");
 
   // Agent guesses
   tl.to("#s1-guess", { opacity: 1, duration: 0.5 }, "+=0.4");
