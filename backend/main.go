@@ -34,6 +34,7 @@ func main() {
 	mux.HandleFunc("/api/status", handleStatus)
 	mux.HandleFunc("/api/upload/audio", handleUploadAudio)
 	mux.HandleFunc("/api/upload/image", handleUploadImage)
+	mux.Handle("/", http.FileServer(http.Dir("/static")))
 
 	handler := corsMiddleware(mux)
 

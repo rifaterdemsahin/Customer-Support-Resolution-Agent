@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>if(location.hostname==='rifaterdemsahin.github.io')location.replace('https://csra-backend.fly.dev'+location.pathname+location.search)</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Agent: Escalate vs. Guess — Storyboard</title>
@@ -82,6 +83,12 @@ h2 {
 .card-icons span:hover { opacity: 1; }
 .card-icons a { font-size: 20px; text-decoration: none; opacity: 0.6; transition: opacity 0.2s; }
 .card-icons a:hover { opacity: 1; }
+.tools-grid { display: flex; gap: 20px; width: 100%; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+.tool-card { flex: 1; min-width: 180px; max-width: 240px; background: #0d0d0d; border: 1px solid rgba(0,212,170,0.12); border-radius: 14px; padding: 20px 16px; text-align: center; text-decoration: none; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.tool-card:hover { border-color: #00d4aa; box-shadow: 0 0 30px rgba(0,212,170,0.1); transform: translateY(-3px); }
+.tool-card .tool-icon { font-size: 36px; }
+.tool-card .tool-label { color: #00d4aa; font-size: 16px; font-weight: 700; }
+.tool-card .tool-desc { color: #666; font-size: 12px; line-height: 1.4; }
 
 .info-bar {
   margin-top: 20px; padding: 20px 40px;
@@ -220,6 +227,30 @@ h2 {
       </div>
       <a class="act-link" href="act3.html">▶ Watch Act 3 (8s)</a>
     </div>
+  </div>
+
+  <h2 style="font-size:22px;color:#00d4aa;margin-top:20px">🔧 Tools</h2>
+  <div class="tools-grid">
+    <a class="tool-card" href="https://secondbrain-kokoro.fly.dev/" target="_blank">
+      <span class="tool-icon">🗣️</span>
+      <span class="tool-label">Speech Creation</span>
+      <span class="tool-desc">Generate AI narration audio with Kokoro TTS</span>
+    </a>
+    <a class="tool-card" href="media.html">
+      <span class="tool-icon">🎬</span>
+      <span class="tool-label">Media Manager</span>
+      <span class="tool-desc">Upload audio &amp; background images</span>
+    </a>
+    <a class="tool-card" href="https://csra-backend.fly.dev/health" target="_blank">
+      <span class="tool-icon">☁️</span>
+      <span class="tool-label">Backend API</span>
+      <span class="tool-desc">Go server on fly.io — health &amp; status</span>
+    </a>
+    <a class="tool-card" href="docs/SPEC.md">
+      <span class="tool-icon">📖</span>
+      <span class="tool-label">Documentation</span>
+      <span class="tool-desc">Master spec, rules, script &amp; scene docs</span>
+    </a>
   </div>
 
   <div class="info-bar">
