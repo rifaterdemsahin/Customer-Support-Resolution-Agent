@@ -4,11 +4,18 @@
 >
 > **Live:** https://rifaterdemsahin.github.io/Customer-Support-Resolution-Agent/
 >
-> **Last updated:** 2026-07-07
+> **Last updated:** 2026-07-07 [[time]]
 
 ---
 
 ## 1. Concept
+
+
+### Status Quo
+> There is a customer agent where it talks online in an online store and handles the customers.
+
+### Use Case
+> When the agent is requested to get a price match with a competitor 
 
 ### The Question
 > After calling `get_customer()` and `lookup_order()`, the agent has all available data but faces uncertainty. Which situation triggers `escalate_to_human()`?
@@ -17,7 +24,12 @@
 > The customer requests a competitor price match. Internal policy covers own-site price drops within 14 days but is **silent on competitor pricing**. Escalate for policy interpretation — autonomous agents execute deterministic rules; when guidelines are silent, guessing risks financial errors.
 
 ### The Demo
-A self-contained `index.html` plays a **30-second cinematic animation** in 3 acts showing both approaches side-by-side: a naive AI that guesses wrong, and a resilient AI that escalates correctly.
+A self-contained `index.html` plays a **32-second cinematic animation** in 3 acts showing both approaches side-by-side: a naive AI that guesses wrong, and a resilient AI that escalates correctly.
+
+### Timings
+- Act 1 : 8 seconds > focus on premise
+- Act 2 : 16 seconds > focus on conclusion
+- Act 3 : 8 seconds > focus on summary
 
 ---
 
@@ -26,11 +38,11 @@ A self-contained `index.html` plays a **30-second cinematic animation** in 3 act
 | Layer | Technology | Version | Purpose |
 |-------|-----------|---------|---------|
 | **Animation** | GSAP (GreenSock) | 3.12.5 | 30s timeline, character reveals, path draws, opacity/slide transitions |
-| **Audio Narration** | edge-tts (Microsoft Edge neural TTS) | 6.1.0 | 3 pre-generated MP3 clips, `en-US-GuyNeural` voice |
-| **Image Generation** | OpenRouter → `google/gemini-2.5-flash-image` | — | 8 scene background PNGs from text prompts |
-| **Testing** | Playwright (headless Chromium) | 1.61.1 | 35 automated assertions + 6 time-indexed screenshots |
+| **Audio Narration** |  3 pre-generated MP3 clips, `US Guy Neural` voice |
+| **Image Generation** | OpenRouter → `google/gemini-3nanobanana-image` | — | 8 scene background PNGs from text prompts that are saved in the project |
+| **Testing** | Playwright (headless Chromium) | 1.61.1 | 35 automated assertions + 8 time-indexed screenshots , runs before github push |
 | **Deployment** | GitHub Pages via `static.yml` workflow | — | Push to `main` triggers deploy |
-| **Python deps** | `requests`, `python-dotenv`, `edge-tts` | — | Image/audio generation scripts |
+| **Python deps** | `requests`, `python-dotenv`, | — | Image/audio generation scripts |
 | **CDN** | cdnjs (GSAP) | — | Single external dependency |
 
 ### Brand Colors
@@ -87,7 +99,7 @@ A self-contained `index.html` plays a **30-second cinematic animation** in 3 act
 
 ## 4. Scene-by-Scene Spec
 
-### Act 1 — The Naive Approach (0–10s)
+### Act 1 — The Naive Approach (0–8s)
 
 **Scene ID:** `#scene1` | **CSS class:** `.scene`
 
@@ -129,7 +141,7 @@ A self-contained `index.html` plays a **30-second cinematic animation** in 3 act
 
 ---
 
-### Act 2 — The Resilient Approach (10–20s)
+### Act 2 — The Resilient Approach (8–24s)
 
 **Scene ID:** `#scene2` | **CSS class:** `.scene`
 
@@ -159,7 +171,7 @@ A self-contained `index.html` plays a **30-second cinematic animation** in 3 act
 
 ---
 
-### Act 3 — The Lesson (20–30s)
+### Act 3 — The Lesson (24–32s)
 
 **Scene ID:** `#scene3` | **CSS class:** `.scene`
 
