@@ -56,6 +56,19 @@ input[type="text"]:focus{border-color:#00d4aa;outline:none}
 .gh-header input{max-width:400px}
 .progress{height:4px;background:#111;border-radius:2px;overflow:hidden;margin:8px 0}
 .progress-bar{height:100%;background:#00d4aa;width:0;transition:width 0.3s}
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;justify-content:center;align-items:center}
+.modal-backdrop.open{display:flex}
+.modal-box{background:#111;border:1px solid #333;border-radius:14px;padding:24px;max-width:90vw;max-height:90vh;overflow:auto;position:relative}
+.modal-box img{max-width:100%;max-height:70vh;border-radius:8px}
+.modal-box audio{width:400px;max-width:100%;margin-top:12px}
+.modal-box h3{color:#00d4aa;font-size:18px;margin:0 0 12px}
+.modal-close{position:absolute;top:12px;right:16px;background:none;border:none;color:#888;font-size:24px;cursor:pointer;line-height:1}
+.modal-close:hover{color:#e94560}
+.card-audio{cursor:pointer}
+.card-audio:hover{border-color:#00d4aa}
+.footer{text-align:center;padding:16px 24px;border-top:1px solid rgba(0,212,170,0.08);margin-top:30px;font-size:13px;color:#555}
+.footer a{color:#00d4aa;text-decoration:none}
+.footer a:hover{filter:brightness(1.4)}
 </style>
 </head>
 <body>
@@ -146,6 +159,14 @@ input[type="text"]:focus{border-color:#00d4aa;outline:none}
   </div>
 </div>
 
+<div class="modal-backdrop" id="preview-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="modal-title"></h3>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
 <script>
 (function(){
   var BACKEND_URL = 'https://csra-backend.fly.dev';
@@ -211,33 +232,40 @@ input[type="text"]:focus{border-color:#00d4aa;outline:none}
   window.previewAudio = function() {
     var file = document.getElementById('audio-file').files[0];
     if (!file) return;
-    var url = URL.createObjectURL(file);
-    var win = window.open('','_blank');
-    win.document.write('<audio controls autoplay src="'+url+'"><\/audio>');
+    openModal('▶ Preview Audio', '<audio controls autoplay src="'+URL.createObjectURL(file)+'"><\/audio>');
   };
 
   window.previewImage = function() {
     var file = document.getElementById('image-file').files[0];
     if (!file) return;
-    var url = URL.createObjectURL(file);
-    var win = window.open('','_blank');
-    win.document.write('<img src="'+url+'" style="max-width:100%">');
+    openModal('🔍 Preview Image', '<img src="'+URL.createObjectURL(file)+'">');
   };
+
+  window.openModal = function(title, html) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-content').innerHTML = html;
+    document.getElementById('preview-modal').classList.add('open');
+  };
+  window.closeModal = function() {
+    document.getElementById('preview-modal').classList.remove('open');
+  };
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+  document.getElementById('preview-modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
   // Load existing assets
   var audioMap = {
-    act1: {file:'act1-narration.mp3',text:'When guidelines are silent...'},
-    act2: {file:'act2-narration.mp3',text:'The resilient agent detects...'},
-    act3: {file:'act3-narration.mp3',text:'Know what you don\'t know...'}
+    act1: {file:'act1-narration.mp3',text:'When guidelines are silent...',used:'act1.html'},
+    act2: {file:'act2-narration.mp3',text:'The resilient agent detects...',used:'act2.html'},
+    act3: {file:'act3-narration.mp3',text:'Know what you don\'t know...',used:'act3.html'}
   };
   var imgMap = {
-    'act1-request': {file:'act1-request.png',act:'Act 1',desc:'AI robot + money bag'},
-    'act1-policy-gap': {file:'act1-policy-gap.png',act:'Act 1',desc:'Red warning + policy doc'},
-    'act1-error': {file:'act1-error.png',act:'Act 1',desc:'AI panicking, red X'},
-    'act2-escalate': {file:'act2-escalate.png',act:'Act 2',desc:'AI → Human handoff'},
-    'act2-success': {file:'act2-success.png',act:'Act 2',desc:'Human + AI together'},
-    'act3-comparison': {file:'act3-comparison.png',act:'Act 3',desc:'Split-screen comparison'},
-    'act3-final': {file:'act3-final.png',act:'Act 3',desc:'Know what you don\'t know'}
+    'act1-request': {file:'act1-request.png',act:'Act 1',desc:'AI robot + money bag',used:'act1.html'},
+    'act1-policy-gap': {file:'act1-policy-gap.png',act:'Act 1',desc:'Red warning + policy doc',used:''},
+    'act1-error': {file:'act1-error.png',act:'Act 1',desc:'AI panicking, red X',used:''},
+    'act2-escalate': {file:'act2-escalate.png',act:'Act 2',desc:'AI → Human handoff',used:'act2.html'},
+    'act2-success': {file:'act2-success.png',act:'Act 2',desc:'Human + AI together',used:''},
+    'act3-comparison': {file:'act3-comparison.png',act:'Act 3',desc:'Split-screen comparison',used:'act3.html'},
+    'act3-final': {file:'act3-final.png',act:'Act 3',desc:'Know what you don\'t know',used:''}
   };
 
   // Build audio cards
@@ -248,7 +276,8 @@ input[type="text"]:focus{border-color:#00d4aa;outline:none}
     for (var k in audioMap) {
       var a = audioMap[k];
       var path = 'generated-audio/'+ts+'/'+a.file;
-      div.innerHTML += '<div class="card"><h3>🔊 '+k+'</h3><p class="meta">'+a.text+'</p><audio controls src="'+path+'"></audio><span class="meta">📁 '+path+'</span></div>';
+      var usedTag = a.used ? '<span style="color:#00cc66">✅ Used in ' + a.used + '</span>' : '<span style="color:#e94560">⚠ Not in use</span>';
+      div.innerHTML += '<div class="card"><h3>🔊 '+k+'</h3><p class="meta">'+a.text+'</p><audio controls src="'+path+'"></audio><span class="meta">📁 '+path+'</span><div class="meta">'+usedTag+' <a href="#" style="color:#00d4aa;text-decoration:none;font-size:12px" onclick="event.stopPropagation();openModal(\'🔊 '+k+'\',\'<p class=meta>'+a.text+'</p><audio controls autoplay src=\\\''+path+'\\\'></audio><p class=meta>📁 '+path+'</p>\');return false">🔍</a></div></div>';
     }
   })();
 
@@ -260,12 +289,14 @@ input[type="text"]:focus{border-color:#00d4aa;outline:none}
     for (var k in imgMap) {
       var im = imgMap[k];
       var path = 'generated-images/'+ts+'/'+im.file;
-      div.innerHTML += '<div class="card"><h3>🖼 '+k+'</h3><p class="meta">'+im.act+' — '+im.desc+'</p><img src="'+path+'" onerror="this.style.display=\'none\'"><span class="meta">📁 '+path+'</span></div>';
+      var usedTag = im.used ? '<span style="color:#00cc66">✅ Used in ' + im.used + '</span>' : '<span style="color:#e94560">⚠ Not in use</span>';
+      div.innerHTML += '<div class="card"><h3>🖼 '+k+'</h3><p class="meta">'+im.act+' — '+im.desc+'</p><img src="'+path+'" style="cursor:pointer" onclick="openModal(\'🖼 '+k+'\',\'<img src=\\\''+path+'\\\'>\')" onerror="this.style.display=\'none\'"><span class="meta">📁 '+path+'</span><div class="meta">'+usedTag+'</div></div>';
     }
   })();
 
   loadConfig();
 })();
 </script>
+<div class="footer"><a href="https://github.com/rifaterdemsahin/Customer-Support-Resolution-Agent" target="_blank">📂 GitHub</a></div>
 </body>
 </html>

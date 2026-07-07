@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Challenges | AI Agent Demo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+.nav-bar{display:flex;gap:12px;padding:16px 24px;align-items:center;border-bottom:1px solid rgba(0,212,170,0.1)}
+.nav-link{padding:8px 18px;border-radius:8px;font-size:16px;font-weight:700;text-decoration:none;transition:all 0.3s;background:rgba(0,212,170,0.1);color:#00d4aa;border:1px solid rgba(0,212,170,0.2)}
+.nav-link:hover{filter:brightness(1.4)}
+.page{max-width:900px;margin:0 auto;padding:40px 24px}
+h1{color:#00d4aa;font-size:36px;margin-bottom:8px}
+h2{color:#00d4aa;font-size:24px;margin:40px 0 16px;padding-bottom:8px;border-bottom:1px solid rgba(0,212,170,0.1)}
+h3{color:#00cc66;font-size:18px;margin:24px 0 8px}
+p{color:#aaa;font-size:16px;line-height:1.7;margin-bottom:12px}
+.challenge-card{background:#111;border:1px solid #222;border-radius:14px;padding:24px;margin:20px 0}
+.challenge-card h3{color:#e94560;margin:0 0 8px}
+.challenge-card ul{margin:8px 0 8px 24px;color:#888;font-size:15px;line-height:1.8}
+.timing-grid{display:flex;gap:20px;margin:20px 0}
+.timing-col{flex:1;background:#111;border-radius:14px;padding:20px;text-align:center}
+.timing-col.act1{border:2px solid rgba(233,69,96,0.4)}
+.timing-col.act2{border:2px solid rgba(0,204,102,0.4)}
+.timing-col.act3{border:2px solid rgba(0,212,170,0.4)}
+.timing-col .pct{font-size:48px;font-weight:800;margin:8px 0}
+.timing-col .sec{font-size:14px;color:#666}
+.timing-col.act1 .pct{color:#e94560}
+.timing-col.act2 .pct{color:#00cc66}
+.timing-col.act3 .pct{color:#00d4aa}
+.lesson{background:rgba(0,212,170,0.05);border:2px solid rgba(0,212,170,0.2);border-radius:14px;padding:24px;margin:30px 0}
+.lesson h2{color:#00d4aa;border:none;margin:0 0 12px}
+a{color:#00d4aa;text-decoration:none}
+a:hover{filter:brightness(1.4)}
+blockquote{background:rgba(233,69,96,0.05);border-left:3px solid #e94560;padding:12px 20px;margin:16px 0;color:#888;font-style:italic}
+.footer{text-align:center;padding:16px 24px;border-top:1px solid rgba(0,212,170,0.08);margin-top:30px;font-size:13px;color:#555}
+.footer a{color:#00d4aa;text-decoration:none}
+.footer a:hover{filter:brightness(1.4)}
+</style>
+</head>
+<body>
+<div class="nav-bar">
+  <a class="nav-link" href="index.html">🏠 Storyboard</a>
+  <a class="nav-link" href="act1.html">Act 1</a>
+  <a class="nav-link" href="act2.html">Act 2</a>
+  <a class="nav-link" href="act3.html">Act 3</a>
+</div>
+
+<div class="page">
+  <h1>⚡ Challenges We Learned From</h1>
+  <p>Building the animated demo was not a straight line. Every iteration revealed something unexpected. The biggest surprise: voice-over timing reshaped the entire narrative structure.</p>
+
+  <div class="challenge-card">
+    <h3>🎙️ Voice-Over: Text Is Longer Than You Think</h3>
+    <p>When recording narration, we discovered that text expands dramatically when spoken. A sentence that reads in 3 seconds silently takes 6–8 seconds spoken at natural pace. This forced us to rethink the entire timeline.</p>
+    <ul>
+      <li><strong>Written estimates fail.</strong> You must record, listen, and measure real audio duration — never guess from word count.</li>
+      <li><strong>Subtitles compound the problem.</strong> Each subtitle phrase needs reveal time, hold time, and fade-out — all stacking onto the timeline.</li>
+      <li><strong>Iteration cycle:</strong> Write → Record → Time → Adjust script → Re-record → Re-time. Three cycles minimum per act.</li>
+    </ul>
+    <blockquote>"I thought Act 1 would be 4 seconds. The narration alone was 8."</blockquote>
+  </div>
+
+  <div class="challenge-card">
+    <h3>⏱️ The 25/50/25 Rule Emerged From Failure</h3>
+    <p>Our initial assumption was equal-length acts — 10s each for a clean 30s demo. Reality forced a different split:</p>
+
+    <div class="timing-grid">
+      <div class="timing-col act1">
+        <div style="font-size:14px;color:#888">Act 1</div>
+        <div class="pct">25%</div>
+        <div class="sec">8 seconds</div>
+        <div style="margin-top:12px;font-size:13px;color:#e94560">The Problem</div>
+        <div style="font-size:12px;color:#666">Focus on the premise — just enough to establish the failure scenario without dragging.</div>
+      </div>
+      <div class="timing-col act2">
+        <div style="font-size:14px;color:#888">Act 2</div>
+        <div class="pct">50%</div>
+        <div class="sec">16 seconds</div>
+        <div style="margin-top:12px;font-size:13px;color:#00cc66">The Solution</div>
+        <div style="font-size:12px;color:#666">The core of the message. Policy check, decision, escalation, success — the chain takes time.</div>
+      </div>
+      <div class="timing-col act3">
+        <div style="font-size:14px;color:#888">Act 3</div>
+        <div class="pct">25%</div>
+        <div class="sec">8 seconds</div>
+        <div style="margin-top:12px;font-size:13px;color:#00d4aa">The Lesson</div>
+        <div style="font-size:12px;color:#666">Brief and memorable. Side-by-side comparison and the final takeaway — no more needed.</div>
+      </div>
+    </div>
+
+    <p style="margin-top:16px">Act 2 carries the weight because <strong>the solution needs to land</strong>. The problem is simple to state. The lesson is simple to remember. But the transition from naive to resilient — the detection, the decision, the escalation — that's where the learning happens. It deserves half the runtime.</p>
+  </div>
+
+  <div class="challenge-card">
+    <h3>🔄 Iterate, Don't Perfect</h3>
+    <p>Every cycle of recording and timing revealed new micro-adjustments. Subtitle reveals that overlapped awkwardly. Audio that outpaced the visuals. Scene transitions that needed an extra 0.3s of breathing room.</p>
+    <ul>
+      <li><strong>Debug panel was born from this.</strong> We needed real-time feedback on scene timing, subtitle sync, and event ordering — so we built it into every act file.</li>
+      <li><strong>Act files went self-contained.</strong> Originally a single 1474-line <code style="background:#1a1a1a;padding:2px 6px;border-radius:4px;color:#00d4aa">combined.html</code>. Split into independent acts so each could be iterated, timed, and debugged in isolation.</li>
+      <li><strong>The 10-minute health check.</strong> Automated link scanning, sentinel verification, and error catching — because manual checks after every iteration don't scale.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <h2>What We Carry Forward</h2>
+    <p style="color:#aaa;line-height:1.7">
+      The gap between what you <em>think</em> the timing should be and what the audio <em>actually</em> demands is the gap where real learning happens. Voice-over narration is not a script — it's a <strong>constraint</strong>. The visuals serve the audio, not the other way around. When the text is longer than expected, you don't rush the voice — you restructure the timeline. The 25/50/25 split isn't a design choice. It's the shape the content demanded.
+    </p>
+  </div>
+</div>
+
+<div class="footer"><a href="https://github.com/rifaterdemsahin/Customer-Support-Resolution-Agent" target="_blank">📂 GitHub</a></div>
+</body>
+</html>

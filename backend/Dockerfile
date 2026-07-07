@@ -16,6 +16,7 @@ COPY act3.html /static/act3.html
 COPY combined.html /static/combined.html
 COPY media.html /static/media.html
 COPY methodology.html /static/methodology.html
+COPY challenge.html /static/challenge.html
 COPY docs/ /static/docs/
 COPY scenes/ /static/scenes/
 COPY generated-images/ /static/generated-images/
