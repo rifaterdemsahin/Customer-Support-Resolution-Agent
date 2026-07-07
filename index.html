@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent: Escalate vs. Guess</title>
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0a0a0a;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stage {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+.scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+}
+
+.act-label {
+  position: absolute;
+  top: 40px;
+  left: 60px;
+  font-size: 22px;
+  color: #555;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.timeline-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: #00d4aa;
+  width: 0%;
+  z-index: 100;
+}
+
+h1 {
+  font-size: 52px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #888;
+}
+
+.big-text {
+  font-size: 28px;
+  line-height: 1.6;
+}
+.medium-text {
+  font-size: 24px;
+  line-height: 1.5;
+}
+
+.request-bubble {
+  background: #1a1a2e;
+  border: 2px solid #333;
+  border-radius: 16px;
+  padding: 24px 40px;
+  font-size: 26px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.request-bubble .icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.agent-box {
+  background: #12121f;
+  border: 2px solid #00d4aa;
+  border-radius: 20px;
+  padding: 32px 48px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 28px;
+  transition: all 0.5s;
+}
+.agent-box.error {
+  border-color: #e94560;
+  background: #1a0a0f;
+}
+.agent-box.success {
+  border-color: #00cc66;
+  background: #0a1a0f;
+}
+.agent-avatar {
+  font-size: 64px;
+}
+
+.policy-box {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px 32px;
+  margin: 16px 0;
+  font-size: 22px;
+  max-width: 520px;
+  text-align: center;
+}
+.policy-box ul {
+  list-style: none;
+  text-align: left;
+}
+.policy-box li {
+  padding: 6px 0;
+  color: #888;
+}
+.policy-box li.covered::before {
+  content: "✅ ";
+  color: #00cc66;
+}
+.policy-box li.gap::before {
+  content: "❓ ";
+  color: #e94560;
+}
+
+.thinking-dots {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00d4aa;
+}
+
+.result-badge {
+  font-size: 100px;
+  margin: 16px 0;
+}
+.result-label {
+  font-size: 32px;
+  font-weight: 700;
+}
+.result-label.error { color: #e94560; }
+.result-label.success { color: #00cc66; }
+
+.human-icon {
+  font-size: 72px;
+}
+.arrow {
+  font-size: 48px;
+  margin: 0 16px;
+}
+.arrow.cyan { color: #00d4aa; }
+.arrow.green { color: #00cc66; }
+
+.comparison {
+  display: flex;
+  gap: 80px;
+  align-items: flex-start;
+}
+
+.comparison .col {
+  text-align: center;
+  max-width: 500px;
+}
+.comparison .col.naive .col-header {
+  color: #e94560;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.comparison .col.resilient .col-header {
+  color: #00cc66;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.comparison .step {
+  font-size: 24px;
+  margin: 14px 0;
+  opacity: 0.5;
+}
+
+.metric-box {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 24px 48px;
+  margin-top: 32px;
+  text-align: center;
+}
+.metric-label {
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 8px;
+}
+.metric-value {
+  font-size: 72px;
+  font-weight: 800;
+  color: #00d4aa;
+}
+.metric-final {
+  font-size: 72px;
+  font-weight: 800;
+  color: #00cc66;
+}
+
+.final-text {
+  font-size: 48px;
+  font-weight: 700;
+  color: #00d4aa;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.confused-face {
+  font-size: 96px;
+}
+
+.policy-gap-banner {
+  background: #1a0a0f;
+  border: 2px solid #e94560;
+  border-radius: 12px;
+  padding: 16px 32px;
+  font-size: 28px;
+  color: #e94560;
+  font-weight: 700;
+}
+
+.flash-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: #e94560;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.narrator-text {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22px;
+  color: #666;
+  font-style: italic;
+  opacity: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <div class="flash-overlay" id="flash"></div>
+
+  <!-- ===================== ACT 1: NAIVE ===================== -->
+  <div class="scene" id="scene1">
+    <div class="act-label">Act 1 &mdash; The Naive Approach</div>
+
+    <div id="s1-request" style="opacity:0;">
+      <div class="request-bubble">
+        <span class="icon">💰</span>
+        "I found this cheaper at CompetitorCo. Can you match their price?"
+      </div>
+    </div>
+
+    <div id="s1-agent" style="opacity:0; display:flex; flex-direction:column; align-items:center; gap:20px;">
+      <div class="agent-box" id="s1-agent-box">
+        <span class="agent-avatar">🤖</span>
+        <span>AI Agent &mdash; Analyzing request...</span>
+      </div>
+    </div>
+
+    <div id="s1-policy" style="opacity:0; display:flex; flex-direction:column; align-items:center;">
+      <div class="policy-box">
+        <div style="font-size:18px;color:#666;margin-bottom:10px;">📋 Policy Rules Check:</div>
+        <ul>
+          <li class="covered">Own-site price drop (within 14 days)</li>
+          <li class="covered">Bundle discount with existing subscription</li>
+          <li class="gap">Competitor price matching</li>
+          <li class="covered">Coupon stacking (max 2)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="s1-gap" style="opacity:0;">
+      <div class="policy-gap-banner">⚠️ Policy Gap — No Rule Found</div>
+    </div>
+
+    <div id="s1-guess" style="opacity:0; text-align:center;">
+      <div class="thinker" style="font-size:96px;margin-bottom:10px;">🤖💭</div>
+      <div style="font-size:26px;color:#888;margin-bottom:14px;">"I'll just... figure it out"</div>
+    </div>
+
+    <div id="s1-result" style="opacity:0; text-align:center;">
+      <div class="result-badge">❌</div>
+      <div class="result-label error">Guessed Wrong — Unauthorized 15% Discount Applied</div>
+      <div style="font-size:22px;color:#e94560;margin-top:10px;">Financial loss: -$47.85</div>
+    </div>
+  </div>
+
+  <!-- ===================== ACT 2: RESILIENT ===================== -->
+  <div class="scene" id="scene2">
+    <div class="act-label">Act 2 &mdash; The Resilient Approach</div>
+
+    <div id="s2-request" style="opacity:0;">
+      <div class="request-bubble">
+        <span class="icon">💰</span>
+        "I found this cheaper at CompetitorCo. Can you match their price?"
+      </div>
+    </div>
+
+    <div id="s2-agent" style="opacity:0; display:flex; flex-direction:column; align-items:center; gap:20px;">
+      <div class="agent-box" id="s2-agent-box">
+        <span class="agent-avatar">🤖</span>
+        <span>AI Agent &mdash; Checking policy rules...</span>
+      </div>
+    </div>
+
+    <div id="s2-policy" style="opacity:0; display:flex; flex-direction:column; align-items:center;">
+      <div class="policy-box">
+        <div style="font-size:18px;color:#666;margin-bottom:10px;">📋 Policy Rules Checked:</div>
+        <ul>
+          <li class="covered">Own-site price drop (within 14 days)</li>
+          <li class="covered">Bundle discount with existing subscription</li>
+          <li class="gap">Competitor price matching → <b>No policy found</b></li>
+          <li class="covered">Coupon stacking (max 2)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="s2-decision" style="opacity:0; text-align:center;">
+      <div style="font-size:64px;margin-bottom:10px;">🧠</div>
+      <div style="font-size:28px;color:#00d4aa;margin-bottom:8px;">"No deterministic rule for this."</div>
+      <div style="font-size:24px;color:#888;">"I know what I <i>don't</i> know."</div>
+    </div>
+
+    <div id="s2-escalate" style="opacity:0;">
+      <div class="row" style="gap:30px;">
+        <div class="agent-box success">
+          <span class="agent-avatar">🤖</span>
+          <span>Escalating to human...</span>
+        </div>
+        <span class="arrow green">→</span>
+        <div style="text-align:center;">
+          <span class="human-icon">👩‍💼</span>
+          <div style="font-size:22px;color:#00cc66;">Human Agent</div>
+          <div style="font-size:18px;color:#888;">Policy Interpretation</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="s2-result" style="opacity:0; text-align:center;">
+      <div class="result-badge">✅</div>
+      <div class="result-label success">Correct Outcome — Human applied appropriate policy</div>
+      <div style="font-size:22px;color:#00cc66;margin-top:10px;">Resolution: Fair decision, no financial error</div>
+    </div>
+  </div>
+
+  <!-- ===================== ACT 3: THE LESSON ===================== -->
+  <div class="scene" id="scene3">
+    <div class="act-label">Act 3 &mdash; The Lesson</div>
+
+    <h1 style="margin-bottom:40px;">Side-by-Side Comparison</h1>
+
+    <div id="s3-comparison" style="opacity:0;">
+      <div class="comparison">
+        <div class="col naive" id="col-naive">
+          <div class="col-header">❌ Naive Agent</div>
+          <div class="step" id="naive-step1">🤖 Receives request</div>
+          <div class="step" id="naive-step2">🔍 Policy gap detected</div>
+          <div class="step" id="naive-step3">🎲 Guesses anyway</div>
+          <div class="step" id="naive-step4">💸 Wrong discount → Financial loss</div>
+        </div>
+        <div class="col resilient" id="col-resilient">
+          <div class="col-header">✅ Resilient Agent</div>
+          <div class="step" id="res-step1">🤖 Receives request</div>
+          <div class="step" id="res-step2">🔍 Policy gap detected</div>
+          <div class="step" id="res-step3">🚦 Detects boundary → Escalates</div>
+          <div class="step" id="res-step4">👩‍💼 Human resolves → Correct outcome</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="s3-metric" style="opacity:0;">
+      <div class="metric-box">
+        <div class="metric-label">Error Rate for Unmapped Policy Gaps</div>
+        <div style="display:flex;align-items:center;gap:30px;justify-content:center;">
+          <span class="metric-value" id="metric-start" style="color:#e94560;">100%</span>
+          <span class="arrow cyan">→</span>
+          <span class="metric-final" id="metric-end">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="s3-final" style="opacity:0; margin-top:40px;">
+      <div class="final-text">
+        "Know what you don't know.<br>Escalate policy gaps."
+      </div>
+    </div>
+  </div>
+
+  <div class="timeline-bar" id="timeline"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function() {
+  var tl = gsap.timeline({ defaults: { ease: "power3.inOut" } });
+
+  /* ---------- Narrator (Web Speech API) ---------- */
+  function narrate(text, at) {
+    if (!('speechSynthesis' in window)) return;
+    var u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.9;
+    u.pitch = 1;
+    u.volume = 0.7;
+    u.lang = 'en-US';
+    window.speechSynthesis.cancel();
+    tl.call(function() { window.speechSynthesis.speak(u); }, null, at);
+  }
+
+  narrate(
+    "When guidelines are silent, autonomous agents risk financial errors.",
+    "+=0.3"
+  );
+  narrate(
+    "The resilient agent detects the gap and escalates to a human for policy interpretation.",
+    "+=10"
+  );
+  narrate(
+    "Know what you don't know. Escalate policy gaps to the right decision-maker.",
+    "+=20"
+  );
+
+  /* ============ ACT 1: NAIVE (0–10s) ============ */
+  tl.to("#scene1", { opacity: 1, duration: 0.4 }, 0);
+
+  // Request bubble appears
+  tl.to("#s1-request", { opacity: 1, y: 0, duration: 0.6 }, "+=0.2");
+  tl.to("#s1-request", { opacity: 1, duration: 1.2 });
+
+  // Agent appears thinking
+  tl.to("#s1-agent", { opacity: 1, duration: 0.5 }, "+=0.3");
+  tl.to("#s1-agent-box", { scale: 1.02, duration: 0.3, repeat: 1, yoyo: true });
+
+  // Policy rules display
+  tl.to("#s1-policy", { opacity: 1, scale: 1, duration: 0.6 }, "+=0.4");
+  // Highlight the gap item
+  tl.to("#s1-policy li.gap", { color: "#e94560", fontWeight: "bold", duration: 0.5 }, "+=0.5");
+
+  // Policy gap banner
+  tl.to("#s1-gap", { opacity: 1, scale: 1, duration: 0.5 }, "+=0.5");
+
+  // Agent guesses
+  tl.to("#s1-guess", { opacity: 1, duration: 0.5 }, "+=0.4");
+
+  // Red flash
+  tl.to("#flash", { opacity: 0.4, duration: 0.15 }, "+=0.3");
+  tl.to("#flash", { opacity: 0, duration: 0.4 });
+  tl.to("#s1-agent-box", { className: "agent-box error", duration: 0.2 }, "-=0.5");
+
+  // Wrong result
+  tl.to("#s1-guess", { opacity: 0, duration: 0.2 }, "+=0.2");
+  tl.to("#s1-result", { opacity: 1, scale: 1.1, duration: 0.4 });
+  tl.to("#s1-result", { scale: 1, duration: 0.3 });
+  tl.to("#s1-result", { opacity: 1, duration: 1 });
+
+  // Transition out
+  tl.to("#scene1", { opacity: 0, duration: 0.5 }, "+=0.5");
+
+  /* ============ ACT 2: RESILIENT (10–20s) ============ */
+  tl.to("#scene2", { opacity: 1, duration: 0.4 }, "-=0.1");
+
+  // Request bubble
+  tl.to("#s2-request", { opacity: 1, y: 0, duration: 0.6 }, "+=0.2");
+
+  // Agent appears
+  tl.to("#s2-agent", { opacity: 1, duration: 0.5 }, "+=0.3");
+
+  // Policy rules checked
+  tl.to("#s2-policy", { opacity: 1, scale: 1, duration: 0.6 }, "+=0.4");
+  tl.to("#s2-policy li.gap", { color: "#e94560", fontWeight: "bold", duration: 0.5 }, "+=0.5");
+
+  // Decision point
+  tl.to("#s2-decision", { opacity: 1, duration: 0.6 }, "+=0.6");
+
+  // Escalate to human
+  tl.to("#s2-decision", { opacity: 0, duration: 0.3 }, "+=0.8");
+  tl.to("#s2-escalate", { opacity: 1, scale: 1.05, duration: 0.5 });
+  tl.to("#s2-escalate", { scale: 1, duration: 0.3 });
+  tl.to("#s2-agent-box", { className: "agent-box success", duration: 0.2 });
+
+  // Success result
+  tl.to("#s2-escalate", { opacity: 1, duration: 1.2 }, "+=0.3");
+  tl.to("#s2-escalate", { opacity: 0, duration: 0.3 }, "+=0.3");
+  tl.to("#s2-result", { opacity: 1, scale: 1, duration: 0.5 });
+  tl.to("#s2-result", { opacity: 1, duration: 1.2 });
+
+  // Transition out
+  tl.to("#scene2", { opacity: 0, duration: 0.5 }, "+=0.5");
+
+  /* ============ ACT 3: THE LESSON (20–30s) ============ */
+  tl.to("#scene3", { opacity: 1, duration: 0.4 }, "-=0.1");
+
+  // Side by side comparison
+  tl.to("#s3-comparison", { opacity: 1, duration: 0.6 }, "+=0.3");
+
+  // Animate naive column steps
+  tl.to("#naive-step1", { opacity: 1, duration: 0.3 }, "+=0.3");
+  tl.to("#naive-step2", { opacity: 1, duration: 0.3 }, "+=0.4");
+  tl.to("#naive-step3", { opacity: 1, duration: 0.3 }, "+=0.4");
+  tl.to("#naive-step4", { opacity: 1, duration: 0.3 }, "+=0.4");
+
+  // Animate resilient column steps
+  tl.to("#res-step1", { opacity: 1, duration: 0.3 }, "-=1.4");
+  tl.to("#res-step2", { opacity: 1, duration: 0.3 }, "+=0.4");
+  tl.to("#res-step3", { opacity: 1, duration: 0.3 }, "+=0.4");
+  tl.to("#res-step4", { opacity: 1, duration: 0.3 }, "+=0.4");
+
+  // Highlight final steps
+  tl.to("#naive-step4", { color: "#e94560", fontWeight: "bold", scale: 1.1, duration: 0.4 }, "+=0.3");
+  tl.to("#res-step4", { color: "#00cc66", fontWeight: "bold", scale: 1.1, duration: 0.4 }, "-=0.4");
+  tl.to("#naive-step4", { scale: 1, duration: 0.3 });
+  tl.to("#res-step4", { scale: 1, duration: 0.3 }, "-=0.3");
+
+  // Metric
+  tl.to("#s3-metric", { opacity: 1, duration: 0.5 }, "+=0.5");
+
+  // Animate 100% → 0%
+  tl.fromTo("#metric-end", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.6 }, "+=0.4");
+  tl.to("#metric-start", { opacity: 0.2, scale: 0.8, color: "#555", duration: 0.5 }, "-=0.3");
+
+  // Final text
+  tl.to("#s3-final", { opacity: 1, y: 0, duration: 0.8 }, "+=0.6");
+  tl.to("#s3-final", { scale: 1.03, duration: 0.4, repeat: 1, yoyo: true }, "+=0.4");
+  tl.to(".final-text", { textShadow: "0 0 30px rgba(0,212,170,0.6)", duration: 0.8 }, "-=0.4");
+
+  /* ============ Timeline progress bar ============ */
+  tl.to("#timeline", { width: "100%", duration: 30, ease: "none" }, 0);
+
+  // Loop on finish (last 3 seconds hold)
+  tl.to({}, { duration: 3 });
+  tl.eventCallback("onComplete", function() {
+    tl.restart(true, false);
+  });
+
+})();
+</script>
+</body>
+</html>
