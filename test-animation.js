@@ -170,14 +170,35 @@ async function run() {
   if (finalText && finalText.includes('Know what you don')) PASS('Final text: "Know what you don\'t know..." present');
   else { FAIL(`Final text: "${finalText}"`); failures++; }
 
-  // ─── TEST: Web Speech API ───
-  console.log(bold('\n── Web Speech API narration'));
-  const hasSpeech = await page.evaluate(() => {
-    const scripts = [...document.querySelectorAll('script')].map(s => s.textContent);
-    return scripts.some(s => s.includes('speechSynthesis'));
+  // ─── TEST: Audio narration ───
+  console.log(bold('\n── Audio narration'));
+  const audioElements = await page.evaluate(() => {
+    return document.querySelectorAll('audio').length;
   });
-  if (hasSpeech) PASS('Web Speech API narration code present (3 narration sentences)');
-  else { FAIL('Web Speech API narration missing'); failures++; }
+  if (audioElements >= 3) PASS(`3 audio elements present for narration (${audioElements} found)`);
+  else { FAIL(`Expected 3 audio elements, found ${audioElements}`); failures++; }
+
+  const audioSources = await page.evaluate(() => {
+    return [...document.querySelectorAll('audio')].map(a => a.src);
+  });
+  const hasActNarrations = audioSources.every(s => s.includes('narration.mp3'));
+  if (hasActNarrations) PASS('Audio sources reference generated narration MP3s');
+  else { FAIL('Audio sources missing or incorrect'); failures++; }
+
+  // ─── TEST: 5-second problem card ───
+  console.log(bold('\n── Problem display card'));
+  const problemCard = await page.evaluate(() => {
+    return !!document.getElementById('problem-card');
+  });
+  if (problemCard) PASS('Problem card element present (5s display at Act 1 start)');
+  else { FAIL('Problem card missing'); failures++; }
+
+  const problemText = await page.evaluate(() => {
+    const el = document.getElementById('problem-card');
+    return el ? el.innerText : '';
+  });
+  if (problemText.includes('Policy Gap')) PASS('Problem card describes unmapped policy gap');
+  else { FAIL('Problem card text incomplete'); failures++; }
 
   // ─── TEST: No interactive widgets ───
   console.log(bold('\n── No interactive elements'));
