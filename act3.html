@@ -260,6 +260,7 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
   addEntry('0.0','GSAP '+gsap.version+' loaded','GreenSock animation engine','artifact');
 
   /* ============ ACT 3 TIMELINE (8s) — 3 scenes ============ */
+  // DESIGN RULES (rules.md): 3s min audience hold per event, 3.5s subtitle dwell
   showScene(1,'Comparison',0);
   tl.to("#scene3-bg",{opacity:0.25,duration:1},0);
   logEvent('Act 3 started','+=0');

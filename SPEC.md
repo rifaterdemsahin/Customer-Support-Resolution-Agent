@@ -338,6 +338,7 @@ Customer-Support-Resolution-Agent/
 ├── formula_audio.md                        # Audio generation rationale
 ├── SPEC.md                                 # ← This document
 ├── script.md                               # Narrative screenplay — 9 scenes across 3 acts
+├── rules.md                                # Design rules — timing, sync, brand colors, debug bar
 ├── spec/                                   # Per-scene specification files
 │   ├── scene-1-1-problem-card.md
 │   ├── scene-1-2-policy-gap.md

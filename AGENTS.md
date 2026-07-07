@@ -11,6 +11,8 @@ Multi-file storyboard animated demo that visually explains why AI agents should 
 
 **IMPORTANT: Always update SPEC.md and implementation at the same time.** Every code change to act files, the storyboard, or visual behavior must be reflected in SPEC.md. Never update one without the other.
 
+**Design rules:** `rules.md` — governs timing, subtitle sync, loop integrity, and brand color consistency.
+
 ---
 
 ## Quick Start
