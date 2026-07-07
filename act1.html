@@ -204,6 +204,7 @@ h1{font-size:52px;font-weight:700;margin-bottom:20px}
       <span class="dbg-btn" id="dbg-pause" title="Pause / Play animation">⏸</span>
       <span class="dbg-btn" id="dbg-copy" title="Copy debug log to clipboard">📋</span>
       <span class="dbg-btn" id="dbg-script" title="Open docs/script.md">📜</span>
+      <a href="media.html" class="dbg-btn" style="text-decoration:none" title="Media Manager">🎬</a>
       <span class="debug-status">
         <span class="status-badge imgs" id="status-scene" style="background:rgba(233,69,96,0.2);color:#e94560;margin-right:8px">📍 Scene 1/3: Problem Card</span>
         <span class="status-badge imgs" id="status-imgs">🖼 0/0</span>
@@ -216,6 +217,23 @@ h1{font-size:52px;font-weight:700;margin-bottom:20px}
       <div class="debug-explain" id="debug-explain">
         <h4>📖 Act 1 Events</h4><p>Click any event to see its explanation.</p>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Script Modal -->
+<div class="modal-overlay" id="script-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>📜 Script</h3>
+      <input type="text" id="modal-search" placeholder="Search script..." style="background:#1a1a1a;border:1px solid rgba(0,212,170,0.25);border-radius:8px;padding:5px 12px;color:#ccc;font-size:13px;width:180px;outline:none;font-family:inherit" onfocus="this.style.borderColor='#00d4aa'" onblur="this.style.borderColor='rgba(0,212,170,0.25)'">
+      <span class="modal-close" id="modal-close">&times;</span>
+    </div>
+    <div class="modal-body" id="modal-body">Loading...</div>
+    <div class="modal-footer">
+      <span class="dbg-btn" id="modal-copy">📋 Copy Script</span>
+      <span style="color:#555;font-size:11px;margin-left:auto" id="search-count"></span>
     </div>
   </div>
 </div>
@@ -310,6 +328,20 @@ h1{font-size:52px;font-weight:700;margin-bottom:20px}
       var b = document.getElementById('modal-copy'); b.textContent = '\u2713 Copied!'; b.className = 'dbg-btn copied';
       setTimeout(function(){b.textContent = '\uD83D\uDCCB Copy Script'; b.className = 'dbg-btn';}, 1500);
     })["catch"](function(){});
+  });
+  document.getElementById('modal-search').addEventListener('input',function(){
+    var q = this.value.trim().toLowerCase();
+    var body = document.getElementById('modal-body');
+    var txt = body.textContent; var sc = document.getElementById('search-count');
+    if (!q) { body.innerHTML = txt; sc.textContent = ''; return; }
+    var idx = 0, count = 0; var html = '';
+    while (idx < txt.length) {
+      var pos = txt.toLowerCase().indexOf(q, idx);
+      if (pos === -1) { html += txt.slice(idx); break; }
+      html += txt.slice(idx, pos) + '<mark style="background:#00d4aa;color:#0a0a0a;padding:1px 3px;border-radius:3px">' + txt.slice(pos, pos+q.length) + '</mark>';
+      idx = pos + q.length; count++;
+    }
+    body.innerHTML = html; sc.textContent = count + ' match' + (count!==1?'es':'');
   });
 
   // Track artifacts
@@ -406,18 +438,5 @@ h1{font-size:52px;font-weight:700;margin-bottom:20px}
   tl.eventCallback("onComplete",function(){console.log('[8s] Act 1 loop');tl.restart(true,false)});
 })();
 </script>
-<!-- Script Modal -->
-<div class="modal-overlay" id="script-modal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h3>📜 Script — AI Agent: Escalate vs. Guess</h3>
-      <span class="modal-close" id="modal-close">&times;</span>
-    </div>
-    <div class="modal-body" id="modal-body">Loading...</div>
-    <div class="modal-footer">
-      <span class="dbg-btn" id="modal-copy">📋 Copy Script</span>
-    </div>
-  </div>
-</div>
 </body>
 </html>

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Act 2 — The Resilient Approach | AI Agent Demo</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
+<title>Act 3 — The Lesson | AI Agent Demo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;width:100vw;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
@@ -13,31 +13,33 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
 .scene-bg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0;z-index:0}
 .scene-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%}
 .act-label{position:absolute;top:40px;left:60px;font-size:22px;color:#555;letter-spacing:4px;text-transform:uppercase}
-.timeline-bar{position:absolute;bottom:0;left:0;height:4px;background:#00cc66;width:0%;z-index:100}
-.request-bubble{background:#1a1a2e;border:2px solid #333;border-radius:16px;padding:24px 40px;font-size:26px;margin-bottom:24px;text-align:center}
-.request-bubble .icon{font-size:48px;display:block;margin-bottom:8px}
-.agent-box{background:#12121f;border:2px solid #00d4aa;border-radius:20px;padding:32px 48px;display:flex;align-items:center;gap:20px;font-size:28px;transition:all 0.5s}
-.agent-box.success{border-color:#00cc66;background:#0a1a0f}
-.agent-avatar{font-size:64px}
-.human-icon{font-size:72px}
-.arrow.green{color:#00cc66;font-size:48px;margin:0 16px}
-.policy-box{background:#111;border:1px solid #333;border-radius:12px;padding:20px 32px;margin:16px 0;font-size:22px;max-width:520px;text-align:center}
-.policy-box ul{list-style:none;text-align:left}
-.policy-box li{padding:6px 0;color:#888}
-.policy-box li.covered::before{content:"✅ ";color:#00cc66}
-.policy-box li.gap::before{content:"❓ ";color:#e94560}
-.result-badge{font-size:100px;margin:16px 0}
-.result-label{font-size:32px;font-weight:700}
-.result-label.success{color:#00cc66}
+.timeline-bar{position:absolute;bottom:0;left:0;height:4px;background:#00d4aa;width:0%;z-index:100}
+h1{font-size:44px;font-weight:700;margin-bottom:14px}
+.comparison{display:flex;gap:80px;align-items:flex-start}
+.comparison .col{text-align:center;max-width:500px}
+.col.naive .col-header{color:#e94560;font-size:32px;font-weight:700;margin-bottom:20px}
+.col.resilient .col-header{color:#00cc66;font-size:32px;font-weight:700;margin-bottom:20px}
+.comparison .step{font-size:24px;margin:14px 0;opacity:0.5}
+.metric-box{background:#111;border:1px solid #333;border-radius:16px;padding:24px 48px;margin-top:24px;text-align:center}
+.metric-label{font-size:20px;color:#666;margin-bottom:8px}
+.metric-value{font-size:72px;font-weight:800;color:#e94560}
+.metric-final{font-size:72px;font-weight:800;color:#00cc66}
+.arrow.cyan{color:#00d4aa;font-size:48px;margin:0 16px}
+.final-text{font-size:48px;font-weight:700;color:#00d4aa;line-height:1.4;text-align:center}
 .overlay-box{background:rgba(10,10,10,0.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:16px;padding:24px 40px}
 .subtitle-bar{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);z-index:80;opacity:0;border-radius:14px;overflow:hidden}
-.subtitle-bg{background:#00cc66;padding:18px 36px;border-radius:14px}
-.subtitle-text{font-size:30px;font-weight:700;color:#fff;white-space:nowrap;letter-spacing:1px;font-family:'Segoe UI',system-ui,sans-serif}
-.row{display:flex;align-items:center;gap:20px}
+.subtitle-bg{background:#00d4aa;padding:18px 36px;border-radius:14px}
+.subtitle-text{font-size:30px;font-weight:700;color:#0a0a0a;white-space:nowrap;letter-spacing:1px;font-family:'Segoe UI',system-ui,sans-serif}
+.rationale-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:85;opacity:0;background:rgba(10,10,10,0.92);border:3px solid #00cc66;border-radius:24px;padding:40px 56px;text-align:center;max-width:1100px;width:80%}
+.rationale-card .rationale-title{font-size:38px;font-weight:800;color:#00cc66;margin-bottom:24px}
+.rationale-card .rationale-body{font-size:26px;color:#ccc;line-height:1.6}
+.rationale-card .rationale-body span{color:#00d4aa;font-weight:700}
+.gh-pages-banner{position:absolute;bottom:160px;left:50%;transform:translateX(-50%);z-index:81;opacity:0;background:rgba(0,212,170,0.15);border:2px solid #00d4aa;border-radius:16px;padding:24px 44px;text-align:center}
+.gh-pages-banner .gh-label{font-size:22px;color:#888;margin-bottom:8px}
+.gh-pages-banner .gh-url{font-size:32px;font-weight:700;color:#00d4aa;letter-spacing:1px}
 .nav-bar{position:absolute;top:40px;right:60px;z-index:100;display:flex;gap:12px}
 .nav-link{padding:8px 18px;border-radius:8px;font-size:16px;font-weight:700;text-decoration:none;transition:all 0.3s}
-.nav-link.prev{background:rgba(233,69,96,0.15);color:#e94560;border:1px solid rgba(233,69,96,0.3)}
-.nav-link.next{background:rgba(0,212,170,0.15);color:#00d4aa;border:1px solid rgba(0,212,170,0.3)}
+.nav-link.prev{background:rgba(0,204,102,0.15);color:#00cc66;border:1px solid rgba(0,204,102,0.3)}
 .nav-link.home{background:rgba(0,212,170,0.1);color:#00d4aa;border:1px solid rgba(0,212,170,0.2)}
 .nav-link:hover{filter:brightness(1.4)}
 .audio-toggle{padding:8px 14px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;background:rgba(0,212,170,0.1);color:#00d4aa;border:1px solid rgba(0,212,170,0.2);transition:all 0.3s;user-select:none;line-height:1}
@@ -45,7 +47,7 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
 
 .debug-panel{position:absolute;bottom:0;left:0;width:100%;z-index:200;background:rgba(10,10,10,0.97);border-top:1px solid rgba(0,212,170,0.3);height:180px;transform:translateY(calc(100% - 34px));transition:transform 0.35s;display:flex;flex-direction:column}
 .debug-panel.open{transform:translateY(0)}
-.debug-toggle{display:flex;align-items:center;gap:10px;padding:6px 16px;cursor:pointer;background:rgba(0,212,170,0.06);font-size:12px;color:#00cc66;font-weight:700;letter-spacing:1px;text-transform:uppercase;user-select:none;flex-shrink:0;min-height:34px}
+.debug-toggle{display:flex;align-items:center;gap:10px;padding:6px 16px;cursor:pointer;background:rgba(0,212,170,0.06);font-size:12px;color:#00d4aa;font-weight:700;letter-spacing:1px;text-transform:uppercase;user-select:none;flex-shrink:0;min-height:34px}
 .debug-toggle .toggle-arrow{font-size:10px;transition:transform 0.3s}
 .debug-panel.open .debug-toggle .toggle-arrow{transform:rotate(180deg)}
 .debug-status{margin-left:auto;display:flex;gap:10px;align-items:center}
@@ -57,12 +59,12 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
 .debug-timeline{flex:0 0 340px;overflow-y:auto;padding:6px 10px;border-right:1px solid rgba(255,255,255,0.05);font-family:'SF Mono','Fira Code',monospace;font-size:11px}
 .debug-timeline .tl-entry{display:flex;gap:6px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.02);align-items:flex-start;cursor:pointer}
 .tl-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
-.tl-dot.info{background:#00d4aa}.tl-dot.artifact{background:#00cc66}.tl-dot.error{background:#e94560}.tl-dot.transition{background:#ffaa00}
+.tl-dot.info{background:#00d4aa}.tl-dot.artifact{background:#00cc66}.tl-dot.transition{background:#ffaa00}
 .debug-timeline .tl-time{color:#00d4aa;min-width:36px;font-weight:700}
 .debug-timeline .tl-id{color:#555;font-size:9px;min-width:22px;font-weight:700;flex-shrink:0}
 .debug-timeline .tl-msg{color:#aaa}
 .debug-explain{flex:1;overflow-y:auto;padding:8px 14px;display:flex;flex-direction:column;gap:8px}
-.debug-explain h4{font-size:13px;color:#00cc66;letter-spacing:1px;text-transform:uppercase}
+.debug-explain h4{font-size:13px;color:#00d4aa;letter-spacing:1px;text-transform:uppercase}
 .debug-explain p{font-size:13px;color:#888;line-height:1.6;margin:0}
 .env-links{display:flex;gap:5px;margin-left:16px;font-size:11px;align-items:center}
 .env-links a{color:#666;text-decoration:none;padding:2px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);transition:all 0.2s}
@@ -86,9 +88,8 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
 <body>
 <div class="stage" id="stage">
   <div class="nav-bar">
-    <a class="nav-link prev" href="act1.html">◀ Act 1</a>
+    <a class="nav-link prev" href="act2.html">◀ Act 2</a>
     <a class="nav-link home" href="index.html">🏠 Storyboard</a>
-    <a class="nav-link next" href="act3.html">Act 3 ▶</a>
     <span class="audio-toggle" id="audio-toggle" title="Toggle audio">🔊</span>
   </div>
 
@@ -96,63 +97,76 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
     <div class="subtitle-bg"><span class="subtitle-text" id="subtitle-text"></span></div>
   </div>
 
-  <div class="scene" id="scene2">
-    <img class="scene-bg" id="scene2-bg" src="generated-images/2026-07-07T09-10-41Z/act2-escalate.png" alt="">
-    <div class="act-label">Act 2 — The Resilient Approach</div>
+  <div class="scene" id="scene3">
+    <img class="scene-bg" id="scene3-bg" src="generated-images/2026-07-07T09-10-41Z/act3-comparison.png" alt="">
+    <div class="act-label">Act 3 — The Lesson</div>
     <div class="scene-content">
-    <div id="s2-request" style="opacity:0">
-      <div class="request-bubble overlay-box"><span class="icon">💰</span>"I found this cheaper at CompetitorCo. Can you match their price?"</div>
-    </div>
-    <div id="s2-agent" style="opacity:0;display:flex;flex-direction:column;align-items:center;gap:20px">
-      <div class="agent-box" id="s2-agent-box"><span class="agent-avatar">🤖</span><span>AI Agent — Checking policy rules...</span></div>
-    </div>
-    <div id="s2-policy" style="opacity:0;display:flex;flex-direction:column;align-items:center">
-      <div class="policy-box">
-        <div style="font-size:18px;color:#666;margin-bottom:10px">📋 Policy Rules Checked:</div>
-        <ul>
-          <li class="covered">Own-site price drop (within 14 days)</li>
-          <li class="covered">Bundle discount with existing subscription</li>
-          <li class="gap">Competitor price matching → <b>No policy found</b></li>
-          <li class="covered">Coupon stacking (max 2)</li>
-        </ul>
+    <h1>Side-by-Side Comparison</h1>
+    <div id="s3-comparison" style="opacity:0">
+      <div class="comparison">
+        <div class="col naive">
+          <div class="col-header">❌ Naive Agent</div>
+          <div class="step" id="n1">🤖 Receives request</div>
+          <div class="step" id="n2">🔍 Policy gap detected</div>
+          <div class="step" id="n3">🎲 Guesses anyway</div>
+          <div class="step" id="n4">💸 Wrong discount → Financial loss</div>
+        </div>
+        <div class="col resilient">
+          <div class="col-header">✅ Resilient Agent</div>
+          <div class="step" id="r1">🤖 Receives request</div>
+          <div class="step" id="r2">🔍 Policy gap detected</div>
+          <div class="step" id="r3">🚦 Detects boundary → Escalates</div>
+          <div class="step" id="r4">👩‍💼 Human resolves → Correct outcome</div>
+        </div>
       </div>
     </div>
-    <div id="s2-decision" style="opacity:0;text-align:center">
-      <div style="font-size:64px;margin-bottom:10px">🧠</div>
-      <div style="font-size:28px;color:#00d4aa;margin-bottom:8px">"No deterministic rule for this."</div>
-      <div style="font-size:24px;color:#888">"I know what I <i>don't</i> know."</div>
-    </div>
-    <div id="s2-escalate" style="opacity:0">
-      <div class="row" style="gap:30px">
-        <div class="agent-box success"><span class="agent-avatar">🤖</span><span>Escalating to human...</span></div>
-        <span class="arrow green">→</span>
-        <div style="text-align:center"><span class="human-icon">👩‍💼</span><div style="font-size:22px;color:#00cc66">Human Agent</div><div style="font-size:18px;color:#888">Policy Interpretation</div></div>
+
+    <div id="s3-metric" style="opacity:0">
+      <div class="metric-box">
+        <div class="metric-label">Error Rate for Unmapped Policy Gaps</div>
+        <div style="display:flex;align-items:center;gap:30px;justify-content:center">
+          <span class="metric-value" id="metric-start">100%</span><span class="arrow cyan">→</span><span class="metric-final" id="metric-end">0%</span>
+        </div>
       </div>
     </div>
-    <div id="s2-result" style="opacity:0;text-align:center">
-      <div class="result-badge">✅</div><div class="result-label success">Correct Outcome — Human applied appropriate policy</div>
-      <div style="font-size:22px;color:#00cc66;margin-top:10px">Resolution: Fair decision, no financial error</div>
+
+    <div id="s3-final" style="opacity:0;margin-top:24px">
+      <div class="final-text">"Know what you don't know.<br>Escalate policy gaps."</div>
+    </div>
+
+    <div class="rationale-card" id="rationale-card">
+      <div class="rationale-title">Why Escalation Is Correct</div>
+      <div class="rationale-body">
+        Automated agents execute <span>deterministic rules</span>.<br>
+        When formal guidelines are <span>silent</span> — an unmapped policy gap —<br>
+        autonomous resolution <span>risks financial errors</span>.<br>
+        Human handoff is the <span>only safe path</span> for policy interpretation.
+      </div>
+    </div>
+
+    <div class="gh-pages-banner" id="gh-banner">
+      <div class="gh-label">🔗 View the live demo</div>
+      <div class="gh-url">rifaterdemsahin.github.io/Customer-Support-Resolution-Agent</div>
     </div>
     </div>
   </div>
 
   <div class="timeline-bar" id="timeline"></div>
 
-  <audio id="audio-act2" preload="auto" src="generated-audio/2026-07-07T09-28-54Z/act2-narration.mp3"></audio>
+  <audio id="audio-act3" preload="auto" src="generated-audio/2026-07-07T09-28-54Z/act3-narration.mp3"></audio>
 
   <div class="debug-panel" id="debug-panel">
     <div class="debug-toggle" id="debug-toggle">
-      <span class="toggle-arrow">▲</span> 🐞 Act 2 Debug
+      <span class="toggle-arrow">▲</span> 🐞 Act 3 Debug
       <span class="env-links">
-        <a href="act2.html" title="Local Act 2">🏠 Local</a><span class="sep">|</span>
-        <a href="https://rifaterdemsahin.github.io/Customer-Support-Resolution-Agent/act2.html" title="Cloud / GitHub Pages">🌐 Cloud</a>
+        <a href="act3.html" title="Local Act 3">🏠 Local</a><span class="sep">|</span>
+        <a href="https://rifaterdemsahin.github.io/Customer-Support-Resolution-Agent/act3.html" title="Cloud / GitHub Pages">🌐 Cloud</a>
       </span>
       <span class="dbg-btn" id="dbg-pause" title="Pause / Play animation">⏸</span>
       <span class="dbg-btn" id="dbg-copy" title="Copy debug log to clipboard">📋</span>
       <span class="dbg-btn" id="dbg-script" title="Open docs/script.md">📜</span>
-      <a href="media.html" class="dbg-btn" style="text-decoration:none" title="Media Manager">🎬</a>
       <span class="debug-status">
-        <span class="status-badge imgs" id="status-scene" style="background:rgba(0,204,102,0.2);color:#00cc66;margin-right:8px">📍 Scene 1/3: Policy Check</span>
+        <span class="status-badge imgs" id="status-scene" style="background:rgba(0,212,170,0.2);color:#00d4aa;margin-right:8px">📍 Scene 1/3: Comparison</span>
         <span class="status-badge imgs" id="status-imgs">🖼 0/0</span>
         <span class="status-badge audio" id="status-audio">🔊 0/0</span>
         <span class="status-badge events" id="status-events">📋 0</span>
@@ -161,25 +175,8 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
     <div class="debug-body">
       <div class="debug-timeline" id="debug-timeline"></div>
       <div class="debug-explain" id="debug-explain">
-        <h4>📖 Act 2 Events</h4><p>Click any event to see its explanation.</p>
+        <h4>📖 Act 3 Events</h4><p>Click any event to see its explanation.</p>
       </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- Script Modal -->
-<div class="modal-overlay" id="script-modal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h3>📜 Script</h3>
-      <input type="text" id="modal-search" placeholder="Search script..." style="background:#1a1a1a;border:1px solid rgba(0,212,170,0.25);border-radius:8px;padding:5px 12px;color:#ccc;font-size:13px;width:180px;outline:none;font-family:inherit" onfocus="this.style.borderColor='#00d4aa'" onblur="this.style.borderColor='rgba(0,212,170,0.25)'">
-      <span class="modal-close" id="modal-close">&times;</span>
-    </div>
-    <div class="modal-body" id="modal-body">Loading...</div>
-    <div class="modal-footer">
-      <span class="dbg-btn" id="modal-copy">📋 Copy Script</span>
-      <span style="color:#555;font-size:11px;margin-left:auto" id="search-count"></span>
     </div>
   </div>
 </div>
@@ -190,7 +187,7 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
   var tl = gsap.timeline({ defaults: { ease: "power3.inOut" } });
   var subText = document.getElementById('subtitle-text');
   var subBar = document.getElementById('subtitle-bar');
-  var audioEl = document.getElementById('audio-act2');
+  var audioEl = document.getElementById('audio-act3');
   var audioMuted = false;
   document.getElementById('audio-toggle').addEventListener('click', function() {
     audioMuted = !audioMuted;
@@ -272,20 +269,6 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
       setTimeout(function(){b.textContent = '\uD83D\uDCCB Copy Script'; b.className = 'dbg-btn';}, 1500);
     })["catch"](function(){});
   });
-  document.getElementById('modal-search').addEventListener('input',function(){
-    var q = this.value.trim().toLowerCase();
-    var body = document.getElementById('modal-body');
-    var txt = body.textContent; var sc = document.getElementById('search-count');
-    if (!q) { body.innerHTML = txt; sc.textContent = ''; return; }
-    var idx = 0, count = 0; var html = '';
-    while (idx < txt.length) {
-      var pos = txt.toLowerCase().indexOf(q, idx);
-      if (pos === -1) { html += txt.slice(idx); break; }
-      html += txt.slice(idx, pos) + '<mark style="background:#00d4aa;color:#0a0a0a;padding:1px 3px;border-radius:3px">' + txt.slice(pos, pos+q.length) + '</mark>';
-      idx = pos + q.length; count++;
-    }
-    body.innerHTML = html; sc.textContent = count + ' match' + (count!==1?'es':'');
-  });
 
   document.querySelectorAll('img').forEach(function(img,i){
     imgTotal++; var nm=(img.src.split('/').pop()||'img-'+i).split('?')[0];
@@ -301,56 +284,56 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
   });
   setTimeout(function(){stImgs.textContent='🖼 '+imgLoad+'/'+imgTotal;stAud.textContent='🔊 '+audLoad+'/'+audTotal},100);
 
-  addEntry('0.0','Act 2: Resilient Approach (16s)','16-second conclusion-focused act','info');
+  addEntry('0.0','Act 3: The Lesson (8s)','8-second summary-focused act','info');
   addEntry('0.0','GSAP '+gsap.version+' loaded','GreenSock animation engine','artifact');
 
-  /* ============ ACT 2 TIMELINE (16s) — 3 scenes ============ */
+  /* ============ ACT 3 TIMELINE (8s) — 3 scenes ============ */
   // DESIGN RULES (docs/rules.md): 3s min audience hold per event, 3.5s subtitle dwell
-  showScene(1,'Policy Check',0);
-  tl.to("#scene2-bg",{opacity:0.3,duration:1},0);
-  logEvent('Act 2 started','+=0');
+  showScene(1,'Comparison',0);
+  tl.to("#scene3-bg",{opacity:0.25,duration:1},0);
+  logEvent('Act 3 started','+=0');
 
-  tl.to("#s2-request",{opacity:1,duration:0.6},"+=0.3");
-  logEvent('Request arrives','+=0');
+  tl.to("#s3-comparison",{opacity:1,duration:0.6},"+=0.3");
+  showSubtitle("Naive agent guesses wrong. Resilient agent escalates.",'+=0.2',2.2);
+  logEvent('Comparison columns appear','+=0');
 
-  tl.to("#s2-agent",{opacity:1,duration:0.5},"+=0.5");
-  showSubtitle("Improved agent checks policy — finds same gap.",'+=0.3',1.8);
-  logEvent('Agent appears','+=0');
+  tl.to("#n1",{opacity:1,duration:0.3},"+=0.3");tl.to("#n2",{opacity:1,duration:0.3},"+=0.4");
+  tl.to("#n3",{opacity:1,duration:0.3},"+=0.4");tl.to("#n4",{opacity:1,duration:0.3},"+=0.4");
+  tl.to("#r1",{opacity:1,duration:0.3},"-=1.4");tl.to("#r2",{opacity:1,duration:0.3},"+=0.4");
+  tl.to("#r3",{opacity:1,duration:0.3},"+=0.4");tl.to("#r4",{opacity:1,duration:0.3},"+=0.4");
+  tl.to("#n4",{color:"#e94560",fontWeight:"bold",scale:1.1,duration:0.4},"+=0.3");
+  tl.to("#r4",{color:"#00cc66",fontWeight:"bold",scale:1.1,duration:0.4},"-=0.4");
+  tl.to("#n4",{scale:1,duration:0.3});tl.to("#r4",{scale:1,duration:0.3},"-=0.3");
 
-  tl.to("#s2-policy",{opacity:1,duration:0.6},"+=0.8");
-  tl.to("#s2-policy li.gap",{color:"#e94560",fontWeight:"bold",duration:0.5},"+=0.8");
-  logEvent('Policy gap confirmed','+=0');
+  tl.to("#s3-metric",{opacity:1,duration:0.5},"+=0.3");
+  tl.fromTo("#metric-end",{opacity:0,scale:0.5},{opacity:1,scale:1,duration:0.6},"+=0.4");
+  tl.to("#metric-start",{opacity:0.2,scale:0.8,color:"#555",duration:0.5},"-=0.3");
+  showScene(2,'Metrics','+=0');
+  showSubtitle("Error rate drops from 100% to 0% with human escalation.",'+=0',2.0);
+  logEvent('Metric 100% → 0%','+=0');
 
-  tl.to("#s2-decision",{opacity:1,duration:0.6},"+=1.0");
-  showScene(2,'Decision','+=0');
-  showSubtitle("Agent recognizes: no deterministic rule exists.",'+=0.4',1.8);
-  logEvent('Decision — no guessing','+=0');
+  tl.to("#s3-final",{opacity:1,y:0,duration:0.8},"+=0.4");
+  tl.to("#s3-final",{scale:1.03,duration:0.4,repeat:1,yoyo:true},"+=0.4");
+  tl.to(".final-text",{textShadow:"0 0 30px rgba(0,212,170,0.6)",duration:0.8},"-=0.4");
+  logEvent('Final message displayed','+=0');
 
-  tl.to("#s2-decision",{opacity:0,duration:0.3},"+=1.5");
-  tl.to("#s2-escalate",{opacity:1,scale:1.05,duration:0.5});
-  tl.to("#s2-escalate",{scale:1,duration:0.3});
-  tl.to("#s2-agent-box",{className:"agent-box success",duration:0.2});
-  showSubtitle("Escalating to human for policy interpretation.",'+=0',2.0);
-  logEvent('Escalation to human','+=0');
+  tl.to("#rationale-card",{opacity:1,scale:1.03,duration:0.6},"+=0.4");
+  tl.to("#rationale-card",{scale:1,duration:0.4});
+  showScene(3,'The Lesson','+=0');
+  logEvent('Rationale box shown','+=0');
 
-  tl.to("#s2-escalate",{opacity:1,duration:2.0},"+=1.5");
-  tl.to("#s2-escalate",{opacity:0,duration:0.3},"+=0.5");
-  showScene(3,'Success','+=0');
-  tl.to("#s2-result",{opacity:1,scale:1,duration:0.5});
-  showSubtitle("Human resolves — correct outcome, zero financial error.",'+=0.2',2.0);
-  logEvent('Success — correct outcome','+=0');
+  tl.to("#gh-banner",{opacity:1,y:-10,duration:0.6},"+=0.5");
+  tl.to("#gh-banner",{scale:1.02,duration:0.3,repeat:1,yoyo:true},"+=0.3");
+  logEvent('GitHub Pages URL shown','+=0');
 
-  tl.to("#s2-result",{opacity:1,duration:2.5},"+=2.0");
+  tl.to("#rationale-card",{opacity:0,duration:0.4},"+=2.0");
 
   playAudio('+=0.3');
-  showSubtitle("The resilient agent detects the gap and escalates to a human for policy interpretation.",'+=0.3',2.5);
+  showSubtitle("Know what you don't know. Escalate policy gaps to the right decision-maker.",'+=0.3',2.4);
 
-  tl.to("#scene2",{opacity:0,duration:0.5},"+=1.0");
-  logEvent('Act 2 complete','+=0','Transition to Act 3','transition');
-
-  tl.to("#timeline",{width:"100%",duration:16,ease:"none"},0);
+  tl.to("#timeline",{width:"100%",duration:8,ease:"none"},0);
   tl.to({},{duration:1});
-  tl.eventCallback("onComplete",function(){console.log('[16s] Act 2 loop');tl.restart(true,false)});
+  tl.eventCallback("onComplete",function(){console.log('[8s] Act 3 loop');tl.restart(true,false)});
 })();
 </script>
 </body>

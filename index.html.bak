@@ -77,11 +77,6 @@ h2 {
 .act-card.act2 .act-link { background: rgba(0,204,102,0.15); color: #00cc66; border: 1px solid rgba(0,204,102,0.3); }
 .act-card.act3 .act-link { background: rgba(0,212,170,0.15); color: #00d4aa; border: 1px solid rgba(0,212,170,0.3); }
 .act-link:hover { filter: brightness(1.3); }
-.card-icons { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
-.card-icons span { font-size: 20px; cursor: default; opacity: 0.6; transition: opacity 0.2s; }
-.card-icons span:hover { opacity: 1; }
-.card-icons a { font-size: 20px; text-decoration: none; opacity: 0.6; transition: opacity 0.2s; }
-.card-icons a:hover { opacity: 1; }
 
 .info-bar {
   margin-top: 20px; padding: 20px 40px;
@@ -172,11 +167,6 @@ h2 {
         <li>Policy rules check — gap highlighted</li>
         <li>Agent guesses → red flash → ❌ error</li>
       </ul>
-      <div class="card-icons">
-        <span title="🔊 Narration audio">🔊</span>
-        <span title="🖼 3 background images">🖼</span>
-        <a href="media.html" title="🎬 Media Manager">🎬</a>
-      </div>
       <a class="act-link" href="act1.html">▶ Watch Act 1 (8s)</a>
     </div>
 
@@ -193,11 +183,6 @@ h2 {
         <li>Escalation handoff to human</li>
         <li>✅ Success — correct outcome</li>
       </ul>
-      <div class="card-icons">
-        <span title="🔊 Narration audio">🔊</span>
-        <span title="🖼 2 background images">🖼</span>
-        <a href="media.html" title="🎬 Media Manager">🎬</a>
-      </div>
       <a class="act-link" href="act2.html">▶ Watch Act 2 (16s)</a>
     </div>
 
@@ -213,11 +198,6 @@ h2 {
         <li>Final message + rationale card</li>
         <li>GitHub Pages URL</li>
       </ul>
-      <div class="card-icons">
-        <span title="🔊 Narration audio">🔊</span>
-        <span title="🖼 2 background images">🖼</span>
-        <a href="media.html" title="🎬 Media Manager">🎬</a>
-      </div>
       <a class="act-link" href="act3.html">▶ Watch Act 3 (8s)</a>
     </div>
   </div>
@@ -239,30 +219,12 @@ h2 {
     </span>
     <span class="dbg-btn" id="dbg-copy" title="Copy debug log to clipboard">📋</span>
     <span class="dbg-btn" id="dbg-script" title="Open docs/script.md">📜</span>
-    <a href="media.html" class="dbg-btn" style="text-decoration:none" title="Media Manager">🎬</a>
   </div>
   <div class="debug-body">
     <div class="debug-timeline" id="debug-timeline"></div>
     <div class="debug-explain" id="debug-explain">
       <h4>📖 Divide & Conquer</h4>
       <p>The animation is split into 3 independent act files with a shared debug footer. Each act auto-plays its own timeline. Click a card above to watch.</p>
-    </div>
-  </div>
-</div>
-
-
-<!-- Script Modal -->
-<div class="modal-overlay" id="script-modal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h3>📜 Script</h3>
-      <input type="text" id="modal-search" placeholder="Search script..." style="background:#1a1a1a;border:1px solid rgba(0,212,170,0.25);border-radius:8px;padding:5px 12px;color:#ccc;font-size:13px;width:180px;outline:none;font-family:inherit" onfocus="this.style.borderColor='#00d4aa'" onblur="this.style.borderColor='rgba(0,212,170,0.25)'">
-      <span class="modal-close" id="modal-close">&times;</span>
-    </div>
-    <div class="modal-body" id="modal-body">Loading...</div>
-    <div class="modal-footer">
-      <span class="dbg-btn" id="modal-copy">📋 Copy Script</span>
-      <span style="color:#555;font-size:11px;margin-left:auto" id="search-count"></span>
     </div>
   </div>
 </div>
@@ -316,20 +278,6 @@ h2 {
       var b = document.getElementById('modal-copy'); b.textContent = '\u2713 Copied!'; b.className = 'dbg-btn copied';
       setTimeout(function() { b.textContent = '\uD83D\uDCCB Copy Script'; b.className = 'dbg-btn'; }, 1500);
     })["catch"](function() {});
-  });
-  document.getElementById('modal-search').addEventListener('input', function() {
-    var q = this.value.trim().toLowerCase();
-    var body = document.getElementById('modal-body');
-    var txt = body.textContent; var sc = document.getElementById('search-count');
-    if (!q) { body.innerHTML = txt; sc.textContent = ''; return; }
-    var idx = 0, count = 0, html = '';
-    while (idx < txt.length) {
-      var pos = txt.toLowerCase().indexOf(q, idx);
-      if (pos === -1) { html += txt.slice(idx); break; }
-      html += txt.slice(idx, pos) + '<mark style="background:#00d4aa;color:#0a0a0a;padding:1px 3px;border-radius:3px">' + txt.slice(pos, pos+q.length) + '</mark>';
-      idx = pos + q.length; count++;
-    }
-    body.innerHTML = html; sc.textContent = count + ' match' + (count!==1?'es':'');
   });
 
   document.getElementById('debug-toggle').addEventListener('click', function() {
