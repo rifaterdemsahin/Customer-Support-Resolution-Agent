@@ -103,3 +103,18 @@ Per-act color mapping: Act 1 = red, Act 2 = green, Act 3 = cyan.
 ## Rule 8 — Scene / Event Identity
 
 Every debug timeline entry gets an auto-incrementing event ID (`E1`, `E2`, ...). Scene transitions display `📍 Scene X/3: Name` both in the debug timeline and the debug toggle badge. This ensures every frame of the animation is traceable and debuggable.
+
+---
+
+## Rule 9 — Unique Favicon Per File
+
+Each HTML file MUST use a distinct emoji favicon that represents its act visually. The favicon is an inline SVG data URI shown in the browser tab.
+
+| File | Favicon | Meaning |
+|------|---------|---------|
+| `index.html` | 🤖 | AI agent — general storyboard |
+| `act1.html` | ❌ | Failure/error — naive approach |
+| `act2.html` | ✅ | Success — resilient approach |
+| `act3.html` | 🧠 | Wisdom/lesson — the takeaway |
+
+Implementation: `<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>EMOJI</text></svg>">`
