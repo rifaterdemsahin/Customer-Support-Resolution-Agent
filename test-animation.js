@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs');
 
-const HTML_PATH = path.resolve(__dirname, 'index.html');
+const HTML_PATH = path.resolve(__dirname, 'combined.html');
 const TIMESTAMP = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19) + 'Z';
 const SCREENSHOT_DIR = path.resolve(__dirname, 'test-screenshots', TIMESTAMP);
 fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
