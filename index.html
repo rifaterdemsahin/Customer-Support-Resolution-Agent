@@ -286,6 +286,35 @@ h2 {
   align-items: center;
   gap: 20px;
 }
+
+.scene-bg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  z-index: 0;
+}
+
+.scene-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.overlay-box {
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 24px 40px;
+}
 </style>
 </head>
 <body>
@@ -295,10 +324,12 @@ h2 {
 
   <!-- ===================== ACT 1: NAIVE ===================== -->
   <div class="scene" id="scene1">
+    <img class="scene-bg" id="scene1-bg" src="generated-images/2026-07-07T09-10-41Z/act1-request.png" alt="">
     <div class="act-label">Act 1 &mdash; The Naive Approach</div>
 
+    <div class="scene-content">
     <div id="s1-request" style="opacity:0;">
-      <div class="request-bubble">
+      <div class="request-bubble overlay-box">
         <span class="icon">💰</span>
         "I found this cheaper at CompetitorCo. Can you match their price?"
       </div>
@@ -341,10 +372,12 @@ h2 {
 
   <!-- ===================== ACT 2: RESILIENT ===================== -->
   <div class="scene" id="scene2">
+    <img class="scene-bg" id="scene2-bg" src="generated-images/2026-07-07T09-10-41Z/act2-escalate.png" alt="">
     <div class="act-label">Act 2 &mdash; The Resilient Approach</div>
 
+    <div class="scene-content">
     <div id="s2-request" style="opacity:0;">
-      <div class="request-bubble">
+      <div class="request-bubble overlay-box">
         <span class="icon">💰</span>
         "I found this cheaper at CompetitorCo. Can you match their price?"
       </div>
@@ -399,6 +432,9 @@ h2 {
 
   <!-- ===================== ACT 3: THE LESSON ===================== -->
   <div class="scene" id="scene3">
+    <img class="scene-bg" id="scene3-bg" src="generated-images/2026-07-07T09-10-41Z/act3-comparison.png" alt="">
+
+    <div class="scene-content">
     <div class="act-label">Act 3 &mdash; The Lesson</div>
 
     <h1 style="margin-bottom:40px;">Side-by-Side Comparison</h1>
@@ -438,6 +474,7 @@ h2 {
         "Know what you don't know.<br>Escalate policy gaps."
       </div>
     </div>
+    </div>
   </div>
 
   <div class="timeline-bar" id="timeline"></div>
@@ -475,6 +512,7 @@ h2 {
 
   /* ============ ACT 1: NAIVE (0–10s) ============ */
   tl.to("#scene1", { opacity: 1, duration: 0.4 }, 0);
+  tl.to("#scene1-bg", { opacity: 0.35, duration: 1 }, 0);
 
   // Request bubble appears
   tl.to("#s1-request", { opacity: 1, y: 0, duration: 0.6 }, "+=0.2");
@@ -489,14 +527,21 @@ h2 {
   // Highlight the gap item
   tl.to("#s1-policy li.gap", { color: "#e94560", fontWeight: "bold", duration: 0.5 }, "+=0.5");
 
-  // Policy gap banner
-  tl.to("#s1-gap", { opacity: 1, scale: 1, duration: 0.5 }, "+=0.5");
+  // Policy gap banner — swap to gap image
+  tl.to("#scene1-bg", { opacity: 0, duration: 0.3 }, "+=0.5");
+  tl.call(function() { document.getElementById('scene1-bg').src = 'generated-images/2026-07-07T09-10-41Z/act1-policy-gap.png'; }, null, "+=0");
+  tl.to("#scene1-bg", { opacity: 0.4, duration: 0.4 });
+
+  // Policy gap banner text
+  tl.to("#s1-gap", { opacity: 1, scale: 1, duration: 0.5 });
 
   // Agent guesses
   tl.to("#s1-guess", { opacity: 1, duration: 0.5 }, "+=0.4");
 
-  // Red flash
+  // Red flash + swap to error image
   tl.to("#flash", { opacity: 0.4, duration: 0.15 }, "+=0.3");
+  tl.call(function() { document.getElementById('scene1-bg').src = 'generated-images/2026-07-07T09-10-41Z/act1-error.png'; }, null, "+=0");
+  tl.to("#scene1-bg", { opacity: 0.5, duration: 0.2 });
   tl.to("#flash", { opacity: 0, duration: 0.4 });
   tl.to("#s1-agent-box", { className: "agent-box error", duration: 0.2 }, "-=0.5");
 
@@ -511,6 +556,7 @@ h2 {
 
   /* ============ ACT 2: RESILIENT (10–20s) ============ */
   tl.to("#scene2", { opacity: 1, duration: 0.4 }, "-=0.1");
+  tl.to("#scene2-bg", { opacity: 0.3, duration: 1 }, "-=0.1");
 
   // Request bubble
   tl.to("#s2-request", { opacity: 1, y: 0, duration: 0.6 }, "+=0.2");
@@ -525,8 +571,10 @@ h2 {
   // Decision point
   tl.to("#s2-decision", { opacity: 1, duration: 0.6 }, "+=0.6");
 
-  // Escalate to human
+  // Escalate to human — swap to escalate image
   tl.to("#s2-decision", { opacity: 0, duration: 0.3 }, "+=0.8");
+  tl.call(function() { document.getElementById('scene2-bg').src = 'generated-images/2026-07-07T09-10-41Z/act2-escalate.png'; }, null, "+=0");
+  tl.to("#scene2-bg", { opacity: 0.4, duration: 0.4 });
   tl.to("#s2-escalate", { opacity: 1, scale: 1.05, duration: 0.5 });
   tl.to("#s2-escalate", { scale: 1, duration: 0.3 });
   tl.to("#s2-agent-box", { className: "agent-box success", duration: 0.2 });
@@ -534,6 +582,8 @@ h2 {
   // Success result
   tl.to("#s2-escalate", { opacity: 1, duration: 1.2 }, "+=0.3");
   tl.to("#s2-escalate", { opacity: 0, duration: 0.3 }, "+=0.3");
+  tl.call(function() { document.getElementById('scene2-bg').src = 'generated-images/2026-07-07T09-10-41Z/act2-success.png'; }, null, "+=0");
+  tl.to("#scene2-bg", { opacity: 0.4, duration: 0.4 });
   tl.to("#s2-result", { opacity: 1, scale: 1, duration: 0.5 });
   tl.to("#s2-result", { opacity: 1, duration: 1.2 });
 
@@ -542,6 +592,7 @@ h2 {
 
   /* ============ ACT 3: THE LESSON (20–30s) ============ */
   tl.to("#scene3", { opacity: 1, duration: 0.4 }, "-=0.1");
+  tl.to("#scene3-bg", { opacity: 0.25, duration: 1 }, "-=0.1");
 
   // Side by side comparison
   tl.to("#s3-comparison", { opacity: 1, duration: 0.6 }, "+=0.3");
@@ -572,6 +623,8 @@ h2 {
   tl.to("#metric-start", { opacity: 0.2, scale: 0.8, color: "#555", duration: 0.5 }, "-=0.3");
 
   // Final text
+  tl.call(function() { document.getElementById('scene3-bg').src = 'generated-images/2026-07-07T09-10-41Z/act3-final.png'; }, null, "+=0.2");
+  tl.to("#scene3-bg", { opacity: 0.35, duration: 0.6 });
   tl.to("#s3-final", { opacity: 1, y: 0, duration: 0.8 }, "+=0.6");
   tl.to("#s3-final", { scale: 1.03, duration: 0.4, repeat: 1, yoyo: true }, "+=0.4");
   tl.to(".final-text", { textShadow: "0 0 30px rgba(0,212,170,0.6)", duration: 0.8 }, "-=0.4");
