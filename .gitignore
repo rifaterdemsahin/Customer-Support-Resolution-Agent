@@ -9,6 +9,7 @@ csra-server
 # only generated logs/reports/snapshots are ignored)
 semblance/*.log
 semblance/latest*
+semblance/scan-links-*
 semblance/caught-errors-*.md
 semblance/caught-errors-*.json
 semblance/health-*.md

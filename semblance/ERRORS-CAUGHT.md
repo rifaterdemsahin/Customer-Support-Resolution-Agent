@@ -103,3 +103,29 @@ the assertions are written for). Result: **ALL TESTS PASSED**.
 ```bash
 node test-animation.js    # 🎉 ALL TESTS PASSED
 ```
+
+---
+
+## #5 — New page `methodology.html` shipped without the Error Sentinel
+
+**Where:** `methodology.html` (new page linked from `index.html`'s tool grid).
+
+**How caught:** `semblance/scan-links.js` — the new link-integrity scanner that
+auto-discovers every `*.html` page and asserts (a) the `__csraSentinel` script
+is present and (b) every internal `href` resolves to a real file. On arrival,
+`methodology.html` had neither the sentinel nor coverage in the probes (which
+hardcoded the page list).
+
+**Fix:**
+- Added the Error Sentinel `<script>` to `methodology.html`'s `<head>`.
+- Made `load-and-catch.js` and `verify-sentinel.js` **auto-discover** every
+  `*.html` page (was a hardcoded list) so new pages are scanned with no edits.
+- Added `semblance/scan-links.js` and wired it into `health-check.sh` as the
+  first step, so a missing sentinel or broken link fails the 10-minute check.
+- Confirmed `backend/Dockerfile` already `COPY`s the page to `/static`.
+
+**Verification:**
+```bash
+node semblance/scan-links.js     # 7 pages, all have sentinel, all links resolve
+bash semblance/health-check.sh --force   # 6/6 PASS
+```

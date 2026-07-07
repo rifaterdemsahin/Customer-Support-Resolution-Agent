@@ -11,14 +11,11 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const PAGES = [
-  'index.html',
-  'act1.html',
-  'act2.html',
-  'act3.html',
-  'combined.html',
-  'media.html',
-];
+// Auto-discover every top-level HTML page so newly added pages are scanned
+// automatically — no need to edit this list when a page is added.
+const PAGES = fs.readdirSync(ROOT)
+  .filter(function (f) { return f.endsWith('.html'); })
+  .sort();
 
 const OUT_DIR = path.resolve(__dirname);
 fs.mkdirSync(OUT_DIR, { recursive: true });

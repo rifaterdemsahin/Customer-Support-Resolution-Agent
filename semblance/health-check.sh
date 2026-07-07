@@ -28,8 +28,7 @@ MD="semblance/health-${STAMP}.md"
 # tree is unchanged and we skip (the "rerun tests if there is a change" gate).
 head_ref="$(git rev-parse HEAD 2>/dev/null || echo no-git)"
 tree_hash="$(git status --porcelain 2>/dev/null | git hash-object --stdin 2>/dev/null || echo dirty)"
-src_hash="$(cat act1.html act2.html act3.html combined.html index.html media.html \
-                backend/main.go backend/main_test.go test-animation.js semblance/*.js \
+src_hash="$(cat *.html backend/main.go backend/main_test.go test-animation.js semblance/*.js \
              2>/dev/null | git hash-object --stdin 2>/dev/null || echo nosrc)"
 sig="${head_ref}|${tree_hash}|${src_hash}"
 prev="$(cat "$SIG_FILE" 2>/dev/null || echo none)"
@@ -60,6 +59,7 @@ run() {
   fi
 }
 
+run "scan-links (sentinel + link integrity)" node semblance/scan-links.js
 run "load-and-catch (page errors)"      node semblance/load-and-catch.js
 run "verify-sentinel (gsap crash fix)"  node semblance/verify-sentinel.js
 run "verify-pipeline (client->server)"  node semblance/verify-pipeline.js

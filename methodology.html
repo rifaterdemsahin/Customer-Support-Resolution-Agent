@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Methodology | AI Agent Demo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+<script>
+/* CSRA Error Sentinel — global client error catcher. Captures uncaught errors,
+   unhandled promise rejections, and failed resource loads; shows a dismissible
+   badge, persists to localStorage, and reports to /api/errors (server records in
+   semblance/). Installs a GSAP stub when the CDN fails so pages degrade gracefully. */
+(function(){
+  if(window.__csraSentinel)return;window.__csraSentinel=true;
+  function load(){try{return JSON.parse(localStorage.getItem('csra_errors')||'[]')}catch(e){return[]}}
+  function save(q){try{localStorage.setItem('csra_errors',JSON.stringify(q.slice(-100)))}catch(e){}}
+  var Q=load();
+  function report(e){if(location.protocol!=='http:'&&location.protocol!=='https:')return;var b;try{b=JSON.stringify(e)}catch(x){return}try{if(navigator.sendBeacon&&navigator.sendBeacon('/api/errors',new Blob([b],{type:'application/json'})))return}catch(x){}try{fetch('/api/errors',{method:'POST',headers:{'Content-Type':'application/json'},body:b,keepalive:true}).catch(function(){})}catch(x){}}
+  function badge(e){var d=document.getElementById('sentinel-badge');if(!d){d=document.createElement('div');d.id='sentinel-badge';d.style.cssText='position:fixed;top:10px;left:10px;z-index:99990;max-width:360px;background:#e94560;color:#fff;font:700 12px/1.45 system-ui,sans-serif;padding:8px 12px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.6);cursor:pointer;word-break:break-word';d.title='Click to dismiss — error recorded in semblance/';d.addEventListener('click',function(){d.style.display='none'});(document.body||document.documentElement).appendChild(d)}d.style.display='block';var m=e.data&&(e.data.message||JSON.stringify(e.data));d.textContent='⚠ '+e.type+': '+String(m).slice(0,180)}
+  function rec(type,data){var e={type:type,ts:new Date().toISOString(),page:location.pathname.split('/').pop()||'index.html',data:data};Q.push(e);save(Q);badge(e);report(e)}
+  window.__csraInstallGsapStub=function(src){if(window.gsap)return;var n=function(){return C},C={call:n,to:n,fromTo:n,from:n,set:n,kill:n,eventCallback:n,time:function(){return 0},restart:n,pause:n,play:n,progress:function(){return 0},duration:function(){return 0}};window.gsap={timeline:function(){return C},to:n,fromTo:n,from:n,set:n,quickTo:function(){return n},version:'stub-offline'};rec('dependency-missing',{message:'GSAP failed to load from CDN — animation disabled, static fallback shown.',src:src||'gsap.min.js'});try{document.querySelectorAll('[style*="opacity:0"]').forEach(function(el){el.style.opacity=1})}catch(e){}}
+  window.addEventListener('error',function(e){if(e.target&&e.target!==window&&e.target.tagName){var t=e.target.tagName.toLowerCase(),src=e.target.src||e.target.href||'';if(t==='script'&&/gsap/i.test(src)){window.__csraInstallGsapStub(src);return}rec('resource-error',{tag:t,src:src,message:'<'+t+'> failed to load'});return}rec('uncaught',{message:e.message||'unknown error',filename:e.filename,line:e.lineno,col:e.colno,stack:e.error&&e.error.stack})},true);
+  window.addEventListener('unhandledrejection',function(e){rec('unhandledrejection',{message:(e.reason&&(e.reason.message||String(e.reason)))||'promise rejection',stack:e.reason&&e.reason.stack})});
+})();
+</script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+.nav-bar{display:flex;gap:12px;padding:16px 24px;align-items:center;border-bottom:1px solid rgba(0,212,170,0.1)}
+.nav-link{padding:8px 18px;border-radius:8px;font-size:16px;font-weight:700;text-decoration:none;transition:all 0.3s;background:rgba(0,212,170,0.1);color:#00d4aa;border:1px solid rgba(0,212,170,0.2)}
+.nav-link:hover{filter:brightness(1.4)}
+.page{max-width:900px;margin:0 auto;padding:40px 24px}
+h1{color:#00d4aa;font-size:36px;margin-bottom:8px}
+h2{color:#00d4aa;font-size:24px;margin:40px 0 16px;padding-bottom:8px;border-bottom:1px solid rgba(0,212,170,0.1)}
+h3{color:#00cc66;font-size:18px;margin:24px 0 8px}
+p{color:#aaa;font-size:16px;line-height:1.7;margin-bottom:12px}
+.step{background:#111;border:1px solid #222;border-radius:14px;padding:24px;margin:20px 0}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;font-size:16px;font-weight:800;margin-right:10px}
+.step-num.storyboard{background:rgba(0,212,170,0.15);color:#00d4aa;border:2px solid rgba(0,212,170,0.3)}
+.step-num.spec{background:rgba(0,204,102,0.15);color:#00cc66;border:2px solid rgba(0,204,102,0.3)}
+.step-num.voice{background:rgba(233,69,96,0.15);color:#e94560;border:2px solid rgba(233,69,96,0.3)}
+.step-num.images{background:rgba(255,165,0,0.15);color:#ffa500;border:2px solid rgba(255,165,0,0.3)}
+.step h3{margin:0 0 8px;display:flex;align-items:center;gap:10px}
+.step p{color:#888;font-size:15px}
+ul{margin:8px 0 8px 24px;color:#888;font-size:15px;line-height:1.8}
+.tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;margin:0 4px 4px 0}
+.tag-cyan{background:rgba(0,212,170,0.12);color:#00d4aa;border:1px solid rgba(0,212,170,0.2)}
+.tag-green{background:rgba(0,204,102,0.12);color:#00cc66;border:1px solid rgba(0,204,102,0.2)}
+.tag-red{background:rgba(233,69,96,0.12);color:#e94560;border:1px solid rgba(233,69,96,0.2)}
+.triad{background:rgba(0,212,170,0.05);border:2px solid rgba(0,212,170,0.2);border-radius:14px;padding:24px;margin:30px 0;text-align:center}
+.triad h2{color:#00d4aa;border:none;margin:0 0 16px;font-size:22px}
+.triad-columns{display:flex;gap:20px;margin-top:16px}
+.triad-col{flex:1;background:#111;border:1px solid #222;border-radius:12px;padding:20px}
+.triad-col h3{margin:0 0 8px;font-size:17px}
+.triad-col p{font-size:14px;color:#777}
+.triad-col .icon{font-size:32px;margin-bottom:8px}
+a{color:#00d4aa;text-decoration:none}
+a:hover{filter:brightness(1.4)}
+.code{font-family:'SF Mono',Monaco,monospace;font-size:13px;background:#0a0a0a;border:1px solid #222;border-radius:8px;padding:4px 8px;color:#00d4aa}
+</style>
+</head>
+<body>
+<div class="nav-bar">
+  <a class="nav-link" href="index.html">🏠 Storyboard</a>
+  <a class="nav-link" href="act1.html">Act 1</a>
+  <a class="nav-link" href="act2.html">Act 2</a>
+  <a class="nav-link" href="act3.html">Act 3</a>
+  <a class="nav-link" href="docs/SPEC.md">📖 Spec</a>
+</div>
+
+<div class="page">
+  <h1>🧠 Methodology</h1>
+  <p>The process behind building this AI Agent animated demo — from storyboard to voice-over to the Lacanian awareness that the journey is the destination.</p>
+
+  <div class="step">
+    <h3><span class="step-num storyboard">1</span> Storyboard</h3>
+    <p>We start with the storyboard — the landing page that maps the entire narrative arc across three acts. Before any code runs, we define the structure at <span class="code">index.html</span> with act cards, scene lists, and tool links. This is the canvas that holds everything together — a single-page view of the full journey before diving into any one act.</p>
+    <ul>
+      <li>Three act cards side-by-side with descriptions and scene breakdowns</li>
+      <li>Tool grid linking external services (TTS, transcription, media manager)</li>
+      <li>Info bar for the combined 32s animation and documentation</li>
+    </ul>
+    <div><span class="tag tag-cyan">index.html</span><span class="tag tag-green">storyboard</span><span class="tag tag-red">narrative arc</span></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="step-num spec">2</span> Specs for Acts and Scenes</h3>
+    <p>After the storyboard, we write detailed specifications for each act and its inner scenes. The master spec at <span class="code">docs/SPEC.md</span> captures every element — timeline durations, subtitle text, audio clips, image assets, GSAP animations, and debug panel behavior. Each scene gets its own markdown file under <span class="code">scenes/</span> with frame-by-frame animation tables.</p>
+    <ul>
+      <li><strong>Act 1</strong> — 3 scenes across 8s: Problem Card → Policy Gap → Error Outcome</li>
+      <li><strong>Act 2</strong> — 3 scenes across 16s: Policy Check → Decision → Success</li>
+      <li><strong>Act 3</strong> — 3 scenes across 8s: Comparison → Metrics → The Lesson</li>
+      <li>Per-scene timeline tables with GSAP events, element IDs, and subtitle sync</li>
+    </ul>
+    <div><span class="tag tag-cyan">SPEC.md</span><span class="tag tag-green">scene specs</span><span class="tag tag-red">9 scenes</span></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="step-num spec">3</span> Debug and Iterate with the LLM</h3>
+    <p>This is where the real learning happens. We iterate with a large language model, building each act file incrementally:</p>
+    <ul>
+      <li><strong>Act 1 — The Problem</strong> (red, #e94560): The naive agent guesses wrong. We build the failure scenario first — infographics, gray-area overlays, error flashes. Debug timings, subtitle reveals, and scene transitions until the red-tinted tragedy flows smoothly.</li>
+      <li><strong>Act 2 — The Solution</strong> (green, #00cc66): The resilient agent detects the policy gap and escalates. SVG escalation paths animate, green success checkmarks appear. Iterate on the decision-to-escalation transition until it feels decisive and clear.</li>
+      <li><strong>Act 3 — The Transformative Lesson</strong> (cyan, #00d4aa): Side-by-side comparison. Error rate drops from 100% to 0%. The final message: "Know what you don't know." Each iteration sharpens the visual metaphor.</li>
+    </ul>
+    <div><span class="tag tag-red">Act 1 — Problem</span><span class="tag tag-green">Act 2 — Solution</span><span class="tag tag-cyan">Act 3 — Lesson</span></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="step-num voice">4</span> Voice-Overs via Record and Transcribe</h3>
+    <p>Narration audio is the backbone of the animated demo. We use <a href="https://record-and-transcribe.fly.dev/" target="_blank">Record and Transcribe</a> to capture and transcribe voice memos and draft narration scripts. Final narrations are generated via <span class="code">edge-tts</span> using the <span class="code">en-US-GuyNeural</span> voice (charismatic, +5% rate, -2Hz pitch) and placed in <span class="code">generated-audio/</span>.</p>
+    <ul>
+      <li>Record draft narration ideas as voice memos</li>
+      <li>Transcribe into text for script refinement</li>
+      <li>Feed refined scripts into Kokoro TTS for final MP3 generation</li>
+      <li>Sync audio playback with GSAP timeline in each act file</li>
+    </ul>
+    <div><span class="tag tag-red">transcription</span><span class="tag tag-cyan">TTS</span><span class="tag tag-green">audio sync</span></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="step-num images">5</span> AI Image Generation</h3>
+    <p>Scene backgrounds are generated through OpenRouter using <span class="code">google/gemini-3nanobanana-image</span>. Each prompt describes a specific moment in the narrative — confused AI robot, policy gap warning, escalation handoff, success checkmark, split-screen comparison. Images are placed in <span class="code">generated-images/</span> and referenced as low-opacity background layers in each act file.</p>
+    <ul>
+      <li>8 scene-specific PNGs generated from text prompts</li>
+      <li>Used at reduced opacity (25–35%) as ambient stage backgrounds</li>
+      <li>Infographic overlays (workflow diagrams, gray-area uncertainty) complement the backgrounds</li>
+    </ul>
+    <div><span class="tag tag-cyan">8 PNGs</span><span class="tag tag-green">AI generation</span><span class="tag tag-red">scene backgrounds</span></div>
+  </div>
+
+  <div class="triad">
+    <h2>💡 The Lacanian Triad of Building</h2>
+    <p style="color:#888;margin:0 0 12px">The fun and joy is building and being in the journey — not getting stuck on any single step.</p>
+    <div class="triad-columns">
+      <div class="triad-col">
+        <div class="icon">🪞</div>
+        <h3 style="color:#e94560">The Imaginary</h3>
+        <p>Visualizing the storyboard. Seeing the narrative arc in your mind before it exists. The 3-act structure is an image of order you project onto chaos.</p>
+      </div>
+      <div class="triad-col">
+        <div class="icon">🗣️</div>
+        <h3 style="color:#00cc66">The Symbolic</h3>
+        <p>Writing the specs, the script, the code. Language structures reality — every GSAP timeline, every CSS rule, every scene file is an act of symbolic creation.</p>
+      </div>
+      <div class="triad-col">
+        <div class="icon">🔥</div>
+        <h3 style="color:#00d4aa">The Real</h3>
+        <p>The animation running. The feeling when all three acts loop seamlessly. The gap between what you planned and what actually renders — that's where learning lives.</p>
+      </div>
+    </div>
+  </div>
+
+  <p style="text-align:center;color:#555;font-size:13px;margin-top:40px">Built iteratively. Debugged relentlessly. Deployed continuously. ✦</p>
+</div>
+</body>
+</html>

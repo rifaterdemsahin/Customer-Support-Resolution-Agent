@@ -399,3 +399,34 @@ node test-animation.js
 git push origin main
 # → GitHub Actions deploys to Pages
 ```
+
+---
+
+## 13. Record and Transcribe Service
+
+> **URL:** https://record-and-transcribe.fly.dev/
+>
+> **Purpose:** Record audio and transcribe with AI. Standalone companion tool for generating voice-to-text transcriptions used in scene narration and subtitle development.
+
+### 13.1 Integration
+
+| Tool | URL | Purpose |
+|------|-----|---------|
+| **Speech Creation** | https://secondbrain-kokoro.fly.dev/ | Generate AI narration audio (Kokoro TTS) |
+| **Record and Transcribe** | https://record-and-transcribe.fly.dev/ | Record audio and transcribe with AI |
+| **Backend API** | https://csra-backend.fly.dev/health | Health check and backend status |
+| **Media Manager** | `media.html` | Upload audio and background images |
+
+### 13.2 Workflow
+
+```
+Record and Transcribe  ──transcription──▶  scene narration drafting
+                                          │
+                                          ▼
+Speech Creation (Kokoro)  ──MP3 audio──▶  act1/act2/act3.html
+                                          │
+                                          ▼
+                                          Background images + GSAP timeline
+```
+
+Used to capture voice memos, meeting notes, or draft narration scripts via transcription, which then feed into the audio generation pipeline described in [Section 10](#10-animation-pipeline).

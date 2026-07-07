@@ -29,7 +29,10 @@ the durable log of every error caught by this skill and the fix applied to each.
 ## Run the checks
 
 ```bash
-# Load all 6 pages with Playwright, catch console/page/request errors, record.
+# Verify every page has the Error Sentinel and every internal link resolves.
+node semblance/scan-links.js
+
+# Load every discovered page with Playwright, catch console/page/request errors.
 node semblance/load-and-catch.js
 
 # Confirm the GSAP-CDN-failure crash is prevented on every page.
@@ -61,11 +64,21 @@ bash semblance/health-check.sh --force   # always run every check
 
 ## Add a new page to the catcher
 
+The probes **auto-discover** every top-level `*.html` file, so a new page is
+scanned automatically — but it still needs the sentinel and a Dockerfile copy:
+
 1. Paste the sentinel `<script>` block (copy it from `act1.html`'s `<head>`) as
    the first script in the new page's `<head>`.
 2. If the page loads GSAP, add `onerror="__csraInstallGsapStub(this.src)"` to
    the `<script src="...gsap.min.js">` tag.
-3. Run `node semblance/load-and-catch.js` — the new page appears in the report.
+3. Add `COPY <page>.html /static/<page>.html` to `backend/Dockerfile` so the
+   fly.io backend serves it.
+4. Run `node semblance/scan-links.js` — it fails if the sentinel is missing or
+   any internal link (including to the new page) is broken.
+
+`health-check.sh` includes `scan-links`, `load-and-catch`, and `verify-sentinel`
+which all auto-discover pages, so the 10-minute schedule covers new pages with
+no list editing.
 
 ## Triage a caught error
 

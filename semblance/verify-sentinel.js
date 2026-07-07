@@ -1,6 +1,8 @@
 const { chromium } = require('playwright');
 const path = require('path');
+const fs = require('fs');
 const ROOT = path.resolve(__dirname, '..');
+const PAGES = fs.readdirSync(ROOT).filter(function (f) { return f.endsWith('.html'); }).sort();
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
@@ -20,7 +22,7 @@ const ROOT = path.resolve(__dirname, '..');
   await ctx.route('**/gsap.min.js', r => r.abort());
 
   const results = {};
-  for (const f of ['act1.html', 'act2.html', 'act3.html', 'combined.html', 'index.html', 'media.html']) {
+  for (const f of PAGES) {
     pageErrors.length = 0; reported.length = 0;
     await page.goto('file://' + path.join(ROOT, f), { waitUntil: 'load' }).catch(() => {});
     await page.waitForTimeout(1200);
