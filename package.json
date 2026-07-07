@@ -1,0 +1,23 @@
+{
+  "name": "customer-support-resolution-agent",
+  "version": "1.0.0",
+  "description": "Animation for self learning Customer Support Resolution Agent",
+  "main": "test-animation.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rifaterdemsahin/Customer-Support-Resolution-Agent.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rifaterdemsahin/Customer-Support-Resolution-Agent/issues"
+  },
+  "homepage": "https://github.com/rifaterdemsahin/Customer-Support-Resolution-Agent#readme",
+  "dependencies": {
+    "playwright": "^1.61.1"
+  }
+}
