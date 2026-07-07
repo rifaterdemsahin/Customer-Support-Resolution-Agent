@@ -2,7 +2,7 @@ app = "csra-backend"
 primary_region = "iad"
 
 [build]
-  image = "csra-backend:latest"
+  dockerfile = "Dockerfile"
 
 [[services]]
   protocol = "tcp"
