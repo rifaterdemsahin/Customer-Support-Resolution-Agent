@@ -662,6 +662,27 @@ h2 {
 .debug-explain .feedback-btn:hover {
   background: rgba(0, 212, 170, 0.2);
 }
+
+.agent-infographic {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  opacity: 0;
+  max-width: 700px;
+  width: 60%;
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(0, 212, 170, 0.15);
+  border: 2px solid rgba(0, 212, 170, 0.25);
+}
+
+.agent-infographic img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 14px;
+}
 </style>
 </head>
 <body>
@@ -787,6 +808,11 @@ h2 {
         <span class="agent-avatar">🤖</span>
         <span>AI Agent &mdash; Analyzing request...</span>
       </div>
+    </div>
+
+    <div class="agent-infographic" id="agent-infographic">
+      <img src="infographic/image.png" alt="Agent workflow: get_customer and lookup_order">
+      <div style="text-align:center;color:#666;font-size:14px;margin-top:4px;">get_customer() → lookup_order()</div>
     </div>
 
     <div id="s1-policy" style="opacity:0; display:flex; flex-direction:column; align-items:center;">
@@ -1157,6 +1183,12 @@ h2 {
   tl.to("#s1-agent-box", { scale: 1.02, duration: 0.3, repeat: 1, yoyo: true });
   showSubtitle("AI agent checks internal policy rules...", 'act1', '+=0.2', 1.5);
   logEvent('AI Agent appears — analyzing request', '+=0');
+
+  // Infographic: get_customer + lookup_order workflow
+  tl.to("#agent-infographic", { opacity: 1, scale: 1, duration: 0.5 }, "+=0.2");
+  tl.to("#agent-infographic", { opacity: 1, duration: 1.5 });
+  logEvent('Infographic shown: get_customer() + lookup_order()', '+=0', 'Agent runs data-gathering functions before evaluating policy.', 'info');
+  tl.to("#agent-infographic", { opacity: 0, scale: 0.95, duration: 0.3 }, "+=0.2");
 
   // Policy rules display
   tl.to("#s1-policy", { opacity: 1, scale: 1, duration: 0.6 }, "+=0.4");
