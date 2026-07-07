@@ -41,6 +41,10 @@ node semblance/verify-sentinel.js
 # End-to-end: serve pages over HTTP + /api/errors, confirm client -> server.
 node semblance/verify-pipeline.js
 
+# DeepSeek: diagnose the latest failure (writes semblance/latest-deepseek.md).
+DEEPSEEK_API_KEY=sk-... node semblance/deepseek-fix.js
+DEEPSEEK_API_KEY=sk-... node semblance/deepseek-fix.js --apply   # write edits to disk
+
 # Full Playwright assertion suite (targets combined.html).
 node test-animation.js
 
@@ -61,6 +65,27 @@ bash semblance/health-check.sh --force   # always run every check
 - **Local (optional)** — `bash semblance/install-launchd.sh` installs a macOS
   launchd agent (`com.csra.health-check`, `StartInterval=600s`) that runs the
   same check on this machine and skips when the tree is unchanged.
+
+## DeepSeek auto-fix (the fix LLM)
+
+When the health check fails, `semblance/deepseek-fix.js` sends the failure log
++ source files to the DeepSeek chat API (`deepseek-chat` by default) and asks
+for minimal JSON edits `{path, oldText, newText}`. Each edit is applied only if
+its `oldText` matches exactly once in the file (safe — bad edits are skipped).
+
+- **Diagnose only** runs automatically on every failed scheduled/push run
+  (produces `semblance/latest-deepseek.md`, uploaded as an artifact).
+- **Apply + commit** runs only from the manual **Run workflow** button with the
+  *Apply DeepSeek auto-fix* input on: it writes edits, commits
+  `fix(deepseek): auto-fix from health-check failures [skip ci]`, pushes, and
+  re-runs the suite.
+
+Requires the `DEEPSEEK_API_KEY` repository secret. Set it with:
+```bash
+gh secret set DEEPSEEK_API_KEY --body sk-xxxxxxxx
+# optional: pin a model (defaults to deepseek-chat)
+gh variable set DEEPSEEK_MODEL --body deepseek-chat
+```
 
 ## Add a new page to the catcher
 
