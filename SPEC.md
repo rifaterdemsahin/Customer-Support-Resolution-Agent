@@ -4,7 +4,7 @@
 >
 > **Live:** https://rifaterdemsahin.github.io/Customer-Support-Resolution-Agent/
 >
-> **Last updated:** 2026-07-07 [[time]]
+> **Last updated:** 2026-07-07
 
 ---
 
@@ -15,7 +15,7 @@
 > There is a customer agent where it talks online in an online store and handles the customers.
 
 ### Use Case
-> When the agent is requested to get a price match with a competitor 
+> When the agent is requested to get a price match with a competitor
 
 ### The Question
 > After calling `get_customer()` and `lookup_order()`, the agent has all available data but faces uncertainty. Which situation triggers `escalate_to_human()`?
@@ -37,13 +37,14 @@ A self-contained `index.html` plays a **32-second cinematic animation** in 3 act
 
 | Layer | Technology | Version | Purpose |
 |-------|-----------|---------|---------|
-| **Animation** | GSAP (GreenSock) | 3.12.5 | 30s timeline, character reveals, path draws, opacity/slide transitions |
-| **Audio Narration** |  3 pre-generated MP3 clips, `US Guy Neural` voice |
-| **Image Generation** | OpenRouter → `google/gemini-3nanobanana-image` | — | 8 scene background PNGs from text prompts that are saved in the project |
-| **Testing** | Playwright (headless Chromium) | 1.61.1 | 35 automated assertions + 8 time-indexed screenshots , runs before github push |
+| **Animation** | GSAP (GreenSock) | 3.12.5 | 32s timeline, character reveals, path draws, opacity/slide transitions |
+| **Audio Narration** | `en-US-GuyNeural` voice (Microsoft Edge neural TTS via `edge-tts`) | — | 3 pre-generated MP3 clips, charismatic tone (+5% rate, -2Hz pitch, +10% volume) |
+| **Image Generation** | OpenRouter → `google/gemini-3nanobanana-image` | — | 8 scene background PNGs from text prompts, saved in project |
+| **Testing** | Playwright (headless Chromium) | 1.61.1 | 35 automated assertions + 8 time-indexed screenshots, runs before `git push` |
 | **Deployment** | GitHub Pages via `static.yml` workflow | — | Push to `main` triggers deploy |
-| **Python deps** | `requests`, `python-dotenv`, | — | Image/audio generation scripts |
-| **CDN** | cdnjs (GSAP) | — | Single external dependency |
+| **Python deps** | `requests`, `python-dotenv` | — | Image generation script |
+| **npm deps** | `playwright` | 1.61.1 | Browser test suite |
+| **CDN** | cdnjs (GSAP) | 3.12.5 | Single external dependency |
 
 ### Brand Colors
 
@@ -61,7 +62,7 @@ A self-contained `index.html` plays a **32-second cinematic animation** in 3 act
 ### 3.1 Generated Scene Backgrounds
 
 > Source: `generated-images/2026-07-07T09-10-41Z/`
-> Generator: `generate_images.py` → OpenRouter `google/gemini-2.5-flash-image`
+> Generator: `generate_images.py` → OpenRouter `google/gemini-3nanobanana-image`
 
 | File | KB | Act | Used At | Depicts |
 |------|-----|-----|---------|---------|
@@ -69,10 +70,10 @@ A self-contained `index.html` plays a **32-second cinematic animation** in 3 act
 | `act1-policy-gap.png` | 1197 | Act 1 | ~6s (swap) | Red warning banner, policy document with checkmarks, red question mark on competitor pricing |
 | `act1-error.png` | 1124 | Act 1 | ~8s (swap) | AI panicking, red X, financial loss downward arrow, red flash |
 | `act2-policy-check.png` | 1112 | Act 2 | *Generated but unused* | AI checking policy rulebook (generated for future use) |
-| `act2-escalate.png` | 1115 | Act 2 | 10s (initial), ~12s (swap) | AI → Human handoff, green arrow, confident expression |
-| `act2-success.png` | 988 | Act 2 | ~15s (swap) | Human agent + AI together, green checkmark, thumbs up |
-| `act3-comparison.png` | 1016 | Act 3 | 20s (initial) | Split-screen red vs green, naive failing vs resilient succeeding |
-| `act3-final.png` | 1110 | Act 3 | ~25s (swap) | "Know what you don't know" text, AI + human united team |
+| `act2-escalate.png` | 1115 | Act 2 | 8s (initial), ~12s (swap) | AI → Human handoff, green arrow, confident expression |
+| `act2-success.png` | 988 | Act 2 | ~18s (swap) | Human agent + AI together, green checkmark, thumbs up |
+| `act3-comparison.png` | 1016 | Act 3 | 24s (initial) | Split-screen red vs green, naive failing vs resilient succeeding |
+| `act3-final.png` | 1110 | Act 3 | ~29s (swap) | "Know what you don't know" text, AI + human united team |
 
 ### 3.2 Infographic Images
 
@@ -101,6 +102,8 @@ A self-contained `index.html` plays a **32-second cinematic animation** in 3 act
 
 ### Act 1 — The Naive Approach (0–8s)
 
+**Focus:** Premise — show the problem and the naive agent's failure.
+
 **Scene ID:** `#scene1` | **CSS class:** `.scene`
 
 | Time | Event | Element | Description | Tech |
@@ -110,32 +113,29 @@ A self-contained `index.html` plays a **32-second cinematic animation** in 3 act
 | 0.2s | **Problem card** | `#problem-card` | Cyan-bordered rectangle (85% width): "The AI Agent Policy Gap Problem" — explains competitor price match, unmapped policy gap | `gsap.to(opacity:1, scale:1.05, d:0.6)` |
 | 0.2s | **SVG escalation** | `#escalation-path` | Green bezier arrow drawn from AI robot (left) to Human agent (right) | `gsap.to(strokeDashoffset:0, d:1.2, ease:power3)` |
 | 0.3s | SVG dots | `#dot1–4` | 4 green dots fade in sequentially along arrow path | `gsap.to(opacity:1, d:0.2 each, staggered)` |
-| 0.3s | SVG arrowhead | `#escalation-arrowhead` | Polygon fades in at arrow tip | `gsap.to(opacity:1, d:0.3)` |
 | 0.3s | Audio Act 1 | `<audio#audio-act1>` | Pre-generated MP3 narration plays | `audio.play()` via GSAP `tl.call()` |
 | 0.3s | Subtitle 1 | `.subtitle-bar` | Red bg: *"When guidelines are silent, autonomous agents risk financial errors."* | `clipPath:inset()` character reveal, 2.2s |
-| 0.5s | Subtitle 0 | `.subtitle-bar` | Red bg: *"AI agents face uncertainty when policy rules don't cover every scenario."* | Same technique, 2.0s |
+| 0.5s | Subtitle 2 | `.subtitle-bar` | Red bg: *"AI agents face uncertainty when policy rules don't cover every scenario."* | Same technique, 2.0s |
 | 0.5s | Console log | — | `[0.5s] Problem card displayed` | `logEvent()` |
-| 5.5s | Problem card fades out | `#problem-card` | opacity→0, y:-30 | `gsap.to(opacity:0, d:0.5)` |
-| 5.5s | Subtitle 2 | `.subtitle-bar` | Red bg: *"Customer requests a competitor price match."* | 1.6s reveal |
-| 5.7s | **Request bubble** | `#s1-request` | Dark overlay box: "I found this cheaper at CompetitorCo. Can you match their price?" (💰 emoji) | `gsap.to(opacity:1, d:0.6)` |
-| 6.2s | **Agent box** | `#s1-agent-box` | Cyan-bordered box: 🤖 "AI Agent — Analyzing request..." | `gsap.to(opacity:1, d:0.5)` + scale pulse |
-| 6.4s | **Infographic overlay** | `#agent-infographic` | `infographic/image.png`: `get_customer()` → `lookup_order()` workflow diagram, cyan border | `gsap.to(opacity:1, scale:1, d:0.5)`, held 1.5s |
-| 6.4s | Subtitle 3 | `.subtitle-bar` | Red bg: *"AI agent checks internal policy rules..."* | 1.5s reveal |
-| 6.8s | **Policy rules** | `#s1-policy` | 4 rules listed: 3 ✅ covered, 1 ❓ gap — "Competitor price matching" | `gsap.to(opacity:1, d:0.6)` |
-| 7.3s | Rule gap highlighted | `#s1-policy li.gap` | "Competitor price matching" turns bold red (#e94560) | `gsap.to(color:#e94560, fontWeight:bold, d:0.5)` |
-| 7.3s | Subtitle 4 | `.subtitle-bar` | Red bg: *"Policy gap found: competitor price matching has no rule."* | 1.8s reveal |
-| 7.3s | **Policy gap banner** | `#s1-gap` | Red-bordered banner: "⚠️ Policy Gap — No Rule Found" | `gsap.to(opacity:1, d:0.5)` |
-| 7.5s | **Gray area overlay** | `#gray-area-overlay` | `infographic/gray area.jpeg`: uncertainty zone, red border | `gsap.to(opacity:1, d:0.5)`, held 2.5s |
-| 7.5s | BG image swap | `#scene1-bg` | → `act1-policy-gap.png` | `img.src = ...` via `tl.call()` |
-| 8.2s | **Agent guesses** | `#s1-guess` | 🤖💭 "I'll just... figure it out" | `gsap.to(opacity:1, d:0.5)` |
-| 8.2s | Subtitle 5 | `.subtitle-bar` | Red bg: *"No matching rule. Agent guesses — applies 15% discount."* | 1.8s reveal |
-| 8.5s | **Red flash** | `#flash` | Full-screen #e94560 overlay at 40% opacity | `gsap.to(opacity:0.4, d:0.15)` → `0 d:0.4` |
-| 8.5s | Agent box error | `#s1-agent-box` | Border turns red, background dark red | `className = "agent-box error"` via GSAP |
-| 8.5s | BG image swap | `#scene1-bg` | → `act1-error.png` | `img.src = ...` |
-| 8.7s | **Error result** | `#s1-result` | Large ❌ icon + "Guessed Wrong — Unauthorized 15% Discount Applied" + "-$47.85" | `gsap.to(opacity:1, scale:1.1, d:0.4)` |
-| 8.7s | Subtitle 6 | `.subtitle-bar` | Red bg: *"Financial loss: unauthorized discount applied."* | 1.5s reveal |
-| 9.2s | Scene fades out | `#scene1` | Opacity → 0 | `gsap.to(opacity:0, d:0.5)` |
-| 9.2s | Console log | — | `Act 1 complete — transitioning to Act 2` | `logEvent()` |
+| 4.0s | Problem card fades out | `#problem-card` | opacity→0, y:-30 | `gsap.to(opacity:0, d:0.5)` |
+| 4.0s | Subtitle 3 | `.subtitle-bar` | Red bg: *"Customer requests a competitor price match."* | 1.6s reveal |
+| 4.2s | **Request bubble** | `#s1-request` | Dark overlay box: "I found this cheaper at CompetitorCo. Can you match their price?" (💰 emoji) | `gsap.to(opacity:1, d:0.6)` |
+| 4.5s | **Agent box** | `#s1-agent-box` | Cyan-bordered box: 🤖 "AI Agent — Analyzing request..." | `gsap.to(opacity:1, d:0.5)` + scale pulse |
+| 4.7s | **Infographic overlay** | `#agent-infographic` | `infographic/image.png`: `get_customer()` → `lookup_order()` workflow diagram, cyan border | `gsap.to(opacity:1, scale:1, d:0.5)`, held 1.0s |
+| 4.7s | Subtitle 4 | `.subtitle-bar` | Red bg: *"AI agent checks internal policy rules..."* | 1.5s reveal |
+| 5.0s | **Policy rules** | `#s1-policy` | 4 rules listed: 3 ✅ covered, 1 ❓ gap — "Competitor price matching" | `gsap.to(opacity:1, d:0.6)` |
+| 5.5s | Rule gap highlighted | `#s1-policy li.gap` | "Competitor price matching" turns bold red (#e94560) | `gsap.to(color:#e94560, fontWeight:bold, d:0.5)` |
+| 5.5s | Subtitle 5 | `.subtitle-bar` | Red bg: *"Policy gap found: competitor price matching has no rule."* | 1.8s reveal |
+| 5.5s | **Policy gap banner** | `#s1-gap` | Red-bordered banner: "⚠️ Policy Gap — No Rule Found" | `gsap.to(opacity:1, d:0.5)` |
+| 5.7s | **Gray area overlay** | `#gray-area-overlay` | `infographic/gray area.jpeg`: uncertainty zone, red border | `gsap.to(opacity:1, d:0.5)`, held 2.0s |
+| 6.0s | **Agent guesses** | `#s1-guess` | 🤖💭 "I'll just... figure it out" | `gsap.to(opacity:1, d:0.5)` |
+| 6.0s | Subtitle 6 | `.subtitle-bar` | Red bg: *"No matching rule. Agent guesses — applies 15% discount."* | 1.8s reveal |
+| 6.3s | **Red flash** | `#flash` | Full-screen #e94560 overlay at 40% opacity | `gsap.to(opacity:0.4, d:0.15)` → `0 d:0.4` |
+| 6.3s | Agent box error | `#s1-agent-box` | Border turns red, background dark red | `className = "agent-box error"` via GSAP |
+| 6.5s | **Error result** | `#s1-result` | Large ❌ icon + "Guessed Wrong — Unauthorized 15% Discount Applied" + "-$47.85" | `gsap.to(opacity:1, scale:1.1, d:0.4)` |
+| 6.5s | Subtitle 7 | `.subtitle-bar` | Red bg: *"Financial loss: unauthorized discount applied."* | 1.5s reveal |
+| 7.5s | Scene fades out | `#scene1` | Opacity → 0 | `gsap.to(opacity:0, d:0.5)` |
+| 7.5s | Console log | — | `Act 1 complete — transitioning to Act 2` | `logEvent()` |
 
 **Key Artifacts in Act 1:** 3 scene backgrounds (dynamically swapped), 2 infographic overlays, 1 audio clip, 6 subtitle reveals, 14 console events, 1 SVG escalation animation.
 

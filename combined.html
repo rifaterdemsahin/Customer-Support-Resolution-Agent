@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent: Escalate vs. Guess</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0a0a0a;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stage {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+.scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+}
+
+.act-label {
+  position: absolute;
+  top: 40px;
+  left: 60px;
+  font-size: 22px;
+  color: #555;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.timeline-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: #00d4aa;
+  width: 0%;
+  z-index: 100;
+}
+
+h1 {
+  font-size: 52px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #888;
+}
+
+.big-text {
+  font-size: 28px;
+  line-height: 1.6;
+}
+.medium-text {
+  font-size: 24px;
+  line-height: 1.5;
+}
+
+.request-bubble {
+  background: #1a1a2e;
+  border: 2px solid #333;
+  border-radius: 16px;
+  padding: 24px 40px;
+  font-size: 26px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.request-bubble .icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.agent-box {
+  background: #12121f;
+  border: 2px solid #00d4aa;
+  border-radius: 20px;
+  padding: 32px 48px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 28px;
+  transition: all 0.5s;
+}
+.agent-box.error {
+  border-color: #e94560;
+  background: #1a0a0f;
+}
+.agent-box.success {
+  border-color: #00cc66;
+  background: #0a1a0f;
+}
+.agent-avatar {
+  font-size: 64px;
+}
+
+.policy-box {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px 32px;
+  margin: 16px 0;
+  font-size: 22px;
+  max-width: 520px;
+  text-align: center;
+}
+.policy-box ul {
+  list-style: none;
+  text-align: left;
+}
+.policy-box li {
+  padding: 6px 0;
+  color: #888;
+}
+.policy-box li.covered::before {
+  content: "✅ ";
+  color: #00cc66;
+}
+.policy-box li.gap::before {
+  content: "❓ ";
+  color: #e94560;
+}
+
+.thinking-dots {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00d4aa;
+}
+
+.result-badge {
+  font-size: 100px;
+  margin: 16px 0;
+}
+.result-label {
+  font-size: 32px;
+  font-weight: 700;
+}
+.result-label.error { color: #e94560; }
+.result-label.success { color: #00cc66; }
+
+.human-icon {
+  font-size: 72px;
+}
+.arrow {
+  font-size: 48px;
+  margin: 0 16px;
+}
+.arrow.cyan { color: #00d4aa; }
+.arrow.green { color: #00cc66; }
+
+.comparison {
+  display: flex;
+  gap: 80px;
+  align-items: flex-start;
+}
+
+.comparison .col {
+  text-align: center;
+  max-width: 500px;
+}
+.comparison .col.naive .col-header {
+  color: #e94560;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.comparison .col.resilient .col-header {
+  color: #00cc66;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.comparison .step {
+  font-size: 24px;
+  margin: 14px 0;
+  opacity: 0.5;
+}
+
+.metric-box {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 24px 48px;
+  margin-top: 32px;
+  text-align: center;
+}
+.metric-label {
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 8px;
+}
+.metric-value {
+  font-size: 72px;
+  font-weight: 800;
+  color: #00d4aa;
+}
+.metric-final {
+  font-size: 72px;
+  font-weight: 800;
+  color: #00cc66;
+}
+
+.final-text {
+  font-size: 48px;
+  font-weight: 700;
+  color: #00d4aa;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.confused-face {
+  font-size: 96px;
+}
+
+.policy-gap-banner {
+  background: #1a0a0f;
+  border: 2px solid #e94560;
+  border-radius: 12px;
+  padding: 16px 32px;
+  font-size: 28px;
+  color: #e94560;
+  font-weight: 700;
+}
+
+.flash-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: #e94560;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.narrator-text {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22px;
+  color: #666;
+  font-style: italic;
+  opacity: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.scene-bg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  z-index: 0;
+}
+
+.scene-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.overlay-box {
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 24px 40px;
+}
+
+.subtitle-bar {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 80;
+  opacity: 0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.subtitle-bg {
+  background: #e94560;
+  padding: 18px 36px;
+  border-radius: 14px;
+}
+
+.subtitle-text {
+  font-size: 30px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  letter-spacing: 1px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.subtitle-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 32px;
+  background: #ffffff;
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.subtitle-bar.act2 .subtitle-bg { background: #00cc66; }
+.subtitle-bar.act3 .subtitle-bg { background: #00d4aa; }
+.subtitle-bar.act3 .subtitle-text { color: #0a0a0a; }
+.subtitle-bar.act3 .subtitle-cursor { background: #0a0a0a; }
+
+.gh-pages-banner {
+  position: absolute;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 81;
+  opacity: 0;
+  background: rgba(0, 212, 170, 0.15);
+  border: 2px solid #00d4aa;
+  border-radius: 16px;
+  padding: 24px 44px;
+  text-align: center;
+}
+
+.gh-pages-banner .gh-label {
+  font-size: 22px;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.gh-pages-banner .gh-url {
+  font-size: 32px;
+  font-weight: 700;
+  color: #00d4aa;
+  letter-spacing: 1px;
+}
+
+.problem-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 90;
+  opacity: 0;
+  text-align: center;
+  max-width: 1200px;
+  width: 85%;
+  background: rgba(10, 10, 10, 0.92);
+  border: 3px solid #00d4aa;
+  border-radius: 24px;
+  padding: 44px 60px;
+  box-shadow: 0 0 60px rgba(0, 212, 170, 0.12), inset 0 0 60px rgba(0, 212, 170, 0.04);
+}
+
+.problem-card .problem-icon {
+  font-size: 96px;
+  margin-bottom: 20px;
+}
+
+.problem-card .problem-title {
+  font-size: 56px;
+  font-weight: 800;
+  color: #00d4aa;
+  margin-bottom: 20px;
+  line-height: 1.3;
+}
+
+.problem-card .problem-subtitle {
+  font-size: 28px;
+  color: #999;
+  line-height: 1.5;
+  margin-bottom: 30px;
+}
+
+.problem-card .problem-rule {
+  display: inline-block;
+  background: rgba(233, 69, 96, 0.15);
+  border: 1px solid #e94560;
+  border-radius: 10px;
+  padding: 12px 28px;
+  font-size: 24px;
+  color: #e94560;
+}
+
+.escalation-svg-wrap {
+  margin: 24px 0 12px 0;
+  opacity: 0;
+}
+
+.escalation-svg-wrap svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.escalation-svg-wrap .svg-label {
+  font-size: 16px;
+  fill: #666;
+  text-anchor: middle;
+}
+
+.escalation-svg-wrap .svg-label.active {
+  fill: #00d4aa;
+}
+
+.escalation-path {
+  stroke: #00cc66;
+  stroke-width: 3;
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.escalation-dot {
+  fill: #00cc66;
+  opacity: 0;
+}
+
+.rationale-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 85;
+  opacity: 0;
+  background: rgba(10, 10, 10, 0.92);
+  border: 3px solid #00cc66;
+  border-radius: 24px;
+  padding: 40px 56px;
+  text-align: center;
+  max-width: 1100px;
+  width: 80%;
+  box-shadow: 0 0 50px rgba(0, 204, 102, 0.1), inset 0 0 50px rgba(0, 204, 102, 0.03);
+}
+
+.rationale-card .rationale-title {
+  font-size: 38px;
+  font-weight: 800;
+  color: #00cc66;
+  margin-bottom: 24px;
+}
+
+.rationale-card .rationale-body {
+  font-size: 26px;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.rationale-card .rationale-body span {
+  color: #00d4aa;
+  font-weight: 700;
+}
+
+.rationale-card .rationale-footer {
+  margin-top: 24px;
+  font-size: 22px;
+  color: #888;
+  font-style: italic;
+}
+
+.debug-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 200;
+  background: rgba(10, 10, 10, 0.97);
+  border-top: 1px solid rgba(0, 212, 170, 0.3);
+  height: 220px;
+  transition: transform 0.35s ease;
+  transform: translateY(calc(100% - 34px));
+  display: flex;
+  flex-direction: column;
+}
+.debug-panel.open {
+  transform: translateY(0);
+}
+
+.debug-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  cursor: pointer;
+  background: rgba(0, 212, 170, 0.06);
+  font-size: 12px;
+  color: #00d4aa;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  user-select: none;
+  flex-shrink: 0;
+  min-height: 34px;
+}
+.debug-toggle .toggle-arrow {
+  font-size: 10px;
+  transition: transform 0.3s;
+}
+.debug-panel.open .debug-toggle .toggle-arrow {
+  transform: rotate(180deg);
+}
+
+.debug-progress {
+  margin-left: 8px;
+  font-size: 11px;
+  color: #888;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.debug-progress .prog-bar {
+  display: inline-block;
+  width: 60px;
+  height: 6px;
+  background: #222;
+  border-radius: 3px;
+  margin: 0 6px;
+  vertical-align: middle;
+  overflow: hidden;
+}
+.debug-progress .prog-fill {
+  display: block;
+  height: 100%;
+  background: #00d4aa;
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.3s linear;
+}
+
+.debug-status {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.debug-status .status-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.status-badge.imgs { background: rgba(0,212,170,0.12); color: #00d4aa; }
+.status-badge.audio { background: rgba(0,204,102,0.12); color: #00cc66; }
+.status-badge.events {
+  background: rgba(255,170,0,0.12); color: #ffaa00;
+  margin-left: auto;
+}
+.status-badge.warn { background: rgba(233,69,96,0.12); color: #e94560; }
+
+.debug-body {
+  display: flex;
+  gap: 0;
+  flex: 1;
+  overflow: hidden;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.debug-timeline {
+  flex: 0 0 360px;
+  overflow-y: auto;
+  padding: 6px 10px;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 11px;
+}
+.debug-timeline .tl-entry {
+  display: flex;
+  gap: 6px;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+  align-items: flex-start;
+}
+.debug-timeline .tl-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.tl-dot.info { background: #00d4aa; }
+.tl-dot.artifact { background: #00cc66; }
+.tl-dot.error { background: #e94560; }
+.tl-dot.transition { background: #ffaa00; }
+.tl-dot.subtitle { background: #8888ff; }
+.tl-dot.image { background: #ff66aa; }
+
+.debug-timeline .tl-time {
+  color: #00d4aa;
+  min-width: 36px;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+.debug-timeline .tl-msg {
+  color: #aaa;
+  word-break: break-all;
+}
+.debug-timeline .tl-explain {
+  color: #555;
+  font-style: italic;
+  display: block;
+  font-size: 10px;
+}
+
+.debug-explain {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.debug-explain h4 {
+  font-size: 13px;
+  color: #00d4aa;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.debug-explain p {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.6;
+  margin: 0;
+}
+.debug-explain .feedback-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+.debug-explain textarea {
+  flex: 1;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #ccc;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 12px;
+  padding: 8px 10px;
+  resize: none;
+  outline: none;
+}
+.debug-explain textarea:focus {
+  border-color: #00d4aa;
+}
+.debug-explain .feedback-btn {
+  background: rgba(0, 212, 170, 0.12);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  color: #00d4aa;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 11px;
+  cursor: pointer;
+  align-self: flex-end;
+}
+.debug-explain .feedback-btn:hover {
+  background: rgba(0, 212, 170, 0.2);
+}
+
+.agent-infographic {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  opacity: 0;
+  max-width: 700px;
+  width: 60%;
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(0, 212, 170, 0.15);
+  border: 2px solid rgba(0, 212, 170, 0.25);
+}
+
+.agent-infographic img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 14px;
+}
+
+.gray-area-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  opacity: 0;
+  max-width: 650px;
+  width: 55%;
+  border-radius: 16px;
+  box-shadow: 0 0 50px rgba(233, 69, 96, 0.18);
+  border: 2px solid rgba(233, 69, 96, 0.3);
+}
+
+.gray-area-overlay img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 14px;
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <div class="flash-overlay" id="flash"></div>
+
+  <div class="subtitle-bar" id="subtitle-bar">
+    <div class="subtitle-bg">
+      <span class="subtitle-text" id="subtitle-text"></span><span class="subtitle-cursor" id="subtitle-cursor"></span>
+    </div>
+  </div>
+
+  <div class="gh-pages-banner" id="gh-banner">
+    <div class="gh-label">🔗 View the live demo</div>
+    <div class="gh-url">rifaterdemsahin.github.io/Customer-Support-Resolution-Agent</div>
+  </div>
+
+  <div class="problem-card" id="problem-card">
+    <div class="problem-icon">🤖⚡</div>
+    <div class="problem-title">The AI Agent Policy Gap Problem</div>
+    <div class="problem-subtitle">
+      A customer requests a competitor price match.<br>
+      Internal policy covers own-site drops within 14 days —<br>
+      but is <span style="color:#e94560;font-weight:700;">silent on competitor pricing</span>.
+    </div>
+    <div class="problem-rule">⚠️ Unmapped Policy Gap — No Deterministic Rule</div>
+    <div class="escalation-svg-wrap" id="escalation-svg-wrap">
+      <svg width="740" height="200" viewBox="0 0 740 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- AI Agent (left) -->
+        <g transform="translate(80, 50)">
+          <!-- Antenna -->
+          <line x1="40" y1="0" x2="40" y2="18" stroke="#00d4aa" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="40" cy="-4" r="6" fill="none" stroke="#00d4aa" stroke-width="2"/>
+          <!-- Head -->
+          <rect x="12" y="18" width="56" height="44" rx="8" fill="none" stroke="#00d4aa" stroke-width="3"/>
+          <!-- Eyes -->
+          <circle cx="30" cy="37" r="5" fill="#00d4aa"/>
+          <circle cx="50" cy="37" r="5" fill="#00d4aa"/>
+          <!-- Mouth -->
+          <rect x="26" y="47" width="28" height="4" rx="2" fill="#00d4aa"/>
+          <!-- Antenna glow -->
+          <circle cx="40" cy="-4" r="10" fill="#00d4aa" opacity="0.15">
+            <animate attributeName="r" values="10;14;10" dur="2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.15;0.05;0.15" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Body -->
+          <rect x="4" y="68" width="72" height="50" rx="10" fill="none" stroke="#00d4aa" stroke-width="3"/>
+          <!-- Chest lines -->
+          <line x1="40" y1="78" x2="40" y2="108" stroke="#00d4aa" stroke-width="2" opacity="0.5"/>
+          <line x1="18" y1="85" x2="62" y2="85" stroke="#00d4aa" stroke-width="1.5" opacity="0.4"/>
+          <line x1="18" y1="93" x2="62" y2="93" stroke="#00d4aa" stroke-width="1.5" opacity="0.4"/>
+          <line x1="18" y1="101" x2="40" y2="101" stroke="#00d4aa" stroke-width="1.5" opacity="0.3"/>
+        </g>
+        <!-- Label: AI -->
+        <text x="120" y="185" fill="#00d4aa" font-size="20" font-weight="700" text-anchor="middle">AI Agent</text>
+        <text x="120" y="170" fill="#555" font-size="14" text-anchor="middle">Autonomous</text>
+
+        <!-- Escalation arrow (animated path) -->
+        <path class="escalation-path" id="escalation-path"
+              d="M 210,110 C 280,110 280,80 340,80 C 400,80 400,110 470,110"/>
+        <!-- Arrow head -->
+        <polygon id="escalation-arrowhead" points="470,103 490,110 470,117" fill="#00cc66" opacity="0"/>
+        <!-- Arrow dots -->
+        <circle class="escalation-dot" id="dot1" cx="260" cy="100" r="4"/>
+        <circle class="escalation-dot" id="dot2" cx="310" cy="82" r="4"/>
+        <circle class="escalation-dot" id="dot3" cx="370" cy="82" r="4"/>
+        <circle class="escalation-dot" id="dot4" cx="420" cy="105" r="4"/>
+        <!-- Flow label -->
+        <text x="350" y="65" fill="#888" font-size="14" text-anchor="middle" opacity="0" id="flow-label">escalation</text>
+
+        <!-- Human Agent (right) -->
+        <g transform="translate(540, 50)">
+          <!-- Head -->
+          <circle cx="40" cy="20" r="18" fill="none" stroke="#00cc66" stroke-width="3"/>
+          <!-- Eyes -->
+          <circle cx="34" cy="18" r="3" fill="#00cc66"/>
+          <circle cx="46" cy="18" r="3" fill="#00cc66"/>
+          <!-- Smile -->
+          <path d="M 30,28 Q 40,36 50,28" fill="none" stroke="#00cc66" stroke-width="2" stroke-linecap="round"/>
+          <!-- Body -->
+          <rect x="16" y="42" width="48" height="50" rx="10" fill="none" stroke="#00cc66" stroke-width="3"/>
+          <!-- Tie -->
+          <polygon points="40,52 34,68 40,64 46,68" fill="none" stroke="#00cc66" stroke-width="1.5" opacity="0.6"/>
+          <!-- Arms -->
+          <line x1="16" y1="52" x2="4" y2="78" stroke="#00cc66" stroke-width="3" stroke-linecap="round"/>
+          <line x1="64" y1="52" x2="76" y2="78" stroke="#00cc66" stroke-width="3" stroke-linecap="round"/>
+          <!-- Glow -->
+          <circle cx="40" cy="20" r="28" fill="#00cc66" opacity="0.08">
+            <animate attributeName="r" values="28;34;28" dur="2.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.08;0.03;0.08" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+        </g>
+        <!-- Label: Human -->
+        <text x="580" y="170" fill="#666" font-size="14" text-anchor="middle">Expert</text>
+        <text x="580" y="190" fill="#00cc66" font-size="20" font-weight="700" text-anchor="middle">Human Agent</text>
+
+        <!-- Dashed border between sides -->
+        <line x1="370" y1="115" x2="370" y2="155" stroke="#333" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+      </svg>
+    </div>
+  </div>
+
+  <audio id="audio-act1" preload="auto" src="generated-audio/2026-07-07T09-28-54Z/act1-narration.mp3"></audio>
+  <audio id="audio-act2" preload="auto" src="generated-audio/2026-07-07T09-28-54Z/act2-narration.mp3"></audio>
+  <audio id="audio-act3" preload="auto" src="generated-audio/2026-07-07T09-28-54Z/act3-narration.mp3"></audio>
+
+  <!-- ===================== ACT 1: NAIVE ===================== -->
+  <div class="scene" id="scene1">
+    <img class="scene-bg" id="scene1-bg" src="generated-images/2026-07-07T09-10-41Z/act1-request.png" alt="">
+    <div class="act-label">Act 1 &mdash; The Naive Approach</div>
+
+    <div class="scene-content">
+    <div id="s1-request" style="opacity:0;">
+      <div class="request-bubble overlay-box">
+        <span class="icon">💰</span>
+        "I found this cheaper at CompetitorCo. Can you match their price?"
+      </div>
+    </div>
+
+    <div id="s1-agent" style="opacity:0; display:flex; flex-direction:column; align-items:center; gap:20px;">
+      <div class="agent-box" id="s1-agent-box">
+        <span class="agent-avatar">🤖</span>
+        <span>AI Agent &mdash; Analyzing request...</span>
+      </div>
+    </div>
+
+    <div class="agent-infographic" id="agent-infographic">
+      <img src="infographic/image.png" alt="Agent workflow: get_customer and lookup_order">
+      <div style="text-align:center;color:#666;font-size:14px;margin-top:4px;">get_customer() → lookup_order()</div>
+    </div>
+
+    <div id="s1-policy" style="opacity:0; display:flex; flex-direction:column; align-items:center;">
+      <div class="policy-box">
+        <div style="font-size:18px;color:#666;margin-bottom:10px;">📋 Policy Rules Check:</div>
+        <ul>
+          <li class="covered">Own-site price drop (within 14 days)</li>
+          <li class="covered">Bundle discount with existing subscription</li>
+          <li class="gap">Competitor price matching</li>
+          <li class="covered">Coupon stacking (max 2)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="s1-gap" style="opacity:0;">
+      <div class="policy-gap-banner">⚠️ Policy Gap — No Rule Found</div>
+    </div>
+
+    <div class="gray-area-overlay" id="gray-area-overlay">
+      <img src="infographic/gray area.jpeg" alt="Gray area: uncertainty zone where policy is silent">
+      <div style="text-align:center;color:#e94560;font-size:14px;margin-top:4px;font-weight:700;">Policy Gap — No Deterministic Rule Exists</div>
+    </div>
+
+    <div id="s1-guess" style="opacity:0; text-align:center;">
+      <div class="thinker" style="font-size:96px;margin-bottom:10px;">🤖💭</div>
+      <div style="font-size:26px;color:#888;margin-bottom:14px;">"I'll just... figure it out"</div>
+    </div>
+
+    <div id="s1-result" style="opacity:0; text-align:center;">
+      <div class="result-badge">❌</div>
+      <div class="result-label error">Guessed Wrong — Unauthorized 15% Discount Applied</div>
+      <div style="font-size:22px;color:#e94560;margin-top:10px;">Financial loss: -$47.85</div>
+    </div>
+  </div>
+
+  <!-- ===================== ACT 2: RESILIENT ===================== -->
+  <div class="scene" id="scene2">
+    <img class="scene-bg" id="scene2-bg" src="generated-images/2026-07-07T09-10-41Z/act2-escalate.png" alt="">
+    <div class="act-label">Act 2 &mdash; The Resilient Approach</div>
+
+    <div class="scene-content">
+    <div id="s2-request" style="opacity:0;">
+      <div class="request-bubble overlay-box">
+        <span class="icon">💰</span>
+        "I found this cheaper at CompetitorCo. Can you match their price?"
+      </div>
+    </div>
+
+    <div id="s2-agent" style="opacity:0; display:flex; flex-direction:column; align-items:center; gap:20px;">
+      <div class="agent-box" id="s2-agent-box">
+        <span class="agent-avatar">🤖</span>
+        <span>AI Agent &mdash; Checking policy rules...</span>
+      </div>
+    </div>
+
+    <div id="s2-policy" style="opacity:0; display:flex; flex-direction:column; align-items:center;">
+      <div class="policy-box">
+        <div style="font-size:18px;color:#666;margin-bottom:10px;">📋 Policy Rules Checked:</div>
+        <ul>
+          <li class="covered">Own-site price drop (within 14 days)</li>
+          <li class="covered">Bundle discount with existing subscription</li>
+          <li class="gap">Competitor price matching → <b>No policy found</b></li>
+          <li class="covered">Coupon stacking (max 2)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="s2-decision" style="opacity:0; text-align:center;">
+      <div style="font-size:64px;margin-bottom:10px;">🧠</div>
+      <div style="font-size:28px;color:#00d4aa;margin-bottom:8px;">"No deterministic rule for this."</div>
+      <div style="font-size:24px;color:#888;">"I know what I <i>don't</i> know."</div>
+    </div>
+
+    <div id="s2-escalate" style="opacity:0;">
+      <div class="row" style="gap:30px;">
+        <div class="agent-box success">
+          <span class="agent-avatar">🤖</span>
+          <span>Escalating to human...</span>
+        </div>
+        <span class="arrow green">→</span>
+        <div style="text-align:center;">
+          <span class="human-icon">👩‍💼</span>
+          <div style="font-size:22px;color:#00cc66;">Human Agent</div>
+          <div style="font-size:18px;color:#888;">Policy Interpretation</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="s2-result" style="opacity:0; text-align:center;">
+      <div class="result-badge">✅</div>
+      <div class="result-label success">Correct Outcome — Human applied appropriate policy</div>
+      <div style="font-size:22px;color:#00cc66;margin-top:10px;">Resolution: Fair decision, no financial error</div>
+    </div>
+  </div>
+
+  <!-- ===================== ACT 3: THE LESSON ===================== -->
+  <div class="scene" id="scene3">
+    <img class="scene-bg" id="scene3-bg" src="generated-images/2026-07-07T09-10-41Z/act3-comparison.png" alt="">
+
+    <div class="scene-content">
+    <div class="act-label">Act 3 &mdash; The Lesson</div>
+
+    <h1 style="margin-bottom:40px;">Side-by-Side Comparison</h1>
+
+    <div id="s3-comparison" style="opacity:0;">
+      <div class="comparison">
+        <div class="col naive" id="col-naive">
+          <div class="col-header">❌ Naive Agent</div>
+          <div class="step" id="naive-step1">🤖 Receives request</div>
+          <div class="step" id="naive-step2">🔍 Policy gap detected</div>
+          <div class="step" id="naive-step3">🎲 Guesses anyway</div>
+          <div class="step" id="naive-step4">💸 Wrong discount → Financial loss</div>
+        </div>
+        <div class="col resilient" id="col-resilient">
+          <div class="col-header">✅ Resilient Agent</div>
+          <div class="step" id="res-step1">🤖 Receives request</div>
+          <div class="step" id="res-step2">🔍 Policy gap detected</div>
+          <div class="step" id="res-step3">🚦 Detects boundary → Escalates</div>
+          <div class="step" id="res-step4">👩‍💼 Human resolves → Correct outcome</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="s3-metric" style="opacity:0;">
+      <div class="metric-box">
+        <div class="metric-label">Error Rate for Unmapped Policy Gaps</div>
+        <div style="display:flex;align-items:center;gap:30px;justify-content:center;">
+          <span class="metric-value" id="metric-start" style="color:#e94560;">100%</span>
+          <span class="arrow cyan">→</span>
+          <span class="metric-final" id="metric-end">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="s3-final" style="opacity:0; margin-top:40px;">
+      <div class="final-text">
+        "Know what you don't know.<br>Escalate policy gaps."
+      </div>
+    </div>
+
+    <div class="rationale-card" id="rationale-card">
+      <div class="rationale-title">Why Escalation Is Correct</div>
+      <div class="rationale-body">
+        Automated agents execute <span>deterministic rules</span>.<br>
+        When formal guidelines are <span>silent</span> — an unmapped policy gap —<br>
+        autonomous resolution <span>risks financial errors</span>.<br>
+        Human handoff is the <span>only safe path</span> for policy interpretation.
+      </div>
+      <div class="rationale-footer">
+        "A resilient AI knows what it doesn't know."
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="timeline-bar" id="timeline"></div>
+
+  <div class="debug-panel" id="debug-panel">
+    <div class="debug-toggle" id="debug-toggle">
+      <span class="toggle-arrow">▲</span>
+      🐞 Timeline
+      <span class="debug-progress">
+        <span class="prog-bar"><span class="prog-fill" id="prog-fill"></span></span>
+        <span id="prog-text">0.0s / 30.0s</span>
+      </span>
+      <span class="debug-status">
+        <span class="status-badge imgs" id="status-imgs">🖼 0</span>
+        <span class="status-badge audio" id="status-audio">🔊 0</span>
+        <span class="status-badge events" id="status-events">📋 0</span>
+      </span>
+    </div>
+    <div class="debug-body">
+      <div class="debug-timeline" id="debug-timeline"></div>
+      <div class="debug-explain" id="debug-explain">
+        <h4>📖 Event Details</h4>
+        <p>Click any event on the left to see timing, category, and explanation here.</p>
+        <div class="feedback-box">
+          <textarea id="feedback-text" placeholder="Write feedback on this timeline page..."></textarea>
+          <button class="feedback-btn" id="feedback-btn">Submit Feedback</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function() {
+  var tl = gsap.timeline({ defaults: { ease: "power3.inOut" } });
+
+  var subText = document.getElementById('subtitle-text');
+  var subBar = document.getElementById('subtitle-bar');
+  var subCursor = document.getElementById('subtitle-cursor');
+
+  var audioAct1 = document.getElementById('audio-act1');
+  var audioAct2 = document.getElementById('audio-act2');
+  var audioAct3 = document.getElementById('audio-act3');
+
+  function showSubtitle(text, bgClass, at, duration) {
+    duration = duration || 1.8;
+    tl.call(function() {
+      subBar.className = 'subtitle-bar';
+      if (bgClass) subBar.classList.add(bgClass);
+      subText.textContent = text;
+    }, null, at);
+
+    var charCount = text.length;
+    tl.fromTo(subBar,
+      { opacity: 1, clipPath: 'inset(0 100% 0 0)' },
+      { clipPath: 'inset(0 0% 0 0)', duration: duration, ease: 'steps(' + Math.min(charCount, 30) + ')' },
+      at + '+=0'
+    );
+
+    tl.to(subBar, { opacity: 0, duration: 0.6 }, at + '+= ' + (duration + 3.5));
+  }
+
+  function playAudio(audioEl, at) {
+    tl.call(function() {
+      try {
+        audioEl.currentTime = 0;
+        audioEl.play().catch(function(e) { console.log('Audio play prevented:', e.message); });
+      } catch(e) {}
+    }, null, at);
+  }
+
+  var allEvents = [];
+  var imgLoadCount = 0;
+  var audioLoadCount = 0;
+  var imgTotal = 0;
+  var audioTotal = 0;
+
+  function logEvent(event, at, explain, cls) {
+    cls = cls || 'info';
+    explain = explain || event;
+    tl.call(function() {
+      var elapsed = tl.time().toFixed(1);
+      console.log('[' + elapsed + 's] ' + event);
+      addTimelineEntry(elapsed, event, explain, cls);
+    }, null, at);
+  }
+
+  var timelineList = document.getElementById('debug-timeline');
+  var explainTitle = document.getElementById('debug-explain').querySelector('h4');
+  var explainP   = document.getElementById('debug-explain').querySelector('p');
+  var statusImgs = document.getElementById('status-imgs');
+  var statusAudio = document.getElementById('status-audio');
+  var statusEvents = document.getElementById('status-events');
+
+  function updateStatus() {
+    var warn = (imgLoadCount < imgTotal || audioLoadCount < audioTotal) ? ' warn' : '';
+    statusImgs.textContent = '\uD83D\uDDBC ' + imgLoadCount + '/' + imgTotal;
+    statusAudio.textContent = '\uD83D\uDD0A ' + audioLoadCount + '/' + audioTotal;
+    statusEvents.textContent = '\uD83D\uDCCB ' + allEvents.length;
+    if (imgLoadCount < imgTotal) statusImgs.className = 'status-badge imgs warn';
+    else statusImgs.className = 'status-badge imgs';
+    if (audioLoadCount < audioTotal) statusAudio.className = 'status-badge audio warn';
+    else statusAudio.className = 'status-badge audio';
+  }
+
+  function addTimelineEntry(time, msg, explain, cls) {
+    allEvents.push({ time: time, msg: msg, explain: explain, cls: cls });
+
+    var entry = document.createElement('div');
+    entry.className = 'tl-entry';
+    entry.style.cursor = 'pointer';
+    entry.title = 'Click for details';
+    entry.innerHTML =
+      '<span class="tl-dot ' + cls + '"></span>' +
+      '<span class="tl-time">' + time + 's</span>' +
+      '<span class="tl-msg">' + msg.slice(0, 50) + (msg.length > 50 ? '\u2026' : '') +
+      '<span class="tl-explain">' + explain + '</span></span>';
+
+    entry.addEventListener('click', function() {
+      explainTitle.textContent = '\uD83D\uDCD6 ' + time + 's \u2014 ' + cls.toUpperCase();
+      explainP.innerHTML = '<strong>' + msg + '</strong><br><br>' + explain;
+    });
+
+    timelineList.appendChild(entry);
+    timelineList.scrollTop = timelineList.scrollHeight;
+    updateStatus();
+  }
+
+  // Real-time timeline progress bar
+  var progFill = document.getElementById('prog-fill');
+  var progText = document.getElementById('prog-text');
+  setInterval(function() {
+    var t = tl.time() || 0;
+    var pct = Math.min(100, (t / 30) * 100);
+    progFill.style.width = pct + '%';
+    progText.textContent = t.toFixed(1) + 's / 30.0s';
+  }, 150);
+
+  // Debug panel toggle
+  var debugPanel = document.getElementById('debug-panel');
+  document.getElementById('debug-toggle').addEventListener('click', function() {
+    debugPanel.classList.toggle('open');
+  });
+
+  // Feedback submit
+  document.getElementById('feedback-btn').addEventListener('click', function() {
+    var text = document.getElementById('feedback-text').value.trim();
+    if (text) {
+      addTimelineEntry((tl.time() || 0).toFixed(1), 'Feedback: ' + text.slice(0, 60), text, 'subtitle');
+      document.getElementById('feedback-text').value = '';
+    }
+  });
+
+  // Track ALL image artifacts (scene-bg + infographic images)
+  var allImgs = document.querySelectorAll('img.scene-bg, .agent-infographic img, .gray-area-overlay img');
+  imgTotal = allImgs.length;
+  allImgs.forEach(function(img, i) {
+    var name = (img.src.split('/').pop() || 'img-' + i).split('?')[0];
+    img.addEventListener('load', function() {
+      imgLoadCount++;
+      addTimelineEntry((tl.time() || 0).toFixed(1), '\uD83D\uDDBC Loaded: ' + name, 'Image artifact loaded successfully.', 'image');
+    });
+    img.addEventListener('error', function() {
+      imgLoadCount++;
+      addTimelineEntry((tl.time() || 0).toFixed(1), '\uD83D\uDDBC FAILED: ' + name, 'Image could not be loaded — check path.', 'error');
+    });
+    if (img.complete && img.naturalWidth > 0) {
+      imgLoadCount++;
+      addTimelineEntry('0.0', '\uD83D\uDDBC Cached: ' + name, 'Image already in browser cache.', 'image');
+    }
+  });
+
+  var allAudio = document.querySelectorAll('audio');
+  audioTotal = allAudio.length;
+  allAudio.forEach(function(a, i) {
+    var name = (a.src.split('/').pop() || 'audio-' + i).split('?')[0];
+    a.addEventListener('loadeddata', function() {
+      audioLoadCount++;
+      addTimelineEntry((tl.time() || 0).toFixed(1), '\uD83D\uDD0A Loaded: ' + name, 'Audio clip buffered, ready for playback.', 'artifact');
+    });
+    a.addEventListener('error', function() {
+      audioLoadCount++;
+      addTimelineEntry((tl.time() || 0).toFixed(1), '\uD83D\uDD0A FAILED: ' + name, 'Audio clip load error — check file path.', 'error');
+    });
+    if (a.readyState >= 2) {
+      audioLoadCount++;
+      addTimelineEntry('0.0', '\uD83D\uDD0A Cached: ' + name, 'Audio already buffered in browser.', 'artifact');
+    }
+  });
+
+  addTimelineEntry('0.0', 'Debug panel initialized', 'All events, artifacts, and timings tracked here.', 'info');
+  addTimelineEntry('0.0', 'GSAP v' + gsap.version + ' loaded', 'GreenSock Animation Platform powers the timeline.', 'artifact');
+  updateStatus();
+
+  // === Problem card intro subtitle ===
+  showSubtitle(
+    "AI agents face uncertainty when policy rules don't cover every scenario.",
+    'act1',
+    '+=0.5',
+    2.0
+  );
+  logEvent('Problem card displayed — AI Agent Policy Gap Problem', '+=0.5');
+
+  // Act 1 — play audio + subtitle
+  playAudio(audioAct1, '+=0.3');
+  showSubtitle(
+    "When guidelines are silent, autonomous agents risk financial errors.",
+    'act1',
+    '+=0.3',
+    2.2
+  );
+
+  // Act 2 — play audio + subtitle
+  playAudio(audioAct2, '+=10');
+  showSubtitle(
+    "The resilient agent detects the gap and escalates to a human for policy interpretation.",
+    'act2',
+    '+=10',
+    2.5
+  );
+
+  // Act 3 — play audio + subtitle
+  playAudio(audioAct3, '+=20');
+  showSubtitle(
+    "Know what you don't know. Escalate policy gaps to the right decision-maker.",
+    'act3',
+    '+=20',
+    2.4
+  );
+
+  /* ============ ACT 1: NAIVE (0–10s) ============ */
+  tl.to("#scene1", { opacity: 1, duration: 0.4 }, 0);
+  tl.to("#scene1-bg", { opacity: 0.35, duration: 1 }, 0);
+
+  // Problem card — display for 5 seconds
+  tl.to("#problem-card", { opacity: 1, scale: 1.05, duration: 0.6 }, "+=0.2");
+  tl.to("#problem-card", { scale: 1, duration: 0.4 });
+
+  // SVG escalation animation — draw arrow, fade dots
+  tl.to("#escalation-svg-wrap", { opacity: 1, duration: 0.5 }, "-=0.2");
+  tl.to("#escalation-path", { strokeDashoffset: 0, duration: 1.2, ease: "power3.inOut" }, "-=0.1");
+  tl.to("#escalation-arrowhead", { opacity: 1, duration: 0.3 }, "-=0.6");
+  tl.to("#dot1", { opacity: 1, duration: 0.2 }, "-=0.8");
+  tl.to("#dot2", { opacity: 1, duration: 0.2 }, "-=0.6");
+  tl.to("#dot3", { opacity: 1, duration: 0.2 }, "-=0.4");
+  tl.to("#dot4", { opacity: 1, duration: 0.2 }, "-=0.2");
+  tl.to("#flow-label", { opacity: 1, duration: 0.4 }, "-=0.1");
+
+  tl.to("#problem-card", { opacity: 1, duration: 2.8 });
+  tl.to("#problem-card", { opacity: 0, y: -30, duration: 0.5 }, "+=0.5");
+  showSubtitle("Customer requests a competitor price match.", 'act1', '+=0', 1.6);
+  logEvent('Problem card dismissed', '+=0');
+
+  // Request bubble appears after problem card
+  tl.to("#s1-request", { opacity: 1, y: 0, duration: 0.6 }, "+=0.2");
+  tl.to("#s1-request", { opacity: 1, duration: 1.2 });
+  logEvent('Customer request bubble appears', '+=0');
+
+  // Agent appears thinking
+  tl.to("#s1-agent", { opacity: 1, duration: 0.5 }, "+=0.3");
+  tl.to("#s1-agent-box", { scale: 1.02, duration: 0.3, repeat: 1, yoyo: true });
+  showSubtitle("AI agent checks internal policy rules...", 'act1', '+=0.2', 1.5);
+  logEvent('AI Agent appears — analyzing request', '+=0');
+
+  // Infographic: get_customer + lookup_order workflow
+  tl.to("#agent-infographic", { opacity: 1, scale: 1, duration: 0.5 }, "+=0.2");
+  tl.to("#agent-infographic", { opacity: 1, duration: 1.5 });
+  logEvent('Infographic shown: get_customer() + lookup_order()', '+=0', 'Agent runs data-gathering functions before evaluating policy.', 'info');
+  tl.to("#agent-infographic", { opacity: 0, scale: 0.95, duration: 0.3 }, "+=0.2");
+
+  // Policy rules display
+  tl.to("#s1-policy", { opacity: 1, scale: 1, duration: 0.6 }, "+=0.4");
+  // Highlight the gap item
+  tl.to("#s1-policy li.gap", { color: "#e94560", fontWeight: "bold", duration: 0.5 }, "+=0.5");
+  showSubtitle("Policy gap found: competitor price matching has no rule.", 'act1', '+=0.5', 1.8);
+  logEvent('Policy rules shown — competitor gap highlighted', '+=0');
+
+  // Policy gap banner — swap to gap image
+  tl.to("#scene1-bg", { opacity: 0, duration: 0.3 }, "+=0.5");
+  tl.call(function() { document.getElementById('scene1-bg').src = 'generated-images/2026-07-07T09-10-41Z/act1-policy-gap.png'; }, null, "+=0");
+  tl.to("#scene1-bg", { opacity: 0.4, duration: 0.4 });
+
+  // Policy gap banner text
+  tl.to("#s1-gap", { opacity: 1, scale: 1, duration: 0.5 });
+  logEvent('Policy Gap banner shown', '+=0');
+
+  // Gray area infographic — uncertainty zone
+  tl.to("#gray-area-overlay", { opacity: 1, scale: 1, duration: 0.5 }, "+=0.2");
+  tl.to("#gray-area-overlay", { opacity: 1, duration: 2.5 });
+  logEvent('Gray area shown — policy silence / uncertainty zone', '+=0', 'Infographic illustrates the ambiguous zone where policy rules are absent.', 'error');
+  tl.to("#gray-area-overlay", { opacity: 0, scale: 0.95, duration: 0.3 }, "+=0.2");
+
+  // Agent guesses
+  tl.to("#s1-guess", { opacity: 1, duration: 0.5 }, "+=0.4");
+  showSubtitle("No matching rule. Agent guesses — applies 15% discount.", 'act1', '+=0.3', 1.8);
+  logEvent('Agent guesses — applies unauthorized discount', '+=0');
+
+  // Red flash + swap to error image
+  tl.to("#flash", { opacity: 0.4, duration: 0.15 }, "+=0.3");
+  tl.call(function() { document.getElementById('scene1-bg').src = 'generated-images/2026-07-07T09-10-41Z/act1-error.png'; }, null, "+=0");
+  tl.to("#scene1-bg", { opacity: 0.5, duration: 0.2 });
+  tl.to("#flash", { opacity: 0, duration: 0.4 });
+  tl.to("#s1-agent-box", { className: "agent-box error", duration: 0.2 }, "-=0.5");
+  logEvent('Red flash — error state triggered', '+=0');
+
+  // Wrong result
+  tl.to("#s1-guess", { opacity: 0, duration: 0.2 }, "+=0.2");
+  tl.to("#s1-result", { opacity: 1, scale: 1.1, duration: 0.4 });
+  tl.to("#s1-result", { scale: 1, duration: 0.3 });
+  tl.to("#s1-result", { opacity: 1, duration: 1 });
+  showSubtitle("Financial loss: unauthorized discount applied.", 'act1', '+=0.2', 1.5);
+  logEvent('Error result displayed — financial loss', '+=0');
+
+  // Transition out
+  tl.to("#scene1", { opacity: 0, duration: 0.5 }, "+=0.5");
+  logEvent('Act 1 complete — transitioning to Act 2', '+=0');
+
+  /* ============ ACT 2: RESILIENT (10–20s) ============ */
+  tl.to("#scene2", { opacity: 1, duration: 0.4 }, "-=0.1");
+  tl.to("#scene2-bg", { opacity: 0.3, duration: 1 }, "-=0.1");
+  logEvent('Act 2 started — The Resilient Approach', '+=0');
+
+  // Request bubble
+  tl.to("#s2-request", { opacity: 1, y: 0, duration: 0.6 }, "+=0.2");
+  logEvent('Same competitor price match request arrives', '+=0');
+
+  // Agent appears
+  tl.to("#s2-agent", { opacity: 1, duration: 0.5 }, "+=0.3");
+  showSubtitle("Improved agent checks policy — finds same gap.", 'act2', '+=0.3', 1.8);
+  logEvent('Resilient agent appears', '+=0');
+
+  // Policy rules checked
+  tl.to("#s2-policy", { opacity: 1, scale: 1, duration: 0.6 }, "+=0.4");
+  tl.to("#s2-policy li.gap", { color: "#e94560", fontWeight: "bold", duration: 0.5 }, "+=0.5");
+  logEvent('Policy gap confirmed again', '+=0');
+
+  // Decision point
+  tl.to("#s2-decision", { opacity: 1, duration: 0.6 }, "+=0.6");
+  showSubtitle("Agent recognizes: no deterministic rule exists.", 'act2', '+=0.4', 1.8);
+  logEvent('Agent decides — no guessing this time', '+=0');
+
+  // Escalate to human — swap to escalate image
+  tl.to("#s2-decision", { opacity: 0, duration: 0.3 }, "+=0.8");
+  tl.call(function() { document.getElementById('scene2-bg').src = 'generated-images/2026-07-07T09-10-41Z/act2-escalate.png'; }, null, "+=0");
+  tl.to("#scene2-bg", { opacity: 0.4, duration: 0.4 });
+  tl.to("#s2-escalate", { opacity: 1, scale: 1.05, duration: 0.5 });
+  tl.to("#s2-escalate", { scale: 1, duration: 0.3 });
+  tl.to("#s2-agent-box", { className: "agent-box success", duration: 0.2 });
+  showSubtitle("Escalating to human for policy interpretation.", 'act2', '+=0', 2.0);
+  logEvent('Escalation to human agent initiated', '+=0');
+
+  // Success result
+  tl.to("#s2-escalate", { opacity: 1, duration: 1.2 }, "+=0.3");
+  tl.to("#s2-escalate", { opacity: 0, duration: 0.3 }, "+=0.3");
+  tl.call(function() { document.getElementById('scene2-bg').src = 'generated-images/2026-07-07T09-10-41Z/act2-success.png'; }, null, "+=0");
+  tl.to("#scene2-bg", { opacity: 0.4, duration: 0.4 });
+  tl.to("#s2-result", { opacity: 1, scale: 1, duration: 0.5 });
+  tl.to("#s2-result", { opacity: 1, duration: 1.2 });
+  showSubtitle("Human resolves — correct outcome, zero financial error.", 'act2', '+=0.2', 2.0);
+  logEvent('Success — human agent applied correct policy', '+=0');
+
+  // Transition out
+  tl.to("#scene2", { opacity: 0, duration: 0.5 }, "+=0.5");
+  logEvent('Act 2 complete — transitioning to Act 3', '+=0');
+
+  /* ============ ACT 3: THE LESSON (20–30s) ============ */
+  tl.to("#scene3", { opacity: 1, duration: 0.4 }, "-=0.1");
+  tl.to("#scene3-bg", { opacity: 0.25, duration: 1 }, "-=0.1");
+  logEvent('Act 3 started — The Lesson / Comparison', '+=0');
+
+  // Side by side comparison
+  tl.to("#s3-comparison", { opacity: 1, duration: 0.6 }, "+=0.3");
+  showSubtitle("Naive agent guesses wrong. Resilient agent escalates.", 'act3', '+=0.2', 2.2);
+  logEvent('Side-by-side comparison columns appear', '+=0');
+
+  // Animate naive column steps
+  tl.to("#naive-step1", { opacity: 1, duration: 0.3 }, "+=0.3");
+  tl.to("#naive-step2", { opacity: 1, duration: 0.3 }, "+=0.4");
+  tl.to("#naive-step3", { opacity: 1, duration: 0.3 }, "+=0.4");
+  tl.to("#naive-step4", { opacity: 1, duration: 0.3 }, "+=0.4");
+
+  // Animate resilient column steps
+  tl.to("#res-step1", { opacity: 1, duration: 0.3 }, "-=1.4");
+  tl.to("#res-step2", { opacity: 1, duration: 0.3 }, "+=0.4");
+  tl.to("#res-step3", { opacity: 1, duration: 0.3 }, "+=0.4");
+  tl.to("#res-step4", { opacity: 1, duration: 0.3 }, "+=0.4");
+
+  // Highlight final steps
+  tl.to("#naive-step4", { color: "#e94560", fontWeight: "bold", scale: 1.1, duration: 0.4 }, "+=0.3");
+  tl.to("#res-step4", { color: "#00cc66", fontWeight: "bold", scale: 1.1, duration: 0.4 }, "-=0.4");
+  tl.to("#naive-step4", { scale: 1, duration: 0.3 });
+  tl.to("#res-step4", { scale: 1, duration: 0.3 }, "-=0.3");
+
+  // Metric
+  tl.to("#s3-metric", { opacity: 1, duration: 0.5 }, "+=0.5");
+
+  // Animate 100% → 0%
+  tl.fromTo("#metric-end", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.6 }, "+=0.4");
+  tl.to("#metric-start", { opacity: 0.2, scale: 0.8, color: "#555", duration: 0.5 }, "-=0.3");
+  showSubtitle("Error rate drops from 100% to 0% with human escalation.", 'act3', '+=0', 2.0);
+  logEvent('Metric animation: 100% → 0%', '+=0');
+
+  // Final text
+  tl.call(function() { document.getElementById('scene3-bg').src = 'generated-images/2026-07-07T09-10-41Z/act3-final.png'; }, null, "+=0.2");
+  tl.to("#scene3-bg", { opacity: 0.35, duration: 0.6 });
+  tl.to("#s3-final", { opacity: 1, y: 0, duration: 0.8 }, "+=0.6");
+  tl.to("#s3-final", { scale: 1.03, duration: 0.4, repeat: 1, yoyo: true }, "+=0.4");
+  tl.to(".final-text", { textShadow: "0 0 30px rgba(0,212,170,0.6)", duration: 0.8 }, "-=0.4");
+  logEvent('Final message displayed', '+=0');
+
+  // Rationale card — explanation rectangle
+  tl.to("#rationale-card", { opacity: 1, scale: 1.03, duration: 0.6 }, "+=0.6");
+  tl.to("#rationale-card", { scale: 1, duration: 0.4 });
+  tl.to("#rationale-card", { opacity: 1, duration: 2.5 }, "+=0");
+  logEvent('Rationale box displayed — why escalation is correct', '+=0');
+
+  // GitHub Pages banner at the end
+  tl.to("#gh-banner", { opacity: 1, y: -10, duration: 0.6 }, "+=0.3");
+  tl.to("#gh-banner", { scale: 1.02, duration: 0.3, repeat: 1, yoyo: true }, "+=0.3");
+  logEvent('GitHub Pages URL banner shown', '+=0');
+
+  /* ============ Timeline progress bar ============ */
+  tl.to("#timeline", { width: "100%", duration: 30, ease: "none" }, 0);
+
+  // Loop on finish (last 5 seconds hold)
+  tl.to({}, { duration: 5 });
+  tl.eventCallback("onComplete", function() {
+    console.log('[30s] Animation loop restart');
+    tl.restart(true, false);
+  });
+
+})();
+</script>
+</body>
+</html>
