@@ -2,15 +2,30 @@
 
 ## Project Identity
 
-Self-contained single-page animated demo that visually explains why AI agents should **escalate competitor price-match policy gaps to humans** rather than guessing. Deployed at:
+Multi-file storyboard animated demo that visually explains why AI agents should **escalate competitor price-match policy gaps to humans** rather than guessing. Deployed at:
 
 > `https://rifaterdemsahin.github.io/Customer-Support-Resolution-Agent/`
+
+---
+
+
+**IMPORTANT: Always update SPEC.md and implementation at the same time.** Every code change to act files, the storyboard, or visual behavior must be reflected in SPEC.md. Never update one without the other.
+
+---
 
 ## Quick Start
 
 ```bash
-# Preview locally
+# Preview storyboard landing page
 open index.html
+
+# Preview individual acts
+open act1.html
+open act2.html
+open act3.html
+
+# Preview combined 32s animation
+open combined.html
 
 # Run tests (Playwright + headless Chromium)
 npm install && npx playwright install chromium
@@ -25,9 +40,15 @@ python generate_images.py
 
 | File | Role |
 |------|------|
-| `index.html` | **The demo** — inline HTML/CSS/JS, GSAP 3.12.5 CDN, 30s auto-playing 3-act animation |
+| `index.html` | **Storyboard** — landing page with 3 act cards + links (230 lines) |
+| `act1.html` | **Act 1** — Naive Approach, 8s auto-loop with 3 inner scenes (352 lines) |
+| `act2.html` | **Act 2** — Resilient Approach, 16s auto-loop with 3 inner scenes (269 lines) |
+| `act3.html` | **Act 3** — The Lesson, 8s auto-loop with 3 inner scenes (284 lines) |
+| `combined.html` | **Combined** — all 3 acts in single 32s animation (1474 lines) |
+| `SPEC.md` | **Master spec** — scene-by-scene, artifacts, timeline tables |
 | `test-animation.js` | Playwright test suite — 32 assertions across 7 categories, exits non-zero on failure |
 | `generate_images.py` | Calls OpenRouter (`google/gemini-2.5-flash-image`) to generate 8 scene PNGs |
+| `generate_audio.py` | Calls edge-tts (`en-US-GuyNeural`) to generate 3 narration MP3s |
 | `formula.md` | Test plan — maps every spec requirement to a Playwright assertion |
 | `package.json` | npm manifest — `playwright ^1.61.1` |
 | `requirements.txt` | Python deps — `requests`, `python-dotenv` |
@@ -38,65 +59,40 @@ python generate_images.py
 ## Architecture
 
 ```
-index.html  (single file)
-├── <style>         — all CSS (dark theme #0a0a0a, cyan #00d4aa, red #e94560, green #00cc66)
+index.html  (storyboard, 230 lines)
+├── 3 × .act-card with descriptions + links
+├── .info-bar → combined.html, SPEC.md, live demo
+└── .debug-panel → minimal debug footer
+
+act1.html  (352 lines, 8s loop)
+├── <style>         — all CSS (dark theme, act-colored accents #e94560)
 ├── <div class="stage">
-│   ├── .flash-overlay          — red flash for error moments
-│   ├── .subtitle-bar           — typewriter-reveal subtitles synced with narration
-│   ├── .gh-pages-banner        — live URL shown at animation end
-│   ├── .scene#scene1 (Act 1)   — Naive agent: request → gap → guess → ❌ loss
-│   │   └── <img .scene-bg>     — background images swapped at key moments
-│   ├── .scene#scene2 (Act 2)   — Resilient agent: request → gap → escalate → ✅ success
-│   │   └── <img .scene-bg>
-│   ├── .scene#scene3 (Act 3)   — Comparison, 100%→0% metric, final text
-│   │   └── <img .scene-bg>
-│   └── .timeline-bar           — 30s linear progress bar
+│   ├── .nav-bar             — Storyboard / Act 2 ▶ links
+│   ├── .audio-toggle        — 🔊/🔇 mute button
+│   ├── .scene-indicator     — "SCENE X/3: Name" overlay (top-center)
+│   ├── .flash-overlay       — red flash for error moments
+│   ├── .subtitle-bar        — typewriter-reveal subtitles
+│   ├── .problem-card        — policy gap problem + SVG escalation
+│   ├── .scene#scene1        — request, agent, infographic, policy, error
+│   └── .timeline-bar        — 8s red progress bar
 └── <script>       — all JS inline
-    ├── showSubtitle()           — clipPath character-by-character reveal
-    ├── narrate()                — Web Speech API (SpeechSynthesisUtterance)
-    └── tl (gsap.timeline)       — 30s animation, loops onComplete via restart()
-```
+    ├── showSubtitle()       — clipPath character-by-character reveal
+    ├── showScene()          — scene indicator + pulse transition + debug entry
+    ├── playAudio()          — respects audioMuted state
+    └── tl (gsap.timeline)   — 8s animation, loops onComplete via restart()
 
-### Image Pipeline
+act2.html  (269 lines, 16s loop) — same pattern, green accent #00cc66
+act3.html  (284 lines, 8s loop)  — same pattern, cyan accent #00d4aa
 
-```
-.env (OPENROUTER_API_KEY)
-  → generate_images.py
-    → OpenRouter /v1/chat/completions
-      → google/gemini-2.5-flash-image
-        → 8 PNGs → generated-images/<TIMESTAMP>/
-          → referenced by index.html <img> tags
-```
+Each act file shares the same component pattern: GSAP timeline, subtitle system, scene indicator, audio toggle, nav bar, debug panel, and auto-loop.
 
-### Test Pipeline
-
-```
-test-animation.js
-  → Playwright Chromium (headless, 1920×1080)
-    → page.evaluate() checks: colors, fonts, DOM, icons, speech API, single-file, no external reqs
-    → 6 screenshots at 3s/8s/13s/18s/24s/29s → test-screenshots/<TIMESTAMP>/
-    → exit 0 on all pass, exit 1 on any failure
-```
-
-## Key Behaviors
-
-### Animation Timeline (0–30s)
-- **Act 1 (0–10s):** Request bubble → agent checking policy → policy gap banner → agent guesses → red flash → ❌ result
-- **Act 2 (10–20s):** Request bubble → agent checking policy → gap detected → "Escalating to human" → green handoff → ✅ result
-- **Act 3 (20–30s):** Side-by-side comparison columns → metric 100%→0% → final text → GitHub Pages URL banner
-- **End (30–35s):** Hold 5s, then `tl.restart(true, false)` to loop
-
-### Subtitle Sync
-Three subtitles revealed character-by-character via `clipPath: inset()` step animation, synced with `SpeechSynthesisUtterance`:
-1. Act 1 (0.3s, red bg `#e94560`): *"When guidelines are silent, autonomous agents risk financial errors."*
-2. Act 2 (10s, green bg `#00cc66`): *"The resilient agent detects the gap and escalates to a human for policy interpretation."*
-3. Act 3 (20s, cyan bg `#00d4aa`): *"Know what you don't know. Escalate policy gaps to the right decision-maker."*
-
-### Background Image Swaps
-Each scene has a `<img class="scene-bg">` whose `src` is dynamically changed during the timeline:
-- Act 1: `act1-request.png` → `act1-policy-gap.png` → `act1-error.png`
-- Act 2: `act2-escalate.png` → `act2-success.png`
-- Act 3: `act3-comparison.png` → `act3-final.png`
+### Debug Panel
+Slide-up panel (bottom, 34px toggle bar) with:
+- **Env links** — `🏠 Local | 🌐 Cloud` to switch between local file and GitHub Pages deployment
+- **Artifact tracking** — 🖼 images, 🔊 audio, 📋 event count
+- **Scene indicator** — `📍 SX/3` updates at scene transitions
+- **Event timeline** — clickable, color-coded entries (cyan=info, green=artifact, red=error, orange=transition)
+- **Explanation panel** — shows details for clicked timeline events
 
 ## Environment & Secrets
 
@@ -109,11 +105,11 @@ Only needed for `generate_images.py`. Not needed for viewing or testing the demo
 ## Testing
 
 All tests in `test-animation.js` are documented in `formula.md`. Key invariants:
-- **No interactive elements** (zero buttons, inputs)
+- **Interactive elements allowed** — audio toggle (🔊/🔇), nav links, debug panel toggle
 - **No external requests** beyond GSAP CDN
-- **All CSS/JS inline** (single file)
+- **All CSS/JS inline** per file
 - **All 4 brand colors match** exact hex values via computed style
-- **Auto-play + loop** confirmed (no user interaction required)
+- **Auto-play + loop** confirmed (no user interaction required to start)
 - **All 32 assertions** must pass — any failure exits non-zero
 
 ```bash
@@ -135,5 +131,5 @@ node test-animation.js
 When you need fresh scene images:
 1. Ensure `.env` has a valid `OPENROUTER_API_KEY`
 2. Run `python generate_images.py`
-3. Update the `<img src="...">` paths in `index.html` to match the new timestamp folder
+3. Update the `<img src="...">` paths in `act1.html`, `act2.html`, `act3.html`, and `combined.html`
 4. Re-run tests to verify

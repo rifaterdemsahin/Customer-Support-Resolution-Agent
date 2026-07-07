@@ -28,6 +28,8 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
 .final-text{font-size:48px;font-weight:700;color:#00d4aa;line-height:1.4;text-align:center}
 .overlay-box{background:rgba(10,10,10,0.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:16px;padding:24px 40px}
 .subtitle-bar{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);z-index:80;opacity:0;border-radius:14px;overflow:hidden}
+.scene-indicator{position:absolute;top:100px;left:50%;transform:translateX(-50%);z-index:92;font-size:16px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:8px 28px;border-radius:22px;background:rgba(0,212,170,0.15);color:#00d4aa;border:1px solid rgba(0,212,170,0.35);transition:transform 0.35s,opacity 0.35s;opacity:0}
+.scene-indicator .scene-num{font-size:11px;letter-spacing:5px;margin-right:10px;opacity:0.7}
 .subtitle-bg{background:#00d4aa;padding:18px 36px;border-radius:14px}
 .subtitle-text{font-size:30px;font-weight:700;color:#0a0a0a;white-space:nowrap;letter-spacing:1px;font-family:'Segoe UI',system-ui,sans-serif}
 .rationale-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:85;opacity:0;background:rgba(10,10,10,0.92);border:3px solid #00cc66;border-radius:24px;padding:40px 56px;text-align:center;max-width:1100px;width:80%}
@@ -42,6 +44,8 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
 .nav-link.prev{background:rgba(0,204,102,0.15);color:#00cc66;border:1px solid rgba(0,204,102,0.3)}
 .nav-link.home{background:rgba(0,212,170,0.1);color:#00d4aa;border:1px solid rgba(0,212,170,0.2)}
 .nav-link:hover{filter:brightness(1.4)}
+.audio-toggle{padding:8px 14px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;background:rgba(0,212,170,0.1);color:#00d4aa;border:1px solid rgba(0,212,170,0.2);transition:all 0.3s;user-select:none;line-height:1}
+.audio-toggle.muted{background:rgba(233,69,96,0.1);color:#e94560;border:1px solid rgba(233,69,96,0.2)}
 
 .debug-panel{position:absolute;bottom:0;left:0;width:100%;z-index:200;background:rgba(10,10,10,0.97);border-top:1px solid rgba(0,212,170,0.3);height:180px;transform:translateY(calc(100% - 34px));transition:transform 0.35s;display:flex;flex-direction:column}
 .debug-panel.open{transform:translateY(0)}
@@ -59,10 +63,15 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
 .tl-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
 .tl-dot.info{background:#00d4aa}.tl-dot.artifact{background:#00cc66}.tl-dot.transition{background:#ffaa00}
 .debug-timeline .tl-time{color:#00d4aa;min-width:36px;font-weight:700}
+.debug-timeline .tl-id{color:#555;font-size:9px;min-width:22px;font-weight:700;flex-shrink:0}
 .debug-timeline .tl-msg{color:#aaa}
 .debug-explain{flex:1;overflow-y:auto;padding:8px 14px;display:flex;flex-direction:column;gap:8px}
 .debug-explain h4{font-size:13px;color:#00d4aa;letter-spacing:1px;text-transform:uppercase}
 .debug-explain p{font-size:13px;color:#888;line-height:1.6;margin:0}
+.env-links{display:flex;gap:5px;margin-left:16px;font-size:11px;align-items:center}
+.env-links a{color:#666;text-decoration:none;padding:2px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);transition:all 0.2s}
+.env-links a:hover{color:#00d4aa;border-color:rgba(0,212,170,0.35);background:rgba(0,212,170,0.06)}
+.env-links .sep{color:#444;margin:0 1px}
 </style>
 </head>
 <body>
@@ -70,7 +79,10 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
   <div class="nav-bar">
     <a class="nav-link prev" href="act2.html">◀ Act 2</a>
     <a class="nav-link home" href="index.html">🏠 Storyboard</a>
+    <span class="audio-toggle" id="audio-toggle" title="Toggle audio">🔊</span>
   </div>
+
+  <div class="scene-indicator" id="scene-indicator"><span class="scene-num">SCENE 1/3</span>Comparison</div>
 
   <div class="subtitle-bar" id="subtitle-bar">
     <div class="subtitle-bg"><span class="subtitle-text" id="subtitle-text"></span></div>
@@ -137,7 +149,12 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
   <div class="debug-panel" id="debug-panel">
     <div class="debug-toggle" id="debug-toggle">
       <span class="toggle-arrow">▲</span> 🐞 Act 3 Debug
+      <span class="env-links">
+        <a href="act3.html" title="Local Act 3">🏠 Local</a><span class="sep">|</span>
+        <a href="https://rifaterdemsahin.github.io/Customer-Support-Resolution-Agent/act3.html" title="Cloud / GitHub Pages">🌐 Cloud</a>
+      </span>
       <span class="debug-status">
+        <span class="status-badge imgs" id="status-scene" style="background:rgba(0,212,170,0.2);color:#00d4aa;margin-right:8px">📍 S1/3</span>
         <span class="status-badge imgs" id="status-imgs">🖼 0/0</span>
         <span class="status-badge audio" id="status-audio">🔊 0/0</span>
         <span class="status-badge events" id="status-events">📋 0</span>
@@ -159,7 +176,14 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
   var subText = document.getElementById('subtitle-text');
   var subBar = document.getElementById('subtitle-bar');
   var audioEl = document.getElementById('audio-act3');
-  var allEvents = [], imgLoad = 0, imgTotal = 0, audLoad = 0, audTotal = 0;
+  var audioMuted = false;
+  document.getElementById('audio-toggle').addEventListener('click', function() {
+    audioMuted = !audioMuted;
+    var btn = document.getElementById('audio-toggle');
+    if (audioMuted) { btn.textContent = '🔇'; btn.className = 'audio-toggle muted'; audioEl.pause(); }
+    else { btn.textContent = '🔊'; btn.className = 'audio-toggle'; }
+  });
+  var allEvents = [], imgLoad = 0, imgTotal = 0, audLoad = 0, audTotal = 0, evtSeq = 0;
   var timelineList = document.getElementById('debug-timeline');
   var explainH4 = document.getElementById('debug-explain').querySelector('h4');
   var explainP = document.getElementById('debug-explain').querySelector('p');
@@ -168,10 +192,11 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
   var stEvents = document.getElementById('status-events');
 
   function addEntry(time, msg, explain, cls) {
-    allEvents.push({t:time,m:msg,e:explain||msg,c:cls||'info'});
+    evtSeq++; var eid = 'E'+evtSeq;
+    allEvents.push({t:time,m:msg,e:explain||msg,c:cls||'info',id:eid});
     var e = document.createElement('div'); e.className = 'tl-entry'; e.style.cursor = 'pointer';
-    e.innerHTML = '<span class="tl-dot '+(cls||'info')+'"></span><span class="tl-time">'+time+'s</span><span class="tl-msg">'+msg.slice(0,55)+'</span>';
-    e.addEventListener('click',function(){explainH4.textContent='📖 '+time+'s — '+((cls||'info').toUpperCase());explainP.innerHTML='<strong>'+msg+'</strong><br><br>'+(explain||msg)});
+    e.innerHTML = '<span class="tl-dot '+(cls||'info')+'"></span><span class="tl-id">'+eid+'</span><span class="tl-time">'+time+'s</span><span class="tl-msg">'+msg.slice(0,50)+'</span>';
+    e.addEventListener('click',function(){explainH4.textContent='📖 '+eid+' — '+time+'s '+((cls||'info').toUpperCase());explainP.innerHTML='<strong>'+msg+'</strong><br><br>'+(explain||msg)});
     timelineList.appendChild(e); timelineList.scrollTop = timelineList.scrollHeight;
     stEvents.textContent = '📋 '+allEvents.length;
   }
@@ -184,7 +209,18 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
     tl.to(subBar,{opacity:0,duration:0.6},at+'+= '+(dur+3.5));
   }
   function playAudio(at) {
-    tl.call(function(){try{audioEl.currentTime=0;audioEl.play().catch(function(){})}catch(e){}},null,at);
+    tl.call(function(){if(audioMuted)return;try{audioEl.currentTime=0;audioEl.play().catch(function(){})}catch(e){}},null,at);
+  }
+  function showScene(num, name, at) {
+    tl.call(function(){
+      document.getElementById('scene-indicator').innerHTML = '<span class="scene-num">SCENE '+num+'/3</span>'+name;
+      var si = document.getElementById('scene-indicator');
+      si.style.opacity = '1';
+      si.style.transform = 'translateX(-50%) scale(1.12)';
+      setTimeout(function(){si.style.transform='translateX(-50%) scale(1)'}, 350);
+      addEntry(tl.time().toFixed(1),'📍 Scene '+num+'/3: '+name,'Scene transition','info');
+      document.getElementById('status-scene').textContent = '📍 S'+num+'/3';
+    },null,at);
   }
 
   document.getElementById('debug-toggle').addEventListener('click',function(){document.getElementById('debug-panel').classList.toggle('open')});
@@ -206,7 +242,8 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
   addEntry('0.0','Act 3: The Lesson (8s)','8-second summary-focused act','info');
   addEntry('0.0','GSAP '+gsap.version+' loaded','GreenSock animation engine','artifact');
 
-  /* ============ ACT 3 TIMELINE (8s) ============ */
+  /* ============ ACT 3 TIMELINE (8s) — 3 scenes ============ */
+  showScene(1,'Comparison',0);
   tl.to("#scene3-bg",{opacity:0.25,duration:1},0);
   logEvent('Act 3 started','+=0');
 
@@ -225,6 +262,7 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
   tl.to("#s3-metric",{opacity:1,duration:0.5},"+=0.3");
   tl.fromTo("#metric-end",{opacity:0,scale:0.5},{opacity:1,scale:1,duration:0.6},"+=0.4");
   tl.to("#metric-start",{opacity:0.2,scale:0.8,color:"#555",duration:0.5},"-=0.3");
+  showScene(2,'Metrics','+=0');
   showSubtitle("Error rate drops from 100% to 0% with human escalation.",'+=0',2.0);
   logEvent('Metric 100% → 0%','+=0');
 
@@ -235,6 +273,7 @@ h1{font-size:44px;font-weight:700;margin-bottom:14px}
 
   tl.to("#rationale-card",{opacity:1,scale:1.03,duration:0.6},"+=0.4");
   tl.to("#rationale-card",{scale:1,duration:0.4});
+  showScene(3,'The Lesson','+=0');
   logEvent('Rationale box shown','+=0');
 
   tl.to("#gh-banner",{opacity:1,y:-10,duration:0.6},"+=0.5");

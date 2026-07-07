@@ -23,13 +23,23 @@
 ### The Answer
 > The customer requests a competitor price match. Internal policy covers own-site price drops within 14 days but is **silent on competitor pricing**. Escalate for policy interpretation — autonomous agents execute deterministic rules; when guidelines are silent, guessing risks financial errors.
 
-### The Demo
-A self-contained `index.html` plays a **32-second cinematic animation** in 3 acts showing both approaches side-by-side: a naive AI that guesses wrong, and a resilient AI that escalates correctly.
+### Architecture — Storyboard + Independent Acts
+
+The demo is split into a **storyboard landing page** (`index.html`) and **3 independent act files**, with a preserved **combined single-file version**.
+
+| File | Role | Lines |
+|------|------|-------|
+| `index.html` | **Storyboard** — landing page with 3 act cards, links to individual acts + combined version | 230 |
+| `act1.html` | **Act 1** — The Naive Approach (8s), self-contained with own GSAP timeline, audio, debug panel | 352 |
+| `act2.html` | **Act 2** — The Resilient Approach (16s), self-contained with own GSAP timeline, audio, debug panel | 269 |
+| `act3.html` | **Act 3** — The Lesson (8s), self-contained with own GSAP timeline, audio, debug panel | 284 |
+| `combined.html` | **Combined** — all 3 acts in a single 32s animation (legacy/alternate version) | 1474 |
 
 ### Timings
 - Act 1 : 8 seconds > focus on premise
 - Act 2 : 16 seconds > focus on conclusion
 - Act 3 : 8 seconds > focus on summary
+- Combined : 32 seconds > all three acts sequentially, loops at end
 
 ---
 
@@ -64,16 +74,18 @@ A self-contained `index.html` plays a **32-second cinematic animation** in 3 act
 > Source: `generated-images/2026-07-07T09-10-41Z/`
 > Generator: `generate_images.py` → OpenRouter `google/gemini-3nanobanana-image`
 
-| File | KB | Act | Used At | Depicts |
-|------|-----|-----|---------|---------|
-| `act1-request.png` | 1305 | Act 1 | 0s (initial) | AI robot receiving price-match request, confused expression, money bag icon |
-| `act1-policy-gap.png` | 1197 | Act 1 | ~6s (swap) | Red warning banner, policy document with checkmarks, red question mark on competitor pricing |
-| `act1-error.png` | 1124 | Act 1 | ~8s (swap) | AI panicking, red X, financial loss downward arrow, red flash |
-| `act2-policy-check.png` | 1112 | Act 2 | *Generated but unused* | AI checking policy rulebook (generated for future use) |
-| `act2-escalate.png` | 1115 | Act 2 | 8s (initial), ~12s (swap) | AI → Human handoff, green arrow, confident expression |
-| `act2-success.png` | 988 | Act 2 | ~18s (swap) | Human agent + AI together, green checkmark, thumbs up |
-| `act3-comparison.png` | 1016 | Act 3 | 24s (initial) | Split-screen red vs green, naive failing vs resilient succeeding |
-| `act3-final.png` | 1110 | Act 3 | ~29s (swap) | "Know what you don't know" text, AI + human united team |
+| File | KB | File | Used At | Depicts |
+|------|-----|------|---------|---------|
+| `act1-request.png` | 1305 | `act1.html` | 0s (initial), 35% opacity background | AI robot receiving price-match request, confused expression, money bag icon |
+| `act1-policy-gap.png` | 1197 | *(unused in split)* | — | Red warning banner, policy document with checkmarks, red question mark |
+| `act1-error.png` | 1124 | *(unused in split)* | — | AI panicking, red X, financial loss downward arrow |
+| `act2-policy-check.png` | 1112 | *(unused)* | — | AI checking policy rulebook (generated for future use) |
+| `act2-escalate.png` | 1115 | `act2.html` | 0s (initial), 30% opacity background | AI → Human handoff, green arrow, confident expression |
+| `act2-success.png` | 988 | *(unused in split)* | — | Human agent + AI together, green checkmark, thumbs up |
+| `act3-comparison.png` | 1016 | `act3.html` | 0s (initial), 25% opacity background | Split-screen red vs green, naive failing vs resilient succeeding |
+| `act3-final.png` | 1110 | *(unused in split)* | — | "Know what you don't know" text, AI + human united team |
+
+> **Note:** In the split architecture, each act file uses a single static background image at reduced opacity. Dynamic BG swaps during the timeline are only in `combined.html`.
 
 ### 3.2 Infographic Images
 
@@ -81,8 +93,8 @@ A self-contained `index.html` plays a **32-second cinematic animation** in 3 act
 
 | File | KB | Used In | Depicts |
 |------|-----|---------|---------|
-| `image.png` | 955 | Act 1, `.agent-infographic` overlay (~4s) | Agent workflow: `get_customer()` → `lookup_order()` |
-| `gray area.jpeg` | 115 | Act 1, `.gray-area-overlay` overlay (~7s) | Uncertainty zone, policy silence illustration |
+| `image.png` | 955 | `act1.html`, `.agent-infographic` overlay | Agent workflow: `get_customer()` → `lookup_order()` |
+| `gray area.jpeg` | 115 | `act1.html`, `.gray-area-overlay` overlay | Uncertainty zone, policy silence illustration |
 | `what_Agent_does.png` | 151 | *Not used* | Standby infographic |
 
 ### 3.3 Audio Narration Clips
@@ -90,21 +102,44 @@ A self-contained `index.html` plays a **32-second cinematic animation** in 3 act
 > Source: `generated-audio/2026-07-07T09-28-54Z/`
 > Generator: `generate_audio.py` → `edge-tts` → `en-US-GuyNeural` (rate:+5%, pitch:-2Hz, volume:+10%)
 
-| File | KB | Act | Trigger | Text |
-|------|-----|-----|---------|------|
-| `act1-narration.mp3` | 26 | Act 1 | 0.3s | *"When guidelines are silent, autonomous agents risk financial errors."* |
-| `act2-narration.mp3` | 32 | Act 2 | 10s | *"The resilient agent detects the gap and escalates to a human for policy interpretation."* |
-| `act3-narration.mp3` | 33 | Act 3 | 20s | *"Know what you don't know. Escalate policy gaps to the right decision-maker."* |
+| File | KB | Used In | Text |
+|------|-----|---------|------|
+| `act1-narration.mp3` | 26 | `act1.html`, `combined.html` | *"When guidelines are silent, autonomous agents risk financial errors."* |
+| `act2-narration.mp3` | 32 | `act2.html`, `combined.html` | *"The resilient agent detects the gap and escalates to a human for policy interpretation."* |
+| `act3-narration.mp3` | 33 | `act3.html`, `combined.html` | *"Know what you don't know. Escalate policy gaps to the right decision-maker."* |
 
 ---
 
 ## 4. Scene-by-Scene Spec
 
-### Act 1 — The Naive Approach (0–8s)
+Each act is a self-contained HTML file with its own GSAP timeline, debug panel, subtitle system, audio, and navigation. All timings below are **relative to the act file's own timeline** (each starts at 0s). Each act auto-loops on completion via `tl.restart(true, false)`.
+
+### Inner Scene System
+
+Each act is divided into **3 named inner scenes** displayed via a `.scene-indicator` overlay at the top-center of the stage. Scene transitions trigger a scale-pulse animation on the indicator and log an entry to the debug timeline.
+
+| Act | Scene 1 | Scene 2 | Scene 3 |
+|-----|---------|---------|---------|
+| Act 1 | Problem Card | Policy Gap | Error Outcome |
+| Act 2 | Policy Check | Decision | Success |
+| Act 3 | Comparison | Metrics | The Lesson |
+
+### Audio Toggle
+
+Each act file includes a 🔊/🔇 mute button in the nav bar. When muted, `playAudio()` is a no-op and the audio element is paused. Mute state persists across timeline loops.
+
+### Navigation
+
+Each act file includes a nav bar (top-right) with links to the sibling acts and the storyboard home:
+- `act1.html`: `🏠 Storyboard` (index.html) | `Act 2 ▶`
+- `act2.html`: `◀ Act 1` | `🏠 Storyboard` | `Act 3 ▶`  
+- `act3.html`: `◀ Act 2` | `🏠 Storyboard`
+
+### Act 1 — The Naive Approach (`act1.html`, 8s loop)
 
 **Focus:** Premise — show the problem and the naive agent's failure.
 
-**Scene ID:** `#scene1` | **CSS class:** `.scene`
+**Scene ID:** `#scene1` | **CSS class:** `.scene` | **BG:** `act1-request.png` at 35% opacity
 
 | Time | Event | Element | Description | Tech |
 |------|-------|---------|-------------|------|
@@ -137,147 +172,138 @@ A self-contained `index.html` plays a **32-second cinematic animation** in 3 act
 | 7.5s | Scene fades out | `#scene1` | Opacity → 0 | `gsap.to(opacity:0, d:0.5)` |
 | 7.5s | Console log | — | `Act 1 complete — transitioning to Act 2` | `logEvent()` |
 
-**Key Artifacts in Act 1:** 3 scene backgrounds (dynamically swapped), 2 infographic overlays, 1 audio clip, 6 subtitle reveals, 14 console events, 1 SVG escalation animation.
+**Key Artifacts in Act 1:** 1 scene background (static), 2 infographic overlays, 1 audio clip, 7 subtitle reveals, 1 SVG escalation animation.
 
 ---
 
-### Act 2 — The Resilient Approach (8–24s)
+### Act 2 — The Resilient Approach (`act2.html`, 16s loop)
 
-**Scene ID:** `#scene2` | **CSS class:** `.scene`
+**Focus:** Conclusion — same scenario, better agent behavior.
+
+**Scene ID:** `#scene2` | **CSS class:** `.scene` | **BG:** `act2-escalate.png` at 30% opacity
 
 | Time | Event | Element | Description | Tech |
 |------|-------|---------|-------------|------|
-| 9.9s | Scene visible | `#scene2` | Opacity → 1 (overlaps Act 1 fade) | `gsap.to(opacity:1, d:0.4)` |
-| 9.9s | BG image loaded | `#scene2-bg` | `act2-escalate.png` at 30% opacity | `gsap.to(opacity:0.3, d:1)` |
-| 10.0s | Audio Act 2 | `<audio#audio-act2>` | Pre-generated MP3 narration plays | `audio.play()` |
-| 10.0s | Subtitle 7 | `.subtitle-bar` | Green bg: *"The resilient agent detects the gap and escalates to a human for policy interpretation."* | clipPath reveal, 2.5s |
-| 10.1s | **Request bubble** | `#s2-request` | Same text as Act 1 | `gsap.to(opacity:1, d:0.6)` |
-| 10.3s | **Agent box** | `#s2-agent-box` | 🤖 "AI Agent — Checking policy rules..." | `gsap.to(opacity:1, d:0.5)` |
-| 10.3s | Subtitle 8 | `.subtitle-bar` | Green bg: *"Improved agent checks policy — finds same gap."* | 1.8s reveal |
-| 10.7s | **Policy rules** | `#s2-policy` | Same rules, gap highlighted: "Competitor price matching → No policy found" | `gsap.to(opacity:1, d:0.6)` |
-| 11.3s | **Decision point** | `#s2-decision` | 🧠 "No deterministic rule for this." / "I know what I don't know." | `gsap.to(opacity:1, d:0.6)` |
-| 11.3s | Subtitle 9 | `.subtitle-bar` | Green bg: *"Agent recognizes: no deterministic rule exists."* | 1.8s reveal |
-| 12.1s | **Escalation** | `#s2-escalate` | 🤖 "Escalating to human..." → 👩‍💼 Human Agent / Policy Interpretation. Handoff animation. | `gsap.to(opacity:1, scale:1.05, d:0.5)` |
-| 12.1s | BG image swap | `#scene2-bg` | → `act2-escalate.png` | Refresh escalation visual |
-| 12.1s | Agent box success | `#s2-agent-box` | Border turns green | `className = "agent-box success"` |
-| 12.1s | Subtitle 10 | `.subtitle-bar` | Green bg: *"Escalating to human for policy interpretation."* | 2.0s reveal |
-| 13.6s | **Success result** | `#s2-result` | Large ✅ icon + "Correct Outcome — Human applied appropriate policy" + green resolution text | `gsap.to(opacity:1, scale:1, d:0.5)` |
-| 13.6s | BG image swap | `#scene2-bg` | → `act2-success.png` | Green success scene |
-| 13.6s | Subtitle 11 | `.subtitle-bar` | Green bg: *"Human resolves — correct outcome, zero financial error."* | 2.0s reveal |
-| 19.1s | Scene fades out | `#scene2` | Opacity → 0 | `gsap.to(opacity:0, d:0.5)` |
-| 19.1s | Console log | — | `Act 2 complete — transitioning to Act 3` | `logEvent()` |
+| 0.0s | Scene visible | `#scene2` | Auto-visible on load | CSS `opacity:1` |
+| 0.0s | BG image loaded | `#scene2-bg` | `act2-escalate.png` at 30% opacity | `gsap.to(opacity:0.3, d:1)` |
+| 0.3s | **Request bubble** | `#s2-request` | Same text as Act 1 | `gsap.to(opacity:1, d:0.6)` |
+| 0.8s | **Agent box** | `#s2-agent-box` | 🤖 "AI Agent — Checking policy rules..." | `gsap.to(opacity:1, d:0.5)` |
+| 1.1s | Subtitle 8 | `.subtitle-bar` | Green bg: *"Improved agent checks policy — finds same gap."* | clipPath reveal, 1.8s |
+| 1.8s | **Policy rules** | `#s2-policy` | Same rules, gap highlighted: "Competitor price matching → No policy found" | `gsap.to(opacity:1, d:0.6)` |
+| 2.6s | Gap highlighted | `#s2-policy li.gap` | Red `#e94560`, bold | `gsap.to(color, fontWeight, d:0.5)` |
+| 3.6s | **Decision point** | `#s2-decision` | 🧠 "No deterministic rule for this." / "I know what I don't know." | `gsap.to(opacity:1, d:0.6)` |
+| 4.0s | Subtitle 9 | `.subtitle-bar` | Green bg: *"Agent recognizes: no deterministic rule exists."* | clipPath reveal, 1.8s |
+| 5.1s | Decision fades | `#s2-decision` | opacity→0 | `gsap.to(opacity:0, d:0.3)` |
+| 5.4s | **Escalation** | `#s2-escalate` | 🤖 "Escalating to human..." → 👩‍💼 Human Agent / Policy Interpretation | `gsap.to(opacity:1, scale:1.05, d:0.5)` |
+| 5.4s | Agent box success | `#s2-agent-box` | Border turns green | `className = "agent-box success"` |
+| 5.4s | Subtitle 10 | `.subtitle-bar` | Green bg: *"Escalating to human for policy interpretation."* | clipPath reveal, 2.0s |
+| 8.3s | **Success result** | `#s2-result` | Large ✅ icon + "Correct Outcome" + green resolution text | `gsap.to(opacity:1, scale:1, d:0.5)` |
+| 8.5s | Subtitle 11 | `.subtitle-bar` | Green bg: *"Human resolves — correct outcome, zero financial error."* | clipPath reveal, 2.0s |
+| ~11s | Narration audio | `<audio#audio-act2>` | Pre-generated MP3 plays | `audio.play()` |
+| ~11.3s | Narration subtitle | `.subtitle-bar` | Green bg: *"The resilient agent detects the gap and escalates..."* | clipPath reveal, 2.5s |
+| 13.0s | Scene fades out | `#scene2` | Opacity → 0 | `gsap.to(opacity:0, d:0.5)` |
+| 16.0s | **Loop** | — | `tl.restart(true, false)` | `onComplete` callback |
 
-**Key Artifacts in Act 2:** 2 scene backgrounds (dynamically swapped), 1 audio clip, 5 subtitle reveals, 8 console events.
+**Key Artifacts in Act 2:** 1 scene background, 1 audio clip, 5 subtitle reveals.
 
 ---
 
-### Act 3 — The Lesson (24–32s)
+### Act 3 — The Lesson (`act3.html`, 8s loop)
 
-**Scene ID:** `#scene3` | **CSS class:** `.scene`
+**Focus:** Summary — side-by-side comparison, metrics, final lesson.
+
+**Scene ID:** `#scene3` | **CSS class:** `.scene` | **BG:** `act3-comparison.png` at 25% opacity
 
 | Time | Event | Element | Description | Tech |
 |------|-------|---------|-------------|------|
-| 19.9s | Scene visible | `#scene3` | Opacity → 1 (overlaps Act 2 fade) | `gsap.to(opacity:1, d:0.4)` |
-| 19.9s | BG image loaded | `#scene3-bg` | `act3-comparison.png` at 25% opacity | `gsap.to(opacity:0.25, d:1)` |
-| 20.0s | Audio Act 3 | `<audio#audio-act3>` | Pre-generated MP3 narration plays | `audio.play()` |
-| 20.0s | Subtitle 12 | `.subtitle-bar` | Cyan bg: *"Know what you don't know. Escalate policy gaps to the right decision-maker."* | clipPath reveal, 2.4s |
-| 20.2s | **Side-by-side comparison** | `#s3-comparison` | Two-column layout: ❌ Naive Agent (red) vs ✅ Resilient Agent (green) | `gsap.to(opacity:1, d:0.6)` |
-| 20.2s | Subtitle 13 | `.subtitle-bar` | Cyan bg: *"Naive agent guesses wrong. Resilient agent escalates."* | 2.2s reveal |
-| 20.5s | Naive step 1 | `#naive-step1` | 🤖 Receives request | `gsap.to(opacity:1, d:0.3)` |
-| 20.9s | Naive step 2 | `#naive-step2` | 🔍 Policy gap detected | d:0.3 |
-| 21.3s | Naive step 3 | `#naive-step3` | 🎲 Guesses anyway | d:0.3 |
-| 21.7s | Naive step 4 | `#naive-step4` | 💸 Wrong discount → Financial loss | d:0.3, then highlight red bold |
-| 20.5s | Resilient step 1 | `#res-step1` | 🤖 Receives request | d:0.3 |
-| 20.9s | Resilient step 2 | `#res-step2` | 🔍 Policy gap detected | d:0.3 |
-| 21.3s | Resilient step 3 | `#res-step3` | 🚦 Detects boundary → Escalates | d:0.3 |
-| 21.7s | Resilient step 4 | `#res-step4` | 👩‍💼 Human resolves → Correct outcome | d:0.3, then highlight green bold |
-| 22.0s | Steps highlighted | `#naive-step4` / `#res-step4` | Red bold (naive) / Green bold (resilient), scale pulse | `gsap.to(color, fontWeight, scale, d:0.4)` |
-| 22.5s | **Error Rate metric** | `#s3-metric` | Metric box: "Error Rate for Unmapped Policy Gaps" | `gsap.to(opacity:1, d:0.5)` |
-| 22.9s | **100% → 0% animation** | `#metric-end` | Green "0%" scales in from 0.5, red "100%" dims to gray | `gsap.fromTo(opacity:0,scale:0.5 → opacity:1,scale:1,d:0.6)` |
-| 22.9s | Subtitle 14 | `.subtitle-bar` | Cyan bg: *"Error rate drops from 100% to 0% with human escalation."* | 2.0s reveal |
-| 24.8s | **Final text** | `#s3-final` | "Know what you don't know. Escalate policy gaps." in cyan, 48px | `gsap.to(opacity:1, y:0, d:0.8)` + text-shadow glow |
-| 24.8s | Console log | — | `Final message displayed` | `logEvent()` |
-| 25.1s | BG image swap | `#scene3-bg` | → `act3-final.png` | Final lesson scene |
-| 25.4s | **Rationale card** | `#rationale-card` | Green-bordered rectangle: "Why Escalation Is Correct" — 4-line explanation: automated agents use deterministic rules, when silent = policy gap, autonomous resolution risks financial errors, human handoff is only safe path | `gsap.to(opacity:1, scale:1.03, d:0.6)`, held 2.5s |
-| 25.4s | Console log | — | `Rationale box displayed` | `logEvent()` |
-| 26.3s | **GitHub Pages banner** | `#gh-banner` | Cyan-bordered URL: `rifaterdemsahin.github.io/Customer-Support-Resolution-Agent` | `gsap.to(opacity:1, y:-10, d:0.6)` + scale pulse |
-| 26.3s | Console log | — | `GitHub Pages URL banner shown` | `logEvent()` |
-| 30.0s | **Timeline complete** | `#timeline` | 4px cyan progress bar reaches 100% width | `gsap.to(width:100%, d:30, ease:none)` |
-| 30.0s | Loop restart | — | Console: `[30s] Animation loop restart` → `tl.restart(true, false)` | `onComplete` callback |
+| 0.0s | Scene visible | `#scene3` | Auto-visible on load | CSS `opacity:1` |
+| 0.0s | BG image loaded | `#scene3-bg` | `act3-comparison.png` at 25% opacity | `gsap.to(opacity:0.25, d:1)` |
+| 0.3s | **Side-by-side comparison** | `#s3-comparison` | Two-column layout: ❌ Naive Agent (red) vs ✅ Resilient Agent (green) | `gsap.to(opacity:1, d:0.6)` |
+| 0.5s | Subtitle 13 | `.subtitle-bar` | Cyan bg: *"Naive agent guesses wrong. Resilient agent escalates."* | clipPath reveal, 2.2s |
+| 0.6s | Naive step 1 | `#n1` | 🤖 Receives request | `gsap.to(opacity:1, d:0.3)` |
+| 1.0s | Naive step 2 | `#n2` | 🔍 Policy gap detected | d:0.3 |
+| 1.4s | Naive step 3 | `#n3` | 🎲 Guesses anyway | d:0.3 |
+| 1.8s | Naive step 4 | `#n4` | 💸 Wrong discount → Financial loss | d:0.3, then highlight red bold |
+| 0.6s | Resilient step 1 | `#r1` | 🤖 Receives request | d:0.3 |
+| 1.0s | Resilient step 2 | `#r2` | 🔍 Policy gap detected | d:0.3 |
+| 1.4s | Resilient step 3 | `#r3` | 🚦 Detects boundary → Escalates | d:0.3 |
+| 1.8s | Resilient step 4 | `#r4` | 👩‍💼 Human resolves → Correct outcome | d:0.3, then highlight green bold |
+| 2.1s | Steps highlighted | `#n4` / `#r4` | Red bold scale pulse / Green bold scale pulse | `gsap.to(scale:1.1, d:0.4)` → back to 1 |
+| 2.4s | **Error Rate metric** | `#s3-metric` | Metric box: "Error Rate for Unmapped Policy Gaps" | `gsap.to(opacity:1, d:0.5)` |
+| 2.8s | **100% → 0% animation** | `#metric-end` | Green "0%" scales in, red "100%" dims | `gsap.fromTo(opacity:0,scale:0.5 → opacity:1,scale:1,d:0.6)` |
+| 2.8s | Subtitle 14 | `.subtitle-bar` | Cyan bg: *"Error rate drops from 100% to 0% with human escalation."* | clipPath reveal, 2.0s |
+| 3.2s | **Final text** | `#s3-final` | "Know what you don't know. Escalate policy gaps." in cyan, 48px | `gsap.to(opacity:1, y:0, d:0.8)` + text-shadow glow |
+| 3.6s | **Rationale card** | `#rationale-card` | Green-bordered: "Why Escalation Is Correct" — 4-line explanation | `gsap.to(opacity:1, scale:1.03, d:0.6)` |
+| 4.2s | **GitHub Pages banner** | `#gh-banner` | Cyan-bordered URL: `rifaterdemsahin.github.io/Customer-Support-Resolution-Agent` | `gsap.to(opacity:1, y:-10, d:0.6)` + scale pulse |
+| ~6.2s | Rationale card fades | `#rationale-card` | Opacity → 0 | `gsap.to(opacity:0, d:0.4)` |
+| ~6.5s | Narration audio | `<audio#audio-act3>` | Pre-generated MP3 plays | `audio.play()` |
+| ~6.8s | Narration subtitle | `.subtitle-bar` | Cyan bg: *"Know what you don't know. Escalate policy gaps to the right decision-maker."* | clipPath reveal, 2.4s |
+| 8.0s | **Loop** | — | `tl.restart(true, false)` | `onComplete` callback |
 
-**Key Artifacts in Act 3:** 2 scene backgrounds (dynamically swapped), 1 audio clip, 4 subtitle reveals, 7 console events, 1 rationale card, 1 GitHub Pages banner.
+**Key Artifacts in Act 3:** 1 scene background, 1 audio clip, 3 subtitle reveals, 1 rationale card, 1 GitHub Pages banner.
 
 ---
 
-## 5. Global Timeline Elements
+## 5. Per-Act Timeline Elements
+
+Each act file contains its own:
 
 | Element | CSS | Animation | Duration |
 |---------|-----|-----------|----------|
-| `.timeline-bar` `#timeline` | 4px height, `#00d4aa` | `width: 0% → 100%` | 30s, `ease:none` |
-| `.debug-panel` `#debug-panel` | Bottom of stage, 220px tall | Opens on click (translateY) | 0.35s transition |
-| Debug progress bar | `#prog-fill` | Live width from `tl.time() / 30 * 100` | Every 150ms via `setInterval` |
+| `.timeline-bar` `#timeline` | 4px height, act-colored (`#e94560` / `#00cc66` / `#00d4aa`) | `width: 0% → 100%` | Full act duration (8s/16s/8s), `ease:none` |
+| `.debug-panel` `#debug-panel` | Bottom of stage, 180px height | Opens on click (translateY) | 0.35s transition |
+| `.debug-toggle` | Full width, 34px height | Click to open/close, shows artifact counts | — |
+| `.nav-bar` | Top-right, flex row | Prev / Storyboard / Next links between acts + 🔊/🔇 audio toggle | — |
+| `.scene-indicator` | Top-center, z-index:92 | `SCENE X/3: Name` with scale-pulse on transition | 0.35s transition |
+| `.subtitle-bar` | Bottom-center, z-index:80 | `clipPath: inset()` character reveal | `steps(<len>)` easing, 3.5s hold, then fade |
+
+### Storyboard (`index.html`)
+
+| Element | CSS | Purpose |
+|---------|-----|---------|
+| `.act-grid` | Flex row, 40px gap | 3 act cards side-by-side |
+| `.act-card` | Flex:1, max 520px, colored borders (`#e94560` / `#00cc66` / `#00d4aa`) | Click target linking to individual act files |
+| `.act-link` | Centered button, act-colored bg/border | Navigation to individual act |
+| `.info-bar` | Cyan-tinted background | Links to combined.html, SPEC.md, and live demo |
+| `.debug-panel` | Bottom slide-up (180px, shared pattern) | Minimal debug info about storyboard structure |
 
 ---
 
-## 6. Console Event Log (Chronological)
+## 6. Console Event Log
 
-All events logged via `logEvent()` → `console.log('[X.Xs] event')` + debug panel entry.
+Each act file logs events to `console.log` and the debug panel via `logEvent()`. Unlike the combined timeline (29 absolute-timed events), each act logs its own events relative to its timeline.
 
-| # | Time | Event | Class |
-|---|------|-------|-------|
-| 1 | 0.0 | Debug panel initialized | info |
-| 2 | 0.0 | GSAP v3.12.5 loaded | artifact |
-| 3 | 0.5 | Problem card displayed — AI Agent Policy Gap Problem | info |
-| 4 | 5.5 | Problem card dismissed | info |
-| 5 | 5.7 | Customer request bubble appears | info |
-| 6 | 6.0 | AI Agent appears — analyzing request | info |
-| 7 | 6.2 | Infographic shown: get_customer() + lookup_order() | info |
-| 8 | 6.4 | Policy rules shown — competitor gap highlighted | info |
-| 9 | 7.0 | Policy Gap banner shown | info |
-| 10 | 7.3 | Gray area shown — policy silence / uncertainty zone | error |
-| 11 | 7.8 | Agent guesses — applies unauthorized discount | info |
-| 12 | 8.1 | Red flash — error state triggered | info |
-| 13 | 8.6 | Error result displayed — financial loss | info |
-| 14 | 9.2 | Act 1 complete — transitioning to Act 2 | info |
-| 15 | 9.9 | Act 2 started — The Resilient Approach | info |
-| 16 | 10.1 | Same competitor price match request arrives | info |
-| 17 | 10.3 | Resilient agent appears | info |
-| 18 | 10.7 | Policy gap confirmed again | info |
-| 19 | 11.3 | Agent decides — no guessing this time | info |
-| 20 | 12.1 | Escalation to human agent initiated | info |
-| 21 | 13.6 | Success — human agent applied correct policy | info |
-| 22 | 19.1 | Act 2 complete — transitioning to Act 3 | info |
-| 23 | 19.9 | Act 3 started — The Lesson / Comparison | info |
-| 24 | 20.2 | Side-by-side comparison columns appear | info |
-| 25 | 22.6 | Metric animation: 100% → 0% | info |
-| 26 | 24.8 | Final message displayed | info |
-| 27 | 25.4 | Rationale box displayed — why escalation is correct | info |
-| 28 | 26.3 | GitHub Pages URL banner shown | info |
-| 29 | 30.0 | Animation loop restart | info |
+| Act | Events | Key console logs |
+|-----|--------|------------------|
+| Act 1 | ~14 | Problem card display/dismiss, request bubble, agent appears, infographic, policy gap, gray area, agent guesses, red flash, error result, act complete, loop |
+| Act 2 | ~10 | Act started, request arrives, agent appears, policy gap confirmed, decision — no guessing, escalation to human, success, act complete, loop |
+| Act 3 | ~7 | Act started, comparison columns, metric 100%→0%, final message, rationale box, GitHub Pages URL, loop |
+
+All events are color-coded in the debug panel: cyan=info, green=artifact, red=error, orange=transition.
 
 ---
 
 ## 7. Subtitle Inventory
 
-All 15 subtitles use `clipPath: inset()` character-by-character reveal via GSAP `steps()` easing. Hold time: 3.5s after reveal before `opacity:0` fade.
+All subtitles use `clipPath: inset()` character-by-character reveal via GSAP `steps()` easing. Hold time: 3.5s after reveal before `opacity:0` fade. Subtitles are defined within each act file's local timeline.
 
-| # | Act | BG Color | Text | Reveal | When |
-|---|-----|----------|------|--------|------|
-| 1 | Act 1 | #e94560 (red) | *"AI agents face uncertainty when policy rules don't cover every scenario."* | 2.0s | 0.5s |
-| 2 | Act 1 | #e94560 (red) | *"When guidelines are silent, autonomous agents risk financial errors."* | 2.2s | 0.3s |
-| 3 | Act 1 | #e94560 (red) | *"Customer requests a competitor price match."* | 1.6s | 5.5s |
-| 4 | Act 1 | #e94560 (red) | *"AI agent checks internal policy rules..."* | 1.5s | 6.2s |
-| 5 | Act 1 | #e94560 (red) | *"Policy gap found: competitor price matching has no rule."* | 1.8s | 7.1s |
-| 6 | Act 1 | #e94560 (red) | *"No matching rule. Agent guesses — applies 15% discount."* | 1.8s | 8.0s |
-| 7 | Act 1 | #e94560 (red) | *"Financial loss: unauthorized discount applied."* | 1.5s | 8.7s |
-| 8 | Act 2 | #00cc66 (green) | *"The resilient agent detects the gap and escalates to a human for policy interpretation."* | 2.5s | 10.0s |
-| 9 | Act 2 | #00cc66 (green) | *"Improved agent checks policy — finds same gap."* | 1.8s | 10.5s |
-| 10 | Act 2 | #00cc66 (green) | *"Agent recognizes: no deterministic rule exists."* | 1.8s | 11.7s |
-| 11 | Act 2 | #00cc66 (green) | *"Escalating to human for policy interpretation."* | 2.0s | 12.1s |
-| 12 | Act 2 | #00cc66 (green) | *"Human resolves — correct outcome, zero financial error."* | 2.0s | 13.8s |
-| 13 | Act 3 | #00d4aa (cyan) | *"Know what you don't know. Escalate policy gaps to the right decision-maker."* | 2.4s | 20.0s |
-| 14 | Act 3 | #00d4aa (cyan) | *"Naive agent guesses wrong. Resilient agent escalates."* | 2.2s | 20.4s |
-| 15 | Act 3 | #00d4aa (cyan) | *"Error rate drops from 100% to 0% with human escalation."* | 2.0s | 22.9s |
+| # | Act | File | BG Color | Text | Reveal |
+|---|-----|------|----------|------|--------|
+| 1 | Act 1 | `act1.html` | `#e94560` (red) | *"AI agents face uncertainty when policy rules don't cover every scenario."* | 2.0s |
+| 2 | Act 1 | `act1.html` | `#e94560` (red) | *"Customer requests a competitor price match."* | 1.6s |
+| 3 | Act 1 | `act1.html` | `#e94560` (red) | *"AI agent checks internal policy rules..."* | 1.5s |
+| 4 | Act 1 | `act1.html` | `#e94560` (red) | *"Policy gap found: competitor price matching has no rule."* | 1.8s |
+| 5 | Act 1 | `act1.html` | `#e94560` (red) | *"No matching rule. Agent guesses — applies 15% discount."* | 1.8s |
+| 6 | Act 1 | `act1.html` | `#e94560` (red) | *"Financial loss: unauthorized discount applied."* | 1.5s |
+| 7 | Act 1 | `act1.html` | `#e94560` (red) | *"When guidelines are silent, autonomous agents risk financial errors."* | 2.2s |
+| 8 | Act 2 | `act2.html` | `#00cc66` (green) | *"Improved agent checks policy — finds same gap."* | 1.8s |
+| 9 | Act 2 | `act2.html` | `#00cc66` (green) | *"Agent recognizes: no deterministic rule exists."* | 1.8s |
+| 10 | Act 2 | `act2.html` | `#00cc66` (green) | *"Escalating to human for policy interpretation."* | 2.0s |
+| 11 | Act 2 | `act2.html` | `#00cc66` (green) | *"Human resolves — correct outcome, zero financial error."* | 2.0s |
+| 12 | Act 2 | `act2.html` | `#00cc66` (green) | *"The resilient agent detects the gap and escalates to a human for policy interpretation."* | 2.5s |
+| 13 | Act 3 | `act3.html` | `#00d4aa` (cyan) | *"Naive agent guesses wrong. Resilient agent escalates."* | 2.2s |
+| 14 | Act 3 | `act3.html` | `#00d4aa` (cyan) | *"Error rate drops from 100% to 0% with human escalation."* | 2.0s |
+| 15 | Act 3 | `act3.html` | `#00d4aa` (cyan) | *"Know what you don't know. Escalate policy gaps to the right decision-maker."* | 2.4s |
 
 ---
 
@@ -309,13 +335,15 @@ All 15 subtitles use `clipPath: inset()` character-by-character reveal via GSAP 
 | Component | ID | Dimensions | Behavior |
 |-----------|-----|------------|----------|
 | Panel container | `#debug-panel` | Full width, 220px height | Slide up from bottom (translateY), hiding 34px toggle bar |
-| Toggle bar | `#debug-toggle` | Full width, 34px height | Click to open/close, shows progress + artifact counts |
-| Progress bar | `#prog-fill` | 60px × 6px | Live fill from `tl.time() / 30 * 100`, every 150ms |
-| Progress text | `#prog-text` | — | `"X.Xs / 30.0s"` |
+| Toggle bar | `#debug-toggle` | Full width, 34px height | Click to open/close, shows env links (🏠 Local / 🌐 Cloud) + scene status (📍 SX/3) + artifact counts |
+| Env links | `.env-links` | Inline flex, 11px | `🏠 Local` link to current file (relative), `🌐 Cloud` link to GitHub Pages absolute URL |
 | Image badge | `#status-imgs` | — | `"🖼 N/M"` — turns red if not all loaded |
 | Audio badge | `#status-audio` | — | `"🔊 N/M"` — turns red if not all loaded |
 | Event badge | `#status-events` | — | `"📋 N"` total event count |
-| Event timeline | `#debug-timeline` | 360px wide, scrollable | Color-coded dots: cyan=info, green=artifact, red=error, orange=transition, purple=subtitle, pink=image |
+| Scene badge | `#status-scene` | — | `"📍 SX/3"` — current inner scene, act-colored |
+| Event timeline | `#debug-timeline` | 340px wide, scrollable | Entries show: dot (color-coded), event ID (E1, E2...), time, message. Color-coded dots: cyan=info, green=artifact, red=error, orange=transition |
+| Event ID | `.tl-id` | 22px min-width, 9px, #555 | Auto-incremented `E1`, `E2`... assigned sequentially on each entry |
+| Scene entry | `📍 Scene X/3: Name` | In message column | Logged on each `showScene()` call via `addEntry()` |
 | Explanation panel | `#debug-explain` | Flex:1, scrollable | Shows clicked event's category, full text, and explanation |
 | Feedback box | `#feedback-text` | Flex:1, textarea | User feedback input — submits into timeline as purple subtitle event |
 
@@ -339,35 +367,45 @@ All 15 subtitles use `clipPath: inset()` character-by-character reveal via GSAP 
 │                                                                 │
 │  infographic/ (manual assets)                                    │
 │      ├── image.png          → workflow diagram                   │
-│      ├── gray area.jpeg     → uncertainty zone                   │
-│      └── what_Agent_does.png → standby                           │
+│      └── gray area.jpeg     → uncertainty zone                   │
 └─────────────────────────────────────────────────────────────────┘
-                          │
-                          ▼
+                           │
+                           ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  index.html  (single file, 1474 lines)                           │
-│                                                                 │
-│  <style>        → all CSS (dark theme, overlays, panels)         │
-│  <div#stage>    → 3 scenes + problem card + debug panel          │
-│  <script>       → GSAP 3.12.5 timeline engine                    │
-│                                                                 │
-│  ARTIFACTS LOADED:                                               │
-│      <img> × 3  → scene backgrounds (dynamic src swap)           │
-│      <img> × 2  → infographic overlays                           │
-│      <svg> × 1  → escalation illustration                        │
-│      <audio> × 3 → narration MP3s (preload=auto)                 │
-└─────────────────────────────────────────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  OUTPUTS                                                         │
-│                                                                 │
-│  https://rifaterdemsahin.github.io/Customer-Support-Resolution-Agent/ │
-│                                                                 │
-│  test-animation.js → 35 assertions + 6 screenshots               │
-│  test-screenshots/<TIMESTAMP>/ → 6 PNG snapshots                 │
+│  Storyboard (index.html, 230 lines)                              │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │  3 act cards with descriptions, links, and debug footer     ││
+│  └─────────────────────────────────────────────────────────────┘│
+│                           │                                      │
+│            ┌──────────────┼──────────────┐                       │
+│            ▼              ▼              ▼                       │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐             │
+│  │  act1.html   │ │  act2.html   │ │  act3.html   │             │
+│  │  352 lines   │ │  269 lines   │ │  284 lines   │             │
+│  │  8s timeline │ │  16s timeline│ │  8s timeline │             │
+│  │  ❌ failure  │ │  ✅ success  │ │  📊 summary  │             │
+│  └──────────────┘ └──────────────┘ └──────────────┘             │
+│                           │                                      │
+│            ┌──────────────┴──────────────┐                       │
+│            ▼                             ▼                       │
+│  ┌──────────────────┐    ┌──────────────────────────┐           │
+│  │  combined.html   │    │  GitHub Pages Deploy      │           │
+│  │  1474 lines      │    │  (static.yml workflow)    │           │
+│  │  32s unified     │    │  push main → auto deploy  │           │
+│  └──────────────────┘    └──────────────────────────┘           │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+### Shared Patterns Across All Act Files
+
+Each act file follows the same architecture:
+1. **GSAP timeline** via `gsap.timeline({ defaults: { ease: "power3.inOut" } })`
+2. **Subtitle system** — `showSubtitle(text, at, dur)` with `clipPath:inset()` reveal
+3. **Audio playback** — `playAudio(at)` triggers `<audio>` element at timeline position
+4. **Event logging** — `logEvent(msg, at, explain, cls)` logs to console + debug panel
+5. **Debug panel** — slide-up panel with timeline entries, artifact tracking (🖼 🔊 📋), and click-to-explain
+6. **Navigation bar** — prev/next/home links between acts
+7. **Auto-loop** — `tl.eventCallback("onComplete", () => tl.restart(true, false))`
 
 ---
 
@@ -375,7 +413,11 @@ All 15 subtitles use `clipPath: inset()` character-by-character reveal via GSAP 
 
 ```
 Customer-Support-Resolution-Agent/
-├── index.html                              # Single-file demo (HTML+CSS+JS inline)
+├── index.html                              # Storyboard landing page (230 lines)
+├── act1.html                               # Act 1: Naive Approach — 8s auto-loop (352 lines)
+├── act2.html                               # Act 2: Resilient Approach — 16s auto-loop (269 lines)
+├── act3.html                               # Act 3: The Lesson — 8s auto-loop (284 lines)
+├── combined.html                           # Combined 32s animation (1474 lines)
 ├── test-animation.js                       # Playwright test suite (35 assertions)
 ├── generate_images.py                      # OpenRouter image generator
 ├── generate_audio.py                       # edge-tts narration generator
@@ -390,10 +432,9 @@ Customer-Support-Resolution-Agent/
 ├── .github/workflows/static.yml            # GitHub Pages deploy
 ├── generated-images/2026-07-07T09-10-41Z/  # 8 AI-generated scene PNGs
 ├── generated-audio/2026-07-07T09-28-54Z/   # 3 TTS narration MP3s
-├── infographic/                            # 3 manual infographic assets
+├── infographic/                            # 2 manual infographic assets
 │   ├── image.png
-│   ├── gray area.jpeg
-│   └── what_Agent_does.png
+│   └── gray area.jpeg
 ├── test-screenshots/                       # Playwright output (timestamped, gitignored)
 ├── README.md
 └── SPEC.md                                 # ← This document
@@ -404,18 +445,26 @@ Customer-Support-Resolution-Agent/
 ## 12. Commands
 
 ```bash
-# View locally
+# View storyboard landing page (links to all acts)
 open index.html
+
+# View individual acts directly
+open act1.html
+open act2.html
+open act3.html
+
+# View combined 32s animation
+open combined.html
 
 # Regenerate images (requires .env with OPENROUTER_API_KEY)
 pip install -r requirements.txt
 python generate_images.py
-# → Update <img src> in index.html to new timestamp
+# → Update <img src> in act1.html / act2.html / act3.html / combined.html
 
 # Regenerate audio
 pip install edge-tts
 python generate_audio.py
-# → Update <audio src> in index.html to new timestamp
+# → Update <audio src> in act1.html / act2.html / act3.html / combined.html
 
 # Run test suite
 npm install && npx playwright install chromium
