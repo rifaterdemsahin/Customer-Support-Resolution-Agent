@@ -2,7 +2,7 @@
 
 > Narrative screenplay for the 3-act animated demo.  
 > Timings relative to each act file (0s start).  
-> Scene specs: `spec/scene-*-*.md`
+> Scene specs: `../scenes/scene-*-*.md`
 
 ---
 
@@ -32,7 +32,7 @@ The problem card holds for 2 seconds, then slides up and fades out.
 
 > *[Scene indicator: SCENE 1/3 — Problem Card]*
 >
-> ➡ `spec/scene-1-1-problem-card.md`
+> ➡ `../scenes/scene-1-1-problem-card.md`
 
 ---
 
@@ -71,7 +71,7 @@ The agent is stuck. No rule. What will it do?
 
 > *[Scene indicator: SCENE 2/3 — Policy Gap]*
 >
-> ➡ `spec/scene-1-2-policy-gap.md`
+> ➡ `../scenes/scene-1-2-policy-gap.md`
 
 ---
 
@@ -96,7 +96,7 @@ The screen fades to black as the timeline bar reaches 100%.
 > *[Scene indicator: SCENE 3/3 — Error Outcome]*  
 > *LOOP → restart*
 >
-> ➡ `spec/scene-1-3-error-outcome.md`
+> ➡ `../scenes/scene-1-3-error-outcome.md`
 
 ---
 
@@ -122,7 +122,7 @@ The agent doesn't panic. It knows what's coming.
 
 > *[Scene indicator: SCENE 1/3 — Policy Check]*
 >
-> ➡ `spec/scene-2-1-policy-check.md`
+> ➡ `../scenes/scene-2-1-policy-check.md`
 
 ---
 
@@ -146,7 +146,7 @@ The correct path. No guessing. Hand it off.
 
 > *[Scene indicator: SCENE 2/3 — Decision]*
 >
-> ➡ `spec/scene-2-2-decision.md`
+> ➡ `../scenes/scene-2-2-decision.md`
 
 ---
 
@@ -170,7 +170,7 @@ The scene fades to black. Timeline reaches 100%.
 > *[Scene indicator: SCENE 3/3 — Success]*  
 > *LOOP → restart*
 >
-> ➡ `spec/scene-2-3-success.md`
+> ➡ `../scenes/scene-2-3-success.md`
 
 ---
 
@@ -193,7 +193,7 @@ Steps reveal sequentially in both columns. At the critical divergence point — 
 
 > *[Scene indicator: SCENE 1/3 — Comparison]*
 >
-> ➡ `spec/scene-3-1-comparison.md`
+> ➡ `../scenes/scene-3-1-comparison.md`
 
 ---
 
@@ -217,7 +217,7 @@ The text glows with a cyan shadow, pulsing gently.
 
 > *[Scene indicator: SCENE 2/3 — Metrics]*
 >
-> ➡ `spec/scene-3-2-metrics.md`
+> ➡ `../scenes/scene-3-2-metrics.md`
 
 ---
 
@@ -248,7 +248,7 @@ The timeline bar reaches 100%.
 > *[Scene indicator: SCENE 3/3 — The Lesson]*  
 > *LOOP → restart*
 >
-> ➡ `spec/scene-3-3-the-lesson.md`
+> ➡ `../scenes/scene-3-3-the-lesson.md`
 
 ---
 
@@ -266,12 +266,12 @@ The timeline bar reaches 100%.
 
 | Act | Scene | Name | Spec File |
 |-----|-------|------|-----------|
-| 1 | 1.1 | Problem Card | `spec/scene-1-1-problem-card.md` |
-| 1 | 1.2 | Policy Gap | `spec/scene-1-2-policy-gap.md` |
-| 1 | 1.3 | Error Outcome | `spec/scene-1-3-error-outcome.md` |
-| 2 | 2.1 | Policy Check | `spec/scene-2-1-policy-check.md` |
-| 2 | 2.2 | Decision | `spec/scene-2-2-decision.md` |
-| 2 | 2.3 | Success | `spec/scene-2-3-success.md` |
-| 3 | 3.1 | Comparison | `spec/scene-3-1-comparison.md` |
-| 3 | 3.2 | Metrics | `spec/scene-3-2-metrics.md` |
-| 3 | 3.3 | The Lesson | `spec/scene-3-3-the-lesson.md` |
+| 1 | 1.1 | Problem Card | `../scenes/scene-1-1-problem-card.md` |
+| 1 | 1.2 | Policy Gap | `../scenes/scene-1-2-policy-gap.md` |
+| 1 | 1.3 | Error Outcome | `../scenes/scene-1-3-error-outcome.md` |
+| 2 | 2.1 | Policy Check | `../scenes/scene-2-1-policy-check.md` |
+| 2 | 2.2 | Decision | `../scenes/scene-2-2-decision.md` |
+| 2 | 2.3 | Success | `../scenes/scene-2-3-success.md` |
+| 3 | 3.1 | Comparison | `../scenes/scene-3-1-comparison.md` |
+| 3 | 3.2 | Metrics | `../scenes/scene-3-2-metrics.md` |
+| 3 | 3.3 | The Lesson | `../scenes/scene-3-3-the-lesson.md` |

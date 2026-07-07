@@ -138,19 +138,19 @@ Each act file includes a nav bar (top-right) with links to the sibling acts and 
 ### Scene Summary
 
 > **Narrative script:** `script.md` — full screenplay with dialog, narration, and visual cues.  
-> **Individual specs:** `spec/scene-*-*.md` — per-scene timeline tables, GSAP events, element IDs, subtitle details.
+> **Individual specs:** `../scenes/scene-*-*.md` — per-scene timeline tables, GSAP events, element IDs, subtitle details.
 
 | Act | Scene | Name | File | Duration | Script | Scene Spec |
 |-----|-------|------|------|----------|--------|-------------|
-| 1 | 1.1 | Problem Card | `act1.html` | 0–4s | [`script.md#scene-11`](script.md#scene-11-problem-card-00s--40s) | [`spec/scene-1-1-problem-card.md`](spec/scene-1-1-problem-card.md) |
-| 1 | 1.2 | Policy Gap | `act1.html` | 4–6.5s | [`script.md#scene-12`](script.md#scene-12-policy-gap-40s--65s) | [`spec/scene-1-2-policy-gap.md`](spec/scene-1-2-policy-gap.md) |
-| 1 | 1.3 | Error Outcome | `act1.html` | 6.5–8s | [`script.md#scene-13`](script.md#scene-13-error-outcome-65s--80s) | [`spec/scene-1-3-error-outcome.md`](spec/scene-1-3-error-outcome.md) |
-| 2 | 2.1 | Policy Check | `act2.html` | 0–3.6s | [`script.md#scene-21`](script.md#scene-21-policy-check-00s--36s) | [`spec/scene-2-1-policy-check.md`](spec/scene-2-1-policy-check.md) |
-| 2 | 2.2 | Decision | `act2.html` | 3.6–7s | [`script.md#scene-22`](script.md#scene-22-decision-36s--70s) | [`spec/scene-2-2-decision.md`](spec/scene-2-2-decision.md) |
-| 2 | 2.3 | Success | `act2.html` | 7–16s | [`script.md#scene-23`](script.md#scene-23-success-70s--160s) | [`spec/scene-2-3-success.md`](spec/scene-2-3-success.md) |
-| 3 | 3.1 | Comparison | `act3.html` | 0–2.5s | [`script.md#scene-31`](script.md#scene-31-comparison-00s--25s) | [`spec/scene-3-1-comparison.md`](spec/scene-3-1-comparison.md) |
-| 3 | 3.2 | Metrics | `act3.html` | 2.5–5s | [`script.md#scene-32`](script.md#scene-32-metrics-25s--50s) | [`spec/scene-3-2-metrics.md`](spec/scene-3-2-metrics.md) |
-| 3 | 3.3 | The Lesson | `act3.html` | 5–8s | [`script.md#scene-33`](script.md#scene-33-the-lesson-50s--80s) | [`spec/scene-3-3-the-lesson.md`](spec/scene-3-3-the-lesson.md) |
+| 1 | 1.1 | Problem Card | `act1.html` | 0–4s | [`script.md#scene-11`](script.md#scene-11-problem-card-00s--40s) | [`../scenes/scene-1-1-problem-card.md`](../scenes/scene-1-1-problem-card.md) |
+| 1 | 1.2 | Policy Gap | `act1.html` | 4–6.5s | [`script.md#scene-12`](script.md#scene-12-policy-gap-40s--65s) | [`../scenes/scene-1-2-policy-gap.md`](../scenes/scene-1-2-policy-gap.md) |
+| 1 | 1.3 | Error Outcome | `act1.html` | 6.5–8s | [`script.md#scene-13`](script.md#scene-13-error-outcome-65s--80s) | [`../scenes/scene-1-3-error-outcome.md`](../scenes/scene-1-3-error-outcome.md) |
+| 2 | 2.1 | Policy Check | `act2.html` | 0–3.6s | [`script.md#scene-21`](script.md#scene-21-policy-check-00s--36s) | [`../scenes/scene-2-1-policy-check.md`](../scenes/scene-2-1-policy-check.md) |
+| 2 | 2.2 | Decision | `act2.html` | 3.6–7s | [`script.md#scene-22`](script.md#scene-22-decision-36s--70s) | [`../scenes/scene-2-2-decision.md`](../scenes/scene-2-2-decision.md) |
+| 2 | 2.3 | Success | `act2.html` | 7–16s | [`script.md#scene-23`](script.md#scene-23-success-70s--160s) | [`../scenes/scene-2-3-success.md`](../scenes/scene-2-3-success.md) |
+| 3 | 3.1 | Comparison | `act3.html` | 0–2.5s | [`script.md#scene-31`](script.md#scene-31-comparison-00s--25s) | [`../scenes/scene-3-1-comparison.md`](../scenes/scene-3-1-comparison.md) |
+| 3 | 3.2 | Metrics | `act3.html` | 2.5–5s | [`script.md#scene-32`](script.md#scene-32-metrics-25s--50s) | [`../scenes/scene-3-2-metrics.md`](../scenes/scene-3-2-metrics.md) |
+| 3 | 3.3 | The Lesson | `act3.html` | 5–8s | [`script.md#scene-33`](script.md#scene-33-the-lesson-50s--80s) | [`../scenes/scene-3-3-the-lesson.md`](../scenes/scene-3-3-the-lesson.md) |
 
 ---
 
@@ -173,7 +173,7 @@ Each act file contains its own:
 | `.act-grid` | Flex row, 40px gap | 3 act cards side-by-side |
 | `.act-card` | Flex:1, max 520px, colored borders (`#e94560` / `#00cc66` / `#00d4aa`) | Click target linking to individual act files |
 | `.act-link` | Centered button, act-colored bg/border | Navigation to individual act |
-| `.info-bar` | Cyan-tinted background | Links to combined.html, SPEC.md, and live demo |
+| `.info-bar` | Cyan-tinted background | Links to combined.html, docs/SPEC.md, and live demo |
 | `.debug-panel` | Bottom slide-up (180px, shared pattern) | Minimal debug info about storyboard structure |
 
 ---
@@ -333,13 +333,14 @@ Customer-Support-Resolution-Agent/
 ├── test-animation.js                       # Playwright test suite (35 assertions)
 ├── generate_images.py                      # OpenRouter image generator
 ├── generate_audio.py                       # edge-tts narration generator
-├── AGENTS.md                               # Developer guide
-├── formula.md                              # Test specification
-├── formula_audio.md                        # Audio generation rationale
-├── SPEC.md                                 # ← This document
-├── script.md                               # Narrative screenplay — 9 scenes across 3 acts
-├── rules.md                                # Design rules — timing, sync, brand colors, debug bar
-├── spec/                                   # Per-scene specification files
+├── docs/                                   # Project documentation
+│   ├── AGENTS.md                           # Developer guide
+│   ├── SPEC.md                             # ← This document
+│   ├── script.md                           # Narrative screenplay — 9 scenes across 3 acts
+│   ├── rules.md                            # Design rules — timing, sync, brand colors, debug bar
+│   ├── formula.md                          # Test specification
+│   └── formula_audio.md                    # Audio generation rationale
+├── scenes/                                 # Per-scene specification files
 │   ├── scene-1-1-problem-card.md
 │   ├── scene-1-2-policy-gap.md
 │   ├── scene-1-3-error-outcome.md
@@ -361,7 +362,7 @@ Customer-Support-Resolution-Agent/
 │   └── gray area.jpeg
 ├── test-screenshots/                       # Playwright output (timestamped, gitignored)
 ├── README.md
-└── SPEC.md                                 # ← This document
+└── docs/SPEC.md                            # ← This document
 ```
 
 ---

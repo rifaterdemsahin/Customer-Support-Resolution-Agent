@@ -60,7 +60,7 @@ Each act loops independently via `tl.restart(true, false)`. The timeline MUST re
 **Every code change MUST update the corresponding spec file at the same time.** Never commit a code change without its matching documentation update. This applies to:
 - `SPEC.md` — master spec (shared architecture, tech stack, artifact inventory)
 - `script.md` — narrative screenplay
-- `spec/scene-*-*.md` — per-scene implementation details
+- `../scenes/scene-*-*.md` — per-scene implementation details
 - `AGENTS.md` — developer quick-reference
 - `rules.md` — this file (design rules)
 

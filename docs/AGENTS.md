@@ -47,11 +47,11 @@ python generate_images.py
 | `act2.html` | **Act 2** — Resilient Approach, 16s auto-loop with 3 inner scenes (269 lines) |
 | `act3.html` | **Act 3** — The Lesson, 8s auto-loop with 3 inner scenes (284 lines) |
 | `combined.html` | **Combined** — all 3 acts in single 32s animation (1474 lines) |
-| `SPEC.md` | **Master spec** — scene-by-scene, artifacts, timeline tables |
-| `test-animation.js` | Playwright test suite — 32 assertions across 7 categories, exits non-zero on failure |
-| `generate_images.py` | Calls OpenRouter (`google/gemini-2.5-flash-image`) to generate 8 scene PNGs |
-| `generate_audio.py` | Calls edge-tts (`en-US-GuyNeural`) to generate 3 narration MP3s |
-| `formula.md` | Test plan — maps every spec requirement to a Playwright assertion |
+| `SPEC.md` | **Master spec** — scene-by-scene, artifacts, timeline tables (`docs/SPEC.md`) |
+| `AGENTS.md` | **This file** — developer quick-reference (`docs/AGENTS.md`) |
+| `formula.md` | Test plan — maps every spec requirement to a Playwright assertion (`docs/formula.md`) |
+| `rules.md` | **Design rules** — timing, sync, brand colors, debug bar (`docs/rules.md`) |
+| `script.md` | **Narrative screenplay** — 9 scenes across 3 acts (`docs/script.md`) |
 | `package.json` | npm manifest — `playwright ^1.61.1` |
 | `requirements.txt` | Python deps — `requests`, `python-dotenv` |
 | `.gitignore` | Excludes `node_modules/`, `.env`, `__pycache__/`, `*.pyc`, `test-screenshots/` |
@@ -63,7 +63,7 @@ python generate_images.py
 ```
 index.html  (storyboard, 230 lines)
 ├── 3 × .act-card with descriptions + links
-├── .info-bar → combined.html, SPEC.md, live demo
+├── .info-bar → combined.html, docs/SPEC.md, live demo
 └── .debug-panel → minimal debug footer
 
 act1.html  (352 lines, 8s loop)
